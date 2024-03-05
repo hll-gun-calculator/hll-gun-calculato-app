@@ -1,0 +1,43 @@
+{
+  "name": "easyarty-calc",
+  "version": "0.0.1",
+  "author": "easyarty",
+  "website": "easyarty.com",
+  "child": {
+    "America": {
+      "envs": {
+        "maxAngle": 978,
+        "maxRange": 1600,
+        "minAngle": 622
+      },
+      "fun": "{maxAngle}-({inputValue}-100)/({maxRange}-100)*({maxAngle}-{minAngle})"
+    },
+    "Germany": {
+      "maximumRange": 1600,
+      "minimumRange": 100,
+      "envs": {
+        "m": -0.237035714285714,
+        "b": 1001.46547619048
+      },
+      "fun": "{m}*{inputValue}+{b}"
+    },
+    "TheSovietUnion": {
+      "maximumRange": 1600,
+      "minimumRange": 100,
+      "envs": {
+        "m": -0.2136691176,
+        "b": 1141.7215
+      },
+      "fun": "{m}*{inputValue}+{b}"
+    },
+    "GreatBritain": {
+      "maximumRange": 1600,
+      "minimumRange": 100,
+      "envs": {
+        "m": -0.1773,
+        "b": 550.69
+      },
+      "fun": "{m}*{inputValue}+{b}"
+    }
+  }
+}

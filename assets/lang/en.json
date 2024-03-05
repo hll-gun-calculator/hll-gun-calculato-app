@@ -1,0 +1,125 @@
+{
+  "basic": {
+    "function": {
+      "auto": {
+        "title": "自动",
+        "describe": "依照系统决定"
+      }
+    },
+    "tip": {
+      "notContent": "空"
+    },
+    "factions": {
+      "America": "美国",
+      "Germany": "德国",
+      "TheSovietUnion": "苏联",
+      "GreatBritain": "大不列颠"
+    },
+    "time": {
+      "seconds": "{s}秒前",
+      "minutes": "{s}分钟前",
+      "hours": "{s}小时前",
+      "today": "今天",
+      "yesterday": "昨天",
+      "beforeYesterday": "前天",
+      "dayAgo": "{s}天前"
+    }
+  },
+  "home": {
+    "title": "首页"
+  },
+  "license": {
+    "title": "开源"
+  },
+  "collect": {
+    "title": "收藏"
+  },
+  "gunComputer": {
+    "meter": "米",
+    "result": "角度 (结果)",
+    "erase": "擦除计算",
+    "backDelet": "删减"
+  },
+  "setting": {
+    "title": "设置中心",
+    "cell": {
+      "history": {
+        "title": "游览历史",
+        "describe": "游览过往内容"
+      },
+      "website": {
+        "title": "网站地址",
+        "describe": "网站"
+      }
+    },
+    "versions": {
+      "title": "版本",
+      "describe": "更新,最新版本,当前版本",
+      "currentVersion": "当前版本",
+      "newVersion": "最新版本",
+      "newVersionDescribe_new": "已经最新",
+      "newVersionDescribe_old": "过时的版本",
+      "type": "类型",
+      "superHairVersionTip": "未找到对应版本,您当前版本可能是超发版本"
+    },
+    "language": {
+      "title": "language"
+    },
+    "theme": {
+      "title": "主题",
+      "describe": "颜色外观,定时主题切换,字体大小",
+      "textScaleFactor": "字体大小"
+    },
+    "cleanManagement": {
+      "title": "清理",
+      "describe": "删除本地数据,谨慎操作"
+    },
+    "appInfo": {
+      "title": "应用程序",
+      "describe": "打开程序应用信息"
+    },
+    "notice": {
+      "title": "通知设置",
+      "describe": "应用相应通知管理",
+      "tagstitle": "身份标签",
+      "switch": {
+        "title": "应用推送",
+        "describe": "是否接收来自应用推送信息"
+      },
+      "site": {
+        "title": "站内推送",
+        "describe": "是否接收站内消息推送"
+      }
+    },
+    "support": {
+      "title": "支持",
+      "guide": "应用初始引导",
+      "feedbackTitle": "反馈群(612949946)",
+      "feedbackDescription": "和作者更加接近呢",
+      "githubTitle": "Github",
+      "githubDescription": "访问开源仓库",
+      "donateTitle": "捐赠",
+      "donateDescription": "向BFBAN APP的开发者捐赠",
+      "licenseTitle": "许可证",
+      "licenseDescription": "列出程序许可证",
+      "appDocumentationTitle": "应用文档",
+      "appDocumentationDescription": "帮助文档地址"
+    },
+    "publicTranslator": {
+      "title": "翻译模块",
+      "describe": "翻译密匙配置,开关",
+      "switch": "开关",
+      "switchDescription": "翻译模块启动开关"
+    }
+  },
+  "history": {
+    "title": "计算历史"
+  },
+  "calculatingFunctionConfig": {
+    "title": "计算函数配置"
+  },
+  "landingTimer": {
+    "title": "炮弹定时器",
+    "put": "推"
+  }
+}

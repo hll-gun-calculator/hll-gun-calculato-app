@@ -1,0 +1,18 @@
+{
+  "name": "internal-calc",
+  "version": "0.0.1",
+  "author": "",
+  "website": "",
+  "child": {
+    "America": {
+      "maximumRange": 1600,
+      "minimumRange": 100,
+      "envs": {
+        "maximumAngle": 978,
+        "maximumRange": 1600,
+        "minimumAngle": 622
+      },
+      "fun": "{maximumAngle}-({inputValue}-100)/({maximumRange}-100)*({maximumAngle}-{minimumAngle})"
+    }
+  }
+}
