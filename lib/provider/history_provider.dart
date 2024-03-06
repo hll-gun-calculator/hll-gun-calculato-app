@@ -4,33 +4,29 @@ import '../data/index.dart';
 import '../utils/index.dart';
 
 class HistoryProvider with ChangeNotifier {
-  CalcList calcList = CalcList();
+  // CalcList calcList = CalcList();
 
   Storage storage = Storage();
 
   String packageName = "calcHistory";
 
-  List<CalcResult> get list => calcList.list ?? [];
+  List<CalcHistoryItemData> list = [];
 
   init () {
-    _readLocalHistory();
     notifyListeners();
   }
 
-  void _readLocalHistory () async {
-    StorageData calcHistoryData = await storage.get(packageName);
-
-    if (calcHistoryData.code == 0) {
-      // calcList.list.addAll(calcHistoryData.value);
-    }
+  /// 排序
+  HistoryProvider sort () {
+    list.sort((a, b) => a.creationTime!.millisecondsSinceEpoch + b.creationTime!.millisecondsSinceEpoch);
+    return this;
   }
 
+  /// 添加
   void add (CalcResult result) {
-    calcList.list.add(result);
+    CalcHistoryItemData calcHistoryItemData = CalcHistoryItemData();
+    calcHistoryItemData.as(result);
+    list.add(calcHistoryItemData);
     notifyListeners();
-  }
-
-  void save () {
-
   }
 }

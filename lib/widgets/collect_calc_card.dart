@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/component/_time/index.dart';
-import 'package:hll_emplacement_calculator/data/CalcResult.dart';
-import 'package:hll_emplacement_calculator/data/Collect.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/collect_provider.dart';
+import '/provider/collect_provider.dart';
+import '/component/_time/index.dart';
+import '/data/Collect.dart';
 
-class collectCalcCard extends StatefulWidget {
+class CollectCalcCard extends StatefulWidget {
   final CollectItemData i;
 
-  const collectCalcCard({
+  CollectCalcCard({
     super.key,
     required this.i,
   });
 
   @override
-  State<collectCalcCard> createState() => _historyCalcCardState();
+  State<CollectCalcCard> createState() => _historyCalcCardState();
 }
 
-class _historyCalcCardState extends State<collectCalcCard> {
+class _historyCalcCardState extends State<CollectCalcCard> {
   /// 打开收藏详情
   void _openCollectDetail(CollectItemData collectItemData) {
     TextEditingController title = TextEditingController(text: collectItemData.title);
@@ -67,6 +66,7 @@ class _historyCalcCardState extends State<collectCalcCard> {
                   ListTile(
                     title: const Text("结果"),
                     subtitle: Card(
+                      margin: EdgeInsets.zero,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                         child: Row(
@@ -168,59 +168,58 @@ class _historyCalcCardState extends State<collectCalcCard> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: ListTile(
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return ListTile(
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.i.title.isNotEmpty ? widget.i.title : widget.i.id,
+                  style: const TextStyle(fontWeight: FontWeight.normal),
+                ),
+                Text(
+                  widget.i.remark.isNotEmpty ? widget.i.remark : widget.i.updateTime.toString(),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ],
+            ),
+          ),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    widget.i.title,
-                    style: const TextStyle(fontWeight: FontWeight.normal),
+                    widget.i.inputValue,
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ),
                   ),
+                  const Icon(Icons.chevron_right),
                   Text(
-                    widget.i.remark,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    widget.i.outputValue.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ),
                 ],
               ),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      widget.i.inputValue,
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right),
-                    Text(
-                      widget.i.outputValue.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        subtitle: Wrap(
-          children: [
-            if (widget.i.result!.code != 0) Text(widget.i.result!.message.toString()),
-          ],
-        ),
+          ),
+        ],
+      ),
+      subtitle: Wrap(
+        children: [
+          if (widget.i.result!.code != 0) Text(widget.i.result!.message.toString()),
+        ],
       ),
       onTap: () {
         _openCollectDetail(widget.i);

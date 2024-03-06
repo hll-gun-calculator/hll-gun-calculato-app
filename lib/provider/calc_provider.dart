@@ -11,39 +11,64 @@ class CalcProvider with ChangeNotifier {
 
   String packageName = "calc";
 
-  List<String> localCalcPath = ["assets/json/internal-calc.json", "assets/json/easyarty.json"];
+  final List<Map> _localCalcPath = [
+    {"name": "internal-calc", "path": "assets/json/internal-calc.json"},
+    {"name": "easyarty", "path": "assets/json/easyarty.json"}
+  ];
 
-  List<CalculatingFunction> calcList = [];
+  // 内置配置列表
+  late final List<CalculatingFunction> _internalCalcList = [];
 
-  // 默认
-  CalculatingFunction get defaultCalculatingFunction => calcList.isEmpty ? CalculatingFunction(name: "internal-calc") : calcList[0];
+  // 自定义配置列表
+  late final List<CalculatingFunction> _customCalcList = [];
 
-  // 用户所选
-  late String _currentCalculatingFunction = defaultCalculatingFunction.name;
-
-  CalculatingFunction get currentCalculatingFunction {
-    if (calcList.where((i) => i.name == _currentCalculatingFunction).isEmpty) return defaultCalculatingFunction;
-    return calcList.where((i) => i.name == _currentCalculatingFunction).first;
+  // 列表 自定义+内置
+  List<CalculatingFunction> get calcList {
+    print(_customCalcList);
+    return [..._internalCalcList, ..._customCalcList];
   }
 
-  String get currentCalculatingFunctionName => _currentCalculatingFunction;
+  // 默认计算函数实例
+  CalculatingFunction get defaultCalculatingFunction => calcList.isEmpty ? CalculatingFunction(name: "internal-calc") : calcList[0];
 
+  late String _currentCalculatingFunctionName = defaultCalculatingFunction.name;
+
+  // 当前哟路虎所选计算函数实例
+  CalculatingFunction get currentCalculatingFunction {
+    if (calcList.where((i) => i.name == _currentCalculatingFunctionName).isEmpty) return defaultCalculatingFunction;
+    return calcList.where((i) => i.name == _currentCalculatingFunctionName).first;
+  }
+
+  // 当前用户所选计算函数名称
+  String get currentCalculatingFunctionName => _currentCalculatingFunctionName;
+
+  // 设置选择计算函数
   set currentCalculatingFunctionName(String value) {
-    _currentCalculatingFunction = value;
+    _currentCalculatingFunctionName = value;
   }
 
   init() async {
-    await _readLocalCalc();
+    await _readLocalInstalledCalc();
     await _readLocalCustomCalc();
+
     notifyListeners();
   }
 
+  /// 保存
+  void _save() {
+    storage.set(packageName, value: {
+      "custom": _customCalcList.where((i) => i.isCustom).toList(),
+      "currentCalculatingFunctionName": currentCalculatingFunction.name,
+    });
+  }
+
   /// 读取本地内置配置
-  Future _readLocalCalc() async {
-    for (var i in localCalcPath) {
-      dynamic d = await rootBundle.loadString(i);
+  Future _readLocalInstalledCalc() async {
+    for (var i in _localCalcPath) {
+      dynamic d = await rootBundle.loadString(i["path"]);
       CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(jsonDecode(d));
-      calcList.add(calculatingFunction);
+      calculatingFunction.isCustom = false;
+      _internalCalcList.add(calculatingFunction);
     }
     return true;
   }
@@ -51,49 +76,85 @@ class CalcProvider with ChangeNotifier {
   /// 读取本地自定义配置
   Future _readLocalCustomCalc() async {
     StorageData calcLocalData = await storage.get(packageName);
+    List<CalculatingFunction> calculatingFunctions = [];
+
     if (calcLocalData.code == 0) {
-      // calcList.addAll(calcLocalData.value["custom"]);
+
+      for (var i in (calcLocalData.value["custom"] as List)) {
+        CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(i);
+        calculatingFunction.isCustom = true;
+        calculatingFunctions.add(calculatingFunction);
+      }
+
+      _customCalcList.addAll(calculatingFunctions);
+      _currentCalculatingFunctionName = calcLocalData.value["currentCalculatingFunctionName"];
     }
+
     return true;
   }
 
   /// 从互联网添加配置
-  void _cloudNetworkLoadCalc(String path) async {
-    Response result = await Http.request(path);
+  Future _cloudNetworkLoadCalc(String path) async {
+    Response result = await Http.request(path, method: Http.GET, httpDioType: HttpDioType.none);
+    return result;
+  }
 
-    if (result.statusCode == 200 && result.extra["c"] == "json") {
-      // todo 校验是否json
-      calcList.add(result.data);
-    }
+  /// 排序
+  CalcProvider sort() {
+    calcList.sort((a, b) => a.creationTime.millisecondsSinceEpoch - b.creationTime.millisecondsSinceEpoch);
+    return this;
+  }
+
+  /// 删除本地自定义
+  void deleteLocalCustom(String name) {
+    if (name.isEmpty) return;
+
+    _customCalcList.removeWhere((i) => i.name == name && i.isCustom);
+
+    _save();
+    notifyListeners();
   }
 
   /// 从网络添加
-  void addNetworkCustom({
+  Future addNetworkCustom({
     required String title,
     required String path,
-  }) {
-    if (title.isEmpty || path.isEmpty) return;
+  }) async {
+    Response result = await _cloudNetworkLoadCalc(path);
 
-    List saveCalcList = List.from(calcList);
-    saveCalcList.where((i) => i["name"] != "internal-calc");
+    // todo 校验json
+    if (result.data != null) {
+      dynamic json = jsonDecode(result.data);
+      CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(json);
+      calculatingFunction.isCustom = true;
+      _customCalcList.add(calculatingFunction);
 
-    _cloudNetworkLoadCalc(path);
-
-    storage.set(packageName, value: {"custom": saveCalcList, "currentCalculatingFunctionName": currentCalculatingFunction.name});
+      _save();
+    }
 
     notifyListeners();
+    return result;
   }
 
   /// 从本地添加
   void addLocalCustom({
     required String title,
-    required String path,
-  }) {}
+    required String data,
+  }) {
+    CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(jsonDecode(data));
+    calculatingFunction.isCustom = true;
+    _customCalcList.add(calculatingFunction);
+
+    _save();
+
+    notifyListeners();
+  }
 
   /// 视图选择保存
   void selectCalculatingFunction(String name) {
     if (name.isEmpty) return;
-    _currentCalculatingFunction = name;
+    _currentCalculatingFunctionName = name;
+    _save();
     notifyListeners();
   }
 }

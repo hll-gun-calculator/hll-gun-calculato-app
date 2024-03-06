@@ -22,3 +22,7 @@ class AppConfig extends InheritedWidget {
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => false;
 }
+
+class AppSize {
+  static num kRang = 645;
+}

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_emplacement_calculator/provider/collect_provider.dart';
+import '/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../component/_empty/index.dart';
@@ -122,8 +122,8 @@ class _calcPageState extends State<calcPage> {
               ? Scrollbar(
                   child: ListView(
                     dragStartBehavior: DragStartBehavior.down,
-                    children: historyData.list.map((i) {
-                      return historyCalcCard(i: i);
+                    children: historyData.sort().list.map((i) {
+                      return HistoryCalcCard(i: i);
                     }).toList(),
                   ),
                 )
@@ -374,11 +374,17 @@ class _calcPageState extends State<calcPage> {
             const Divider(height: 1, thickness: 1),
 
             /// 预选建议
-            if (collectData.primarySelection(_textController.text).isNotEmpty)
-              Container(
-                color: Theme.of(context).primaryColor.withOpacity(.2),
-                height: 70,
-                width: MediaQuery.of(context).size.width,
+            // if (collectData.primarySelection(_textController.text).isNotEmpty)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 350),
+              clipBehavior: Clip.hardEdge,
+              color: Theme.of(context).primaryColor.withOpacity(.2),
+              height: collectData.primarySelection(_textController.text).isNotEmpty ? 80 : 0,
+              width: MediaQuery.of(context).size.width,
+              child: OverflowBox(
+                alignment: Alignment.bottomCenter,
+                maxHeight: 80,
+                minHeight: 0,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -391,43 +397,65 @@ class _calcPageState extends State<calcPage> {
                           scrollDirection: Axis.horizontal,
                           children: collectData
                               .primarySelection(_textController.text)
-                              .map((e) => ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(50 / 3),
+                              .map((e) => Container(
+                                    margin: const EdgeInsets.only(right: 5),
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(50 / 3),
+                                        ),
                                       ),
+                                      child: Container(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 130,
+                                          minWidth: 100,
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Wrap(
+                                              children: [
+                                                if (e.title.isNotEmpty)
+                                                  Text(
+                                                    e.title,
+                                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  )
+                                                else
+                                                  Text(
+                                                    e.id,
+                                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(e.inputValue),
+                                                const SizedBox(child: Icon(Icons.arrow_right_alt_sharp, size: 15), width: 25),
+                                                Chip(
+                                                  label: Text(
+                                                    e.outputValue,
+                                                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                                  ),
+                                                  visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+                                                  padding: EdgeInsets.zero,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _textController.text = e.inputValue;
+                                          _calcSubmit(calcData);
+                                        });
+                                      },
                                     ),
-                                    child: Container(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 120,
-                                        minWidth: 100,
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            e.title,
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(e.inputValue),
-                                              const Icon(Icons.chevron_right, size: 13),
-                                              Text(e.outputValue),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _textController.text = e.inputValue;
-                                        _calcSubmit(calcData);
-                                      });
-                                    },
                                   ))
                               .toList(),
                         ),
@@ -436,19 +464,13 @@ class _calcPageState extends State<calcPage> {
                   ],
                 ),
               ),
+            ),
 
             /// 键盘
             SizedBox(
               height: 380,
               child: NumberKeyboardWidget(
-                theme: NumberKeyboardTheme(
-                  padding: const EdgeInsets.only(
-                    top: 5,
-                    right: 20,
-                    left: 20,
-                    bottom: 20
-                  )
-                ),
+                theme: NumberKeyboardTheme(padding: const EdgeInsets.only(top: 5, right: 20, left: 20, bottom: 20)),
                 onSubmit: () {
                   historyData.add(_calcSubmit(calcData));
                 },

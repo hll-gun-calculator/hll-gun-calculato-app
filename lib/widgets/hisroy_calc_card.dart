@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/component/_time/index.dart';
-import 'package:hll_emplacement_calculator/data/CalcResult.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-import '../data/index.dart';
-import '../provider/collect_provider.dart';
+import '/data/index.dart';
+import '/provider/collect_provider.dart';
+import '/component/_time/index.dart';
 
-class historyCalcCard extends StatefulWidget {
-  final CalcResult i;
+class HistoryCalcCard extends StatefulWidget {
+  final CalcHistoryItemData i;
 
-  const historyCalcCard({
+  const HistoryCalcCard({
     super.key,
     required this.i,
   });
 
   @override
-  State<historyCalcCard> createState() => _historyCalcCardState();
+  State<HistoryCalcCard> createState() => _historyCalcCardState();
 }
 
-class _historyCalcCardState extends State<historyCalcCard> {
+class _historyCalcCardState extends State<HistoryCalcCard> {
   /// 收藏添加
   void _addCollectModel(CalcResult calcResult) {
     TextEditingController titleController = TextEditingController(
       text: "${FlutterI18n.translate(context, "basic.factions.${calcResult.inputFactions.value}")}-${calcResult.inputValue}",
     );
     TextEditingController remarkController = TextEditingController(
-      text: "${calcResult.inputValue} > ${calcResult.outputValue}"
+      text: "${calcResult.inputValue} > ${calcResult.outputValue}",
     );
 
     showModalBottomSheet(
@@ -42,7 +42,18 @@ class _historyCalcCardState extends State<historyCalcCard> {
                 actions: [
                   IconButton(
                     onPressed: () {
+                      if (collectData.hasItem(
+                        inputValue: widget.i.inputValue,
+                        inputFactions: widget.i.inputFactions,
+                        title: titleController.text,
+                        remark: remarkController.text,
+                      )) {
+                        Fluttertoast.showToast(msg: "已存在类似收藏");
+                        return;
+                      }
+
                       collectData.add(widget.i, titleController.text, remark: remarkController.text);
+                      Navigator.pop(context);
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.done),
@@ -93,26 +104,33 @@ class _historyCalcCardState extends State<historyCalcCard> {
               appBar: AppBar(
                 leading: const CloseButton(),
                 actions: [
-                  DropdownButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.more_horiz),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 1,
-                        child: Text("删除"),
-                      ),
-                      DropdownMenuItem(
-                        value: 2,
-                        child: Text("收藏"),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      switch (value as int) {
-                        case 2:
-                          _addCollectModel(widget.i);
-                          break;
-                      }
-                    },
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(collectData.hasAsId(calcResult.id) ? Icons.star : Icons.star_border),
+                  ),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      padding: const EdgeInsets.all(5),
+                      icon: const Icon(Icons.more_horiz),
+                      isDense: true,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 1,
+                          child: Text("删除"),
+                        ),
+                        DropdownMenuItem(
+                          value: 2,
+                          child: Text("收藏"),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        switch (value as int) {
+                          case 2:
+                            _addCollectModel(widget.i);
+                            break;
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -121,6 +139,7 @@ class _historyCalcCardState extends State<historyCalcCard> {
                   ListTile(
                     title: const Text("结果"),
                     subtitle: Card(
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                         child: Row(
@@ -196,55 +215,54 @@ class _historyCalcCardState extends State<historyCalcCard> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: ListTile(
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return ListTile(
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  FlutterI18n.translate(context, "basic.factions.${widget.i.inputFactions.value}"),
+                  style: const TextStyle(fontWeight: FontWeight.normal),
+                ),
+                TimeWidget(data: widget.i.creationTime.toString()),
+              ],
+            ),
+          ),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    FlutterI18n.translate(context, "basic.factions.${widget.i.inputFactions.value}"),
-                    style: const TextStyle(fontWeight: FontWeight.normal),
+                    widget.i.inputValue,
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ),
                   ),
-                  TimeWidget(data: widget.i.creationTime.toString()),
+                  const Icon(Icons.chevron_right),
+                  Text(
+                    widget.i.outputValue.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      widget.i.inputValue,
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Icon(Icons.chevron_right),
-                    Text(
-                      widget.i.outputValue.toString(),
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        subtitle: Wrap(
-          children: [
-            if (widget.i.result!.code != 0) Text(widget.i.result!.message.toString()),
-          ],
-        ),
+          ),
+        ],
+      ),
+      subtitle: Wrap(
+        children: [
+          if (widget.i.result!.code != 0) Text(widget.i.result!.message.toString()),
+        ],
       ),
       onTap: () {
         CalcHistoryItemData calcHistoryItemData = CalcHistoryItemData();

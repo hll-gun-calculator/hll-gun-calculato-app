@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import '../data/index.dart';
 
@@ -61,7 +59,10 @@ class LightnesTheme extends AppBaseThemeItem {
         inversePrimary: Color(0xfffff0db),
         surfaceTint: Color(0xff625648),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
+      dividerTheme: const DividerThemeData(
+        color: Colors.black12,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
       )

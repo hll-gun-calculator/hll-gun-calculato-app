@@ -1,21 +1,20 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'router/router.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'constants/api.dart';
+import 'provider/calc_provider.dart';
+import 'provider/theme_provider.dart';
 import 'provider/collect_provider.dart';
 import 'provider/history_provider.dart';
 import 'provider/package_provider.dart';
 import 'provider/translation_provider.dart';
-import 'router/router.dart';
-
-import 'package:fluro/fluro.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:hll_emplacement_calculator/provider/calc_provider.dart';
-
 
 void runMain() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

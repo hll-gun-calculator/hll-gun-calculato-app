@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/component/_empty/index.dart';
-import 'package:hll_emplacement_calculator/provider/collect_provider.dart';
+import '/component/_empty/index.dart';
+import '/data/Collect.dart';
+import '/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/collect_calc_card.dart';
@@ -14,6 +15,12 @@ class CollectPage extends StatefulWidget {
 }
 
 class _CollectPageState extends State<CollectPage> {
+  bool isEdit = false;
+
+  bool selectAll = false;
+
+  List<String> selectList = [];
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CollectProvider>(
@@ -21,14 +28,72 @@ class _CollectPageState extends State<CollectPage> {
         return Scaffold(
           appBar: AppBar(
             title: Text(FlutterI18n.translate(context, "collect.title")),
-          ),
-          body: ListView(
-            children: data.list.isNotEmpty ? data.list.map((i) => collectCalcCard(i: i)).toList() : [
-              const Center(
-                child: EmptyWidget(),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    isEdit = !isEdit;
+                  });
+                },
+                icon: const Icon(Icons.edit),
               ),
             ],
           ),
+          body: data.list.isNotEmpty
+              ? ListView(
+                  children: data.sort().list.map((i) => Row(
+                            children: [
+                              if (isEdit)
+                                Checkbox(
+                                  value: selectList.contains(i.id),
+                                  onChanged: (v) {
+                                    setState(() {
+                                      if (selectList.where((id) => id == i.id).isNotEmpty) {
+                                        selectList.removeWhere((tId) => tId == i.id);
+                                      } else {
+                                        selectList.add(i.id.toString());
+                                      }
+
+                                      if (selectList.length != data.list.length) {
+                                        selectAll = false;
+                                      }
+                                    });
+                                  },
+                                ),
+                              Expanded(
+                                flex: 1,
+                                child: CollectCalcCard(i: i),
+                              ),
+                            ],
+                          ))
+                      .toList(),
+                )
+              : const Center(
+                  child: EmptyWidget(),
+                ),
+          bottomSheet: isEdit
+              ? Row(
+                  children: [
+                    Checkbox(
+                      value: selectAll || selectList.length == data.list.length,
+                      onChanged: (v) {
+                        setState(() {
+                          (v as bool) ? selectList.addAll(data.list.map((e) => e.id).toList()) : selectList = [];
+                          selectAll = !selectAll;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        for (var id in selectList) {
+                          data.deleteAsId(id);
+                        }
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
+                )
+              : Container(),
         );
       },
     );

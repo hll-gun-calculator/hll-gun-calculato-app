@@ -1,13 +1,13 @@
 import 'package:fluro/fluro.dart';
-
+import 'package:hll_gun_calculator/pages/calculating_function_create/index.dart';
 
 // S Pages
-import '../pages/setting/langage.dart';
+import '/pages/setting/langage.dart';
 import '/pages/license/index.dart';
-import '../pages/collect/collect.dart';
+import '/pages/collect/collect.dart';
 import '/pages/setting/index.dart';
 import '/pages/setting/theme.dart';
-import '../pages/history/computing_history.dart';
+import '/pages/history/computing_history.dart';
 import '/pages/setting/version.dart';
 import '/pages/splash.dart';
 import '/pages/index/home.dart';
@@ -36,7 +36,6 @@ class Routes {
       }
     },
     {
-
       "url": '/language',
       "item": (context, params) {
         return const LanguagePage();
@@ -64,6 +63,12 @@ class Routes {
       "url": '/setting/version',
       "item": (context, params) {
         return const VersionPage();
+      }
+    },
+    {
+      "url": "/calculatingFunctionCreate",
+      "item": (context, params) {
+        return const CalculatingFunctionCreatePage();
       }
     },
     {

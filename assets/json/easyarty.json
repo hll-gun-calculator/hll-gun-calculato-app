@@ -4,14 +4,6 @@
   "author": "easyarty",
   "website": "easyarty.com",
   "child": {
-    "America": {
-      "envs": {
-        "maxAngle": 978,
-        "maxRange": 1600,
-        "minAngle": 622
-      },
-      "fun": "{maxAngle}-({inputValue}-100)/({maxRange}-100)*({maxAngle}-{minAngle})"
-    },
     "Germany": {
       "maximumRange": 1600,
       "minimumRange": 100,

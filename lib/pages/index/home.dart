@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/provider/package_provider.dart';
 import 'package:provider/provider.dart';
 
 import '/pages/index/calc.dart';
 import '/pages/index/gunComparisonTable.dart';
-import '/provider/calc_provider.dart';
 import '/utils/index.dart';
 import '/provider/history_provider.dart';
+import '/constants/config.dart';
+import '/provider/package_provider.dart';
+
 import 'landingTimer.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,6 +20,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late TabController _tabController;
+  List<dynamic> navs = [
+    {
+      "name": "gunCalc",
+      "icon": const Icon(Icons.calculate_outlined, size: 30),
+      "activeIcon": const Icon(Icons.calculate, size: 30),
+    },
+    {
+      "name": "landingTimer",
+      "icon": const Icon(Icons.timer_outlined, size: 30),
+      "activeIcon": const Icon(Icons.timer, size: 30),
+    },
+    {
+      "name": "gunComparisonTable",
+      "icon": const Icon(Icons.table_chart_outlined, size: 30),
+      "activeIcon": const Icon(Icons.table_chart, size: 30),
+    },
+  ];
 
   int tabIndex = 0;
 
@@ -32,10 +50,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       length: 3,
       initialIndex: 0,
     )..addListener(() {
-      setState(() {
-        tabIndex = _tabController.index;
+        setState(() {
+          tabIndex = _tabController.index;
+        });
       });
-    });
     super.initState();
   }
 
@@ -78,19 +96,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           return DefaultTabController(
             length: 3,
             child: Scaffold(
-              appBar: AppBar(
-                title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer','gunComparisonTable'][tabIndex]}.title")),
-                leading: Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                      tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-                    );
-                  },
-                ),
+              appBar: HomeAppBar(
+                contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : 0,
+                tabIndex: tabIndex,
               ),
               drawer: Drawer(
                 backgroundColor: Theme.of(context).canvasColor,
@@ -101,9 +109,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       child: ListView(
                         padding: EdgeInsets.zero,
                         children: [
-                          DrawerHeader(
-                            child: Text(packageData.package!.appName.toString()),
-                          ),
                           ListTile(
                             title: Text(FlutterI18n.translate(context, "history.title")),
                             onTap: () => _openComputingHistory(),
@@ -128,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     ),
                     ListTile(
                       title: const Text('版本'),
-                      trailing: const Text('v0.0.1'),
+                      trailing: Text(packageData.currentVersion),
                       onTap: () {
                         _openVersion();
                       },
@@ -136,18 +141,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              body: TabBarView(
-                controller: _tabController,
-                children: const [
-                  /// 计算机
-                  calcPage(),
-
-                  /// 落地时间计算
-                  LandingTimerPage(),
-
-                  /// 火炮表
-                  GunComparisonTablePage(),
-                ],
+              body: HomeBody(
+                tabIndex: tabIndex,
+                tabController: _tabController,
+                navs: navs,
               ),
               bottomSheet: Container(
                 margin: const EdgeInsets.only(bottom: 5),
@@ -160,5 +157,129 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         },
       ),
     );
+  }
+}
+
+class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
+  final int tabIndex;
+  late double contentHeight;
+
+  HomeAppBar({
+    required this.tabIndex,
+    this.contentHeight = kToolbarHeight,
+  });
+
+  @override
+  State<HomeAppBar> createState() => _HomeAppBarState();
+
+  @override
+  Size get preferredSize => Size.fromHeight(contentHeight);
+}
+
+class _HomeAppBarState extends State<HomeAppBar> {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+      if (constraints.maxWidth < AppSize.kRang) {
+        widget.contentHeight = kToolbarHeight;
+
+        return AppBar(
+          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              );
+            },
+          ),
+        );
+      }
+
+      widget.contentHeight = 0.0;
+
+      return PreferredSize(preferredSize: const Size(0.0, 0.0), child: Container(
+        color: Colors.red,
+      ));
+    });
+  }
+}
+
+class HomeBody extends StatefulWidget {
+  final List navs;
+  final int tabIndex;
+  final TabController tabController;
+
+  HomeBody({
+    required this.navs,
+    required this.tabIndex,
+    required this.tabController,
+  });
+
+  @override
+  State<HomeBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+      return Center(
+        child: OverflowBox(
+          maxWidth: constraints.maxWidth > AppSize.kRang ? double.parse(AppSize.kRang.toString()) : null,
+          maxHeight: MediaQuery.of(context).size.height,
+          child: Container(
+            transformAlignment: Alignment.center,
+            decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Theme.of(context).dividerTheme.color!), boxShadow: [BoxShadow(color: Theme.of(context).dividerColor.withOpacity(.2), spreadRadius: 10, blurRadius: 10)]),
+            constraints: BoxConstraints(
+              maxWidth: double.parse(AppSize.kRang.toString()),
+              minWidth: 100,
+            ),
+            child: Row(
+              children: [
+                if (constraints.maxWidth >= AppSize.kRang)
+                  NavigationRail(
+                    onDestinationSelected: (value) {
+                      setState(() {
+                        widget.tabController.index = value;
+                      });
+                    },
+                    leading: const DrawerButton(),
+                    labelType: NavigationRailLabelType.all,
+                    backgroundColor: Theme.of(context).bottomAppBarTheme.color,
+                    destinations: widget.navs.map((nav) {
+                      return NavigationRailDestination(
+                        icon: nav!["icon"],
+                        selectedIcon: nav!["activeIcon"],
+                        label: Text(FlutterI18n.translate(context, "${nav["name"]}.title")),
+                      );
+                    }).toList(),
+                    selectedIndex: widget.tabIndex,
+                  ),
+                Expanded(
+                  flex: 1,
+                  child: TabBarView(
+                    controller: widget.tabController,
+                    children: const [
+                      /// 计算机
+                      calcPage(),
+
+                      /// 落地时间计算
+                      LandingTimerPage(),
+
+                      /// 火炮表
+                      GunComparisonTablePage(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 }

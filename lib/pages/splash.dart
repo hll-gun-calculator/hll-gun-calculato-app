@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:hll_emplacement_calculator/utils/index.dart';
+import '/utils/index.dart';
 
 import 'package:provider/provider.dart';
 

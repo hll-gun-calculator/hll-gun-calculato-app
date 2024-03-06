@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/component/_empty/index.dart';
-import 'package:hll_emplacement_calculator/provider/history_provider.dart';
+import '/component/_empty/index.dart';
+import '/provider/history_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/hisroy_calc_card.dart';
@@ -25,8 +25,8 @@ class _ComputingHistoryPageState extends State<ComputingHistoryPage> {
           title: Text(FlutterI18n.translate(context, "history.title")),
         ),
         body: historyData.list.isNotEmpty ? ListView(
-          children: historyData.list.map((i) {
-            return historyCalcCard(
+          children: historyData.sort().list.map((i) {
+            return HistoryCalcCard(
               i: i,
             );
           }).toList(),

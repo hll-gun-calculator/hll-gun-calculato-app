@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_emplacement_calculator/utils/index.dart';
+import '/utils/index.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -38,11 +38,6 @@ class _SettingPageState extends State<SettingPage> {
           ListTile(
             title: const Text("网站"),
             onTap: () => urlUtil.onPeUrl("https://hll-app.cabbagelol.net"),
-            trailing: const Icon(Icons.chevron_right),
-          ),
-          ListTile(
-            title: const Text("关于"),
-            onTap: () {},
             trailing: const Icon(Icons.chevron_right),
           ),
         ],

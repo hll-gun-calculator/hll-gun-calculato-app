@@ -40,17 +40,45 @@ class CollectProvider with ChangeNotifier {
   }
 
   // 预选
-  List<CollectItemData> primarySelection (String value, {length = 3}) {
+  List<CollectItemData> primarySelection(String value, {length = 3}) {
     if (value.isEmpty) return [];
     return _list.where((i) => i.inputValue.contains(value)).toList();
+  }
+
+  /// 查询是否有重复
+  bool hasItem({
+    Factions inputFactions = Factions.None,
+    String inputValue = "",
+    String title = "",
+    String remark = "",
+    String id = "",
+  }) {
+    return _list.where((i) {
+      if (i.inputValue == inputValue && i.inputFactions == inputFactions) {
+        return true;
+      }
+
+      if (title.isNotEmpty) {
+        return i.title.contains(title);
+      }
+      if (remark.isNotEmpty) {
+        return i.remark.indexOf(remark) >= 0;
+      }
+      if (id.isNotEmpty) {
+        return i.id == id;
+      }
+      return true;
+    }).isNotEmpty;
   }
 
   /// 添加收藏
   add(CalcResult i, String title, {String remark = ""}) {
     CollectItemData collectItemData = CollectItemData();
     collectItemData.as(i);
+
     collectItemData.title = title;
     collectItemData.remark = remark;
+
     _list.add(collectItemData);
     _save();
     notifyListeners();
@@ -68,5 +96,11 @@ class CollectProvider with ChangeNotifier {
     _list.removeWhere((element) => element.id == id);
     _save();
     notifyListeners();
+  }
+
+  /// 排序
+  CollectProvider sort () {
+    _list.sort((a, b) => a.creationTime!.millisecondsSinceEpoch - b.creationTime!.millisecondsSinceEpoch);
+    return this;
   }
 }

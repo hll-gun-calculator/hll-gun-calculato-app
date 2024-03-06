@@ -10,6 +10,7 @@
       "notContent": "空"
     },
     "factions": {
+      "None": "未知",
       "America": "美国",
       "Germany": "德国",
       "TheSovietUnion": "苏联",
