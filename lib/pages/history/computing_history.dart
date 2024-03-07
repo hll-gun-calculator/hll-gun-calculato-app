@@ -17,22 +17,36 @@ class ComputingHistoryPage extends StatefulWidget {
 }
 
 class _ComputingHistoryPageState extends State<ComputingHistoryPage> {
+  /// 清空会话历史
+  void _cleanHistoryLog(HistoryProvider historyData) {
+    historyData.clean();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HistoryProvider>(builder: (context, historyData, widget) {
       return Scaffold(
         appBar: AppBar(
           title: Text(FlutterI18n.translate(context, "history.title")),
+          actions: [
+            if (historyData.list.isNotEmpty)
+              IconButton(
+                onPressed: () => _cleanHistoryLog(historyData),
+                icon: const Icon(Icons.delete),
+              ),
+          ],
         ),
-        body: historyData.list.isNotEmpty ? ListView(
-          children: historyData.sort().list.map((i) {
-            return HistoryCalcCard(
-              i: i,
-            );
-          }).toList(),
-        ) : const Center(
-          child: EmptyWidget(),
-        ),
+        body: historyData.list.isNotEmpty
+            ? ListView(
+                children: historyData.sort().list.map((i) {
+                  return HistoryCalcCard(
+                    i: i,
+                  );
+                }).toList(),
+              )
+            : const Center(
+                child: EmptyWidget(),
+              ),
       );
     });
   }

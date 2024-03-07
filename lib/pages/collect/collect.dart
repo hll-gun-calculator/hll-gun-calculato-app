@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import '/component/_empty/index.dart';
-import '/data/Collect.dart';
-import '/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/collect_calc_card.dart';
+import '/widgets/collect_calc_card.dart';
+import '/component/_empty/index.dart';
+import '/provider/collect_provider.dart';
 
 class CollectPage extends StatefulWidget {
   const CollectPage({super.key});

@@ -24,3 +24,8 @@ enum Factions {
     return Factions.values[i];
   }
 }
+
+/// 阵营
+class FactionItem {
+
+}

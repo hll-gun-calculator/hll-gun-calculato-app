@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/data/CalculatingFunction.dart';
 import 'package:hll_gun_calculator/utils/index.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../component/_time/index.dart';
 import '../../data/index.dart';
@@ -60,7 +60,6 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
       // 当阵营配置内没有，创建新的Map
       child![newFaction] = child![factionName];
       child!.removeWhere((key, value) => key == factionName);
-      print(child!);
       factionName = newFaction;
     });
     maximumRangeController.addListener(() {
@@ -70,8 +69,6 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
       child![factionName]['minimumRange'] = minimumRangeController.text;
     });
     funController.addListener(() {
-      print(factionName);
-      print(child!);
       child![factionName]['fun'] = funController.text;
     });
   }
@@ -125,10 +122,6 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
 
   /// 执行测试结果
   CalcResult _runTestResult(CalculatingFunctionChildTextController e, inputValue) {
-    print("========");
-    print(e.faction.value);
-    print(e.toJson());
-
     CalcResult calcResult = calcUtil.on(
       inputFactions: e.faction.value,
       inputValue: inputValue,
@@ -163,7 +156,7 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
               ),
               centerTitle: true,
               actions: [
-                IconButton(
+                TextButton.icon(
                   onPressed: () {
                     setState(() {
                       results.add(_runTestResult(e, inputValueController.text));
@@ -171,6 +164,7 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                     modalSetState(() {});
                   },
                   icon: const Icon(Icons.play_arrow),
+                  label: const Text("测试"),
                 ),
               ],
             ),
@@ -268,12 +262,13 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
   }
 
   Map _getForm() {
+    Map child = Map.fromIterable(this.child, key: (v) => v.faction.value.value, value: (v) => v.toJson()["child"]);
     return {
       "name": nameController.text,
       "version": versionController.text,
       "website": websiteController.text,
       "author": authorController.text,
-      "child": child.map((e) => e.toJson()),
+      "child": child,
     };
   }
 
@@ -290,7 +285,9 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
         title: const Text("创建函数"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context, valueAsMap);
+            },
             icon: const Icon(
               Icons.done,
             ),
@@ -302,29 +299,48 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
           children: [
             /// 基本信息
             TextField(
-              decoration: const InputDecoration(hintText: ".json", contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15), label: Text("名称")),
+              decoration: const InputDecoration(
+                hintText: "",
+                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                label: Text("名称"),
+              ),
               controller: nameController,
             ),
             TextField(
-              decoration: const InputDecoration(hintText: "0.0.1", contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15), label: Text("版本")),
+              decoration: const InputDecoration(
+                labelText: "版本",
+                hintText: "0.0.1",
+                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              ),
               controller: versionController,
             ),
             TextField(
-              decoration: const InputDecoration(hintText: "http://", contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15), label: Text("网站")),
-              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: "网站",
+                hintText: "http://",
+                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              ),
+              controller: websiteController,
             ),
             TextField(
-              decoration: const InputDecoration(hintText: ".json", contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15), label: Text("作者")),
-              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: "作者",
+                hintText: "",
+                contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              ),
+              controller: authorController,
             ),
-            const Divider(),
+
+            const SizedBox(height: 10),
 
             /// 阵营配置
             Column(
               children: child.asMap().keys.map((index) {
                 CalculatingFunctionChildTextController e = child[index];
-                return Container(
-                  color: Theme.of(context).cardTheme.surfaceTintColor,
+                return Card(
+                  margin: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+                  semanticContainer: false,
+                  borderOnForeground: false,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -344,7 +360,6 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                                   );
                                 }).toList(),
                                 onChanged: (value) {
-                                  print(value);
                                   setState(() {
                                     e.faction.value = value as Factions;
                                   });
@@ -361,9 +376,7 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                             icon: const Icon(Icons.delete),
                           ),
                           IconButton(
-                            onPressed: () {
-                              _runTestModal(e);
-                            },
+                            onPressed: () => _runTestModal(e),
                             icon: const Icon(Icons.play_arrow),
                           ),
                         ],
@@ -473,17 +486,33 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                         maxLines: 4,
                         controller: e.funController,
                       ),
+
+                      const Divider(height: 1, thickness: 1),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        child: Row(
+                          children: [
+                            Opacity(
+                              opacity: .2,
+                              child: Text(const Uuid().v4()),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 );
               }).toList(),
             ),
-            IconButton(
-              onPressed: () {
-                _addChildConfig();
-              },
-              icon: const Icon(Icons.add),
-            ),
+
+            if (child.isEmpty || child.length < Factions.values.length - 1)
+              TextButton.icon(
+                onPressed: () {
+                  _addChildConfig();
+                },
+                icon: const Icon(Icons.add),
+                label: const Text("创建阵营"),
+              ),
           ],
         ),
       ),

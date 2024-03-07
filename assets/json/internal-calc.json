@@ -1,8 +1,8 @@
 {
   "name": "internal-calc",
   "version": "0.0.1",
-  "author": "",
-  "website": "",
+  "author": "none",
+  "website": "none",
   "child": {
     "America": {
       "maximumRange": 1600,

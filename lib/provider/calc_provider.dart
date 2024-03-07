@@ -94,7 +94,7 @@ class CalcProvider with ChangeNotifier {
   }
 
   /// 从互联网添加配置
-  Future _cloudNetworkLoadCalc(String path) async {
+  Future cloudNetworkLoadCalc(String path) async {
     Response result = await Http.request(path, method: Http.GET, httpDioType: HttpDioType.none);
     return result;
   }
@@ -107,42 +107,21 @@ class CalcProvider with ChangeNotifier {
 
   /// 删除本地自定义
   void deleteLocalCustom(String name) {
-    if (name.isEmpty) return;
-
     _customCalcList.removeWhere((i) => i.name == name && i.isCustom);
 
     _save();
     notifyListeners();
   }
 
-  /// 从网络添加
-  Future addNetworkCustom({
-    required String title,
-    required String path,
-  }) async {
-    Response result = await _cloudNetworkLoadCalc(path);
-
-    // todo 校验json
-    if (result.data != null) {
-      dynamic json = jsonDecode(result.data);
-      CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(json);
-      calculatingFunction.isCustom = true;
-      _customCalcList.add(calculatingFunction);
-
-      _save();
-    }
-
-    notifyListeners();
-    return result;
-  }
-
-  /// 从本地添加
-  void addLocalCustom({
+  /// 添加配置
+  void addCustomConfig({
     required String title,
     required String data,
   }) {
-    CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(jsonDecode(data));
+    dynamic json = jsonDecode(data);
+    CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(json);
     calculatingFunction.isCustom = true;
+    calculatingFunction.name = title;
     _customCalcList.add(calculatingFunction);
 
     _save();

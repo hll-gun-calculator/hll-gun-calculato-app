@@ -8,6 +8,7 @@ part of 'Collect.dart';
 
 CollectItemData _$CollectItemDataFromJson(Map<String, dynamic> json) =>
     CollectItemData(
+      id: json['id'] as String? ?? "",
       title: json['title'] as String? ?? "",
       remark: json['remark'] as String? ?? "",
       updateTime: json['updateTime'] == null
@@ -35,6 +36,7 @@ Map<String, dynamic> _$CollectItemDataToJson(CollectItemData instance) =>
       'calculatingFunctionInfo':
           CalcResult.ValueToJson(instance.calculatingFunctionInfo),
       'result': CalcResult.ValueToJson(instance.result),
+      'id': instance.id,
       'title': instance.title,
       'remark': instance.remark,
       'updateTime': instance.updateTime?.toIso8601String(),

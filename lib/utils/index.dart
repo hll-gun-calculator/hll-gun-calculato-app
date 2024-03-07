@@ -8,3 +8,4 @@ export 'provider.dart';
 export 'logger.dart';
 export 'event.dart';
 export 'calc.dart';
+export 'regular.dart';

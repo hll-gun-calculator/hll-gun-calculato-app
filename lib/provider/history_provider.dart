@@ -22,6 +22,12 @@ class HistoryProvider with ChangeNotifier {
     return this;
   }
 
+  /// 擦除
+  void clean () {
+    list.clear();
+    notifyListeners();
+  }
+
   /// 添加
   void add (CalcResult result) {
     CalcHistoryItemData calcHistoryItemData = CalcHistoryItemData();

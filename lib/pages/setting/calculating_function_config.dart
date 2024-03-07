@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hll_gun_calculator/component/_empty/index.dart';
 import 'package:hll_gun_calculator/component/_time/index.dart';
 import 'package:provider/provider.dart';
 
@@ -42,25 +44,33 @@ class CalculatingFunctionPage extends StatefulWidget {
 class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
   CalcUtil calcUtil = CalcUtil();
 
+  UrlUtil urlUtil = UrlUtil();
+
   ProviderUtil providerUtil = ProviderUtil();
 
+  Regular regular = Regular();
+
   String _currentCalculatingFunctionName = "";
+
+  /// 导入 S
+  /// 导入实例
+  CalculatingFunction importCalculatingFunction = CalculatingFunction();
+
+  /// 导入加载状态
+  bool importLoad = false;
+
+  /// 导入地址
+  TextEditingController pathController = TextEditingController(text: "https://raw.githubusercontent.com/hell-gun-calculator/document/main/config/calcFunction/example.json");
+
+  /// 导入标题
+  TextEditingController titleController = TextEditingController(text: "");
+
+  /// 导入 E
 
   @override
   void initState() {
     _currentCalculatingFunctionName = providerUtil.ofCalc(context).currentCalculatingFunctionName;
     super.initState();
-  }
-
-  /// 删除配置
-  void _deleteConfig (String name) {
-    if (_currentCalculatingFunctionName == name) {
-      Fluttertoast.showToast(msg: "选择中无法删除，请切换函数");
-      return;
-    }
-
-    ProviderUtil().ofCalc(context).deleteLocalCustom(name);
-    Navigator.pop(context);
   }
 
   /// 查看配置详情
@@ -110,18 +120,21 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                 const ListTile(
                   title: Text("支持阵营"),
                 ),
-                Column(
-                  children: i.child!.entries.map((e) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: Text(FlutterI18n.translate(context, "basic.factions.${e.key}")),
-                          subtitle: Text(e.value.toString()),
-                        ),
-                      ],
-                    );
-                  }).toList(),
-                )
+                if (i.child != null && i.child!.isNotEmpty)
+                  Column(
+                    children: i.child!.entries.map((e) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(FlutterI18n.translate(context, "basic.factions.${e.key}")),
+                            subtitle: Text(e.value.toString()),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  )
+                else
+                  const EmptyWidget(),
               ],
             ),
           );
@@ -130,36 +143,124 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     );
   }
 
-  Future _localAddConfig(calcData, title, path) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+  /// 删除配置
+  void _deleteConfig(String name) {
+    if (_currentCalculatingFunctionName == name) {
+      Fluttertoast.showToast(msg: "选择中无法删除，请切换函数");
+      return;
+    }
+
+    providerUtil.ofCalc(context).deleteLocalCustom(name);
+    Navigator.pop(context);
+  }
+
+  /// 确定配置
+  /// 保存添加
+  void _onModalDone() {
+    if (titleController.text.isEmpty) {
+      Fluttertoast.showToast(msg: "缺少标题");
+      return;
+    }
+
+    providerUtil.ofCalc(context).addCustomConfig(
+          title: titleController.text,
+          data: jsonEncode(importCalculatingFunction.toJson()),
+        );
+    Navigator.pop(context);
+  }
+
+  /// 从远程网络下载配置文件
+  Future _networkDownloadConfigType(CalcProvider calcData, String path, modalSetState) async {
+    if (path.isEmpty) {
+      Fluttertoast.showToast(msg: "请填写导入配置具体地址");
+      return;
+    }
+
+    modalSetState(() {
+      importLoad = true;
+    });
+
+    Response cloudNetworkResult = await calcData.cloudNetworkLoadCalc(path);
+
+    if (cloudNetworkResult.data != null) {
+      dynamic json = jsonDecode(cloudNetworkResult.data);
+
+      // 将下载的配置，同步到输入框内
+      setState(() {
+        importCalculatingFunction = CalculatingFunction.fromJson(json);
+
+        if (calcData.calcList.where((i) => i.name == json["name"]).isNotEmpty) {
+          num length = calcData.calcList.where((i) => i.name == json["name"]).length;
+          titleController.text = "${json["name"]} 副本$length";
+        } else {
+          titleController.text = json["name"];
+        }
+      });
+    }
+
+    modalSetState(() {
+      importLoad = false;
+    });
+
+    return cloudNetworkResult;
+  }
+
+  /// 从本地添加配置文件
+  Future _localImportConfigType() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
 
     if (result != null) {
-      print(result.files.single.path!);
-      // File file = File(result.files.single.path!);
-      // calcData.addNetworkCustom(
-      //   title: title,
-      //   path: path,
-      // );
-    } else {
-      // User canceled the picker
+      PlatformFile file = result.files.first;
+      String localImportResult = await rootBundle.loadString(file.path!);
+      dynamic json = jsonDecode(localImportResult);
+
+      setState(() {
+        importCalculatingFunction = CalculatingFunction.fromJson(json);
+
+        if (providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).isNotEmpty) {
+          num length = providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).length;
+          titleController.text = "${json["name"]} 副本$length";
+        } else {
+          titleController.text = json["name"];
+        }
+        pathController.text = "local://${titleController.text}";
+      });
     }
   }
 
-  Future _networkAddConfig(CalcProvider calcData, title, path) async {
-    Response result = await calcData.addNetworkCustom(
-      title: title,
-      path: path,
-    );
+  /// 从本地创建配置文件
+  Future _localCreateConfigType() async {
+    urlUtil.opEnPage(context, "/calculatingFunctionCreate").then((value) {
+      if (value is Map) {
+        Map<String, dynamic> json = Map<String, dynamic>.from(value);
+        setState(() {
+          print(json);
+          // importCalculatingFunction = CalculatingFunction.fromJson(json);
 
-    return result;
+          if (providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).isNotEmpty) {
+            num length = providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).length;
+            titleController.text = "${json["name"]} 副本$length";
+          } else {
+            titleController.text = json["name"];
+          }
+          pathController.text = "local://${json["name"]}";
+        });
+      }
+    });
   }
 
-  /// 添加配置
-  void _addConfigModal(CalcProvider calcData) {
-    TextEditingController pathController = TextEditingController(text: "https://raw.githubusercontent.com/hell-gun-calculator/document/main/config/calcFunction/example.json");
-    TextEditingController titleController = TextEditingController(text: "");
-    TextEditingController versionController = TextEditingController(text: "");
-    String type = "0";
+  /// 打开添加配置Modal
+  void _openAddConfigModal(CalcProvider calcData) {
+    String defaultType = "0";
+
+    setState(() {
+      // 重置
+      importCalculatingFunction = CalculatingFunction();
+      pathController.text = "";
+    });
 
     showModalBottomSheet<void>(
       context: context,
@@ -172,133 +273,129 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
               leading: const CloseButton(),
               actions: [
                 IconButton(
-                  onPressed: () {
-                    // switch (type) {
-                    //   case "0":
-                    //     _networkAddConfig(calcData, title, path);
-                    //     break;
-                    //   case "1":
-                    //     _localAddConfig(calcData, title, path);
-                    //     break;
-                    // }
-                  },
-                  icon: const Icon(Icons.done),
+                  onPressed: () => _onModalDone(),
+                  icon: const Icon(Icons.add_circle),
                 ),
               ],
             ),
-            body: ListView(
-              children: [
-                DropdownButton(
-                  value: type,
-                  isExpanded: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                  items: const [
-                    DropdownMenuItem(
-                      value: "0",
-                      child: Text("从网络导入"),
+            body: Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: ListView(
+                children: [
+                  /// 导入方式
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      value: defaultType,
+                      isExpanded: true,
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      items: const [
+                        DropdownMenuItem(
+                          value: "0",
+                          child: Text("从网络导入"),
+                        ),
+                        DropdownMenuItem(
+                          value: "1",
+                          child: Text("从本地导入"),
+                        ),
+                        DropdownMenuItem(
+                          value: "2",
+                          child: Text("从本地创建"),
+                        ),
+                      ],
+                      onChanged: (v) {
+                        setState(() {
+                          defaultType = v as String;
+                        });
+                        modalSetState(() {});
+                      },
                     ),
-                    DropdownMenuItem(
-                      value: "1",
-                      child: Text("从本地导入"),
-                    ),
-                    DropdownMenuItem(
-                      value: "2",
-                      child: Text("从本地创建"),
-                    ),
-                  ],
-                  onChanged: (v) {
-                    setState(() {
-                      type = v as String;
-                    });
-                    modalSetState(() {});
-                  },
-                ),
-                if (type == "0")
-                  Column(
-                    children: [
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: "地址,例子:https://",
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                          suffix: IconButton(
-                            onPressed: () async {
-                              Response result = await _networkAddConfig(calcData, titleController.text, pathController.text);
-                              dynamic json = jsonDecode(result.data);
+                  ),
+                  const Divider(height: 1, thickness: 1),
 
-                              // 将下载的配置，同步到输入框内
-                              setState(() {
-                                titleController.text = json["name"];
-                                versionController.text = json["version"];
-                              });
-                            },
-                            icon: const Icon(Icons.download),
+                  /// 导入方式Widget
+                  if (defaultType == "0")
+                    Column(
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "地址",
+                            hintText: "https://",
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            suffix: importLoad
+                                ? const SizedBox(
+                                    width: 10,
+                                    height: 10,
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : TextButton.icon(
+                                    onPressed: () => _networkDownloadConfigType(calcData, pathController.text, modalSetState),
+                                    icon: const Icon(Icons.download),
+                                    label: const Text("下载"),
+                                  ),
                           ),
+                          keyboardType: TextInputType.url,
+                          controller: pathController,
+                          onChanged: (v) {
+                            pathController.text = v;
+                          },
+                          validator: (value) {
+                            if (value!.isEmpty) return "地址不可空";
+                            if (regular.check(RegularType.Link, value).code != 0) return "并非正确的地址";
+                            return null;
+                          },
                         ),
-                        controller: pathController,
-                        minLines: 2,
-                        maxLines: 10,
-                        onChanged: (v) {
-                          pathController.text = v;
-                        },
-                      ),
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: "标题",
-                          contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                      ],
+                    )
+                  else if (defaultType == "1")
+                    TextField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "地址",
+                        hintText: "local://",
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        suffix: TextButton.icon(
+                          onPressed: () => _localImportConfigType(),
+                          icon: const Icon(Icons.file_download_rounded),
+                          label: const Text("导入文件"),
                         ),
-                        controller: titleController,
-                        onChanged: (v) {
-                          titleController.text = v;
-                        },
                       ),
-                      TextField(
-                        decoration: const InputDecoration(
-                          hintText: "版本",
-                          contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                      controller: pathController,
+                    )
+                  else if (defaultType == "2")
+                    TextField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "地址",
+                        hintText: "local://",
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        suffix: TextButton.icon(
+                          onPressed: () => _localCreateConfigType(),
+                          icon: const Icon(Icons.edit),
+                          label: const Text("创建"),
                         ),
-                        controller: versionController,
-                        onChanged: (v) {
-                          setState(() {
-                            versionController.text = v;
-                          });
-                        },
                       ),
-                    ],
-                  )
-                else if (type == "1")
-                  const TextField(
-                    readOnly: true,
-                    decoration:  InputDecoration(
-                      hintText: "path://",
+                      controller: pathController,
+                    ),
+
+                  /// 导入的信息
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "函数标题",
+                      hintText: "标题",
                       contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     ),
-                    minLines: 2,
-                    maxLines: 10,
-                  )
-                else if (type == "2")
-                  Column(
-                    children: [
-                      TextField(
-                        readOnly: true,
-                        decoration:  InputDecoration(
-                          hintText: ".json",
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                          suffix: IconButton(
-                            onPressed: () {
-                              UrlUtil().opEnPage(context, "/calculatingFunctionCreate").then((value) {
-                                // calcData.addLocalCustom(title: "???", data: value);
-                              });
-                              // _localAddConfig(calcData, titleController.text, pathController.text);
-                            },
-                            icon: const Icon(Icons.edit),
-                          ),
-                        ),
-                        minLines: 2,
-                        maxLines: 10,
-                      )
-                    ],
+                    controller: titleController,
+                    maxLength: 20,
+                    onChanged: (v) {
+                      titleController.text = v;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) return "缺少标题";
+                      return null;
+                    },
                   ),
-              ],
+                ],
+              ),
             ),
           );
         });
@@ -314,9 +411,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
           title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
           actions: [
             IconButton(
-              onPressed: () {
-                _addConfigModal(calcData);
-              },
+              onPressed: () => _openAddConfigModal(calcData),
               icon: const Icon(Icons.add),
             ),
             if (calcData.currentCalculatingFunctionName != _currentCalculatingFunctionName)
@@ -345,7 +440,13 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                 });
               },
               title: Text(i.name),
-              subtitle: Text(i.version.toString()),
+              subtitle: Row(
+                children: [
+                  Text(i.author.toString()),
+                  const VerticalDivider(),
+                  Text(i.version.toString()),
+                ],
+              ),
               secondary: IconButton(
                 icon: const Icon(Icons.more_horiz),
                 onPressed: () {

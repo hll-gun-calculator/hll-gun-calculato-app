@@ -15,7 +15,7 @@ class CalcUtil {
 
       expression = calculatingFunctionInfo.child![inputFactions.value];
       String fun = expression["fun"] ?? "";
-      Map envs = expression["envs"] ?? {};
+      Map<String, dynamic> envs = expression["envs"] ?? {};
 
       if (inputFactions == Factions.None) {
         result = CalcResultStatus(message: "请选择阵营", code: 1000);

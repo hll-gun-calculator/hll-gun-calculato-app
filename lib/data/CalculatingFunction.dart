@@ -2,23 +2,51 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'CalculatingFunction.g.dart';
 
+enum CalculatingFunctionUpDataType { None, Network }
+
+@JsonSerializable()
+class CalculatingFunctionUpData {
+  String name;
+  String path;
+  CalculatingFunctionUpDataType type = CalculatingFunctionUpDataType.Network;
+
+  CalculatingFunctionUpData({
+    this.name = "none",
+    this.path = "",
+  });
+
+  factory CalculatingFunctionUpData.fromJson(Map<String, dynamic> json) => _$CalculatingFunctionUpDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CalculatingFunctionUpDataToJson(this);
+}
+
 /// 计算函数
 @JsonSerializable()
 class CalculatingFunction {
-  final String name;
-  final String version;
+  // 名称
+  late String name;
+  // 版本
+  late String version;
+  // 阵营
   final Map<String, dynamic>? child;
-  final String author;
-  final String website;
+  // 作者
+  late String author;
+  // 网站
+  late String website;
+  // 更新地址
+  late List<CalculatingFunctionUpData>? updataFunction;
+  // 创建时间
   late DateTime creationTime;
+  // 是否自定义配置(内置或自定义)
   late bool isCustom;
 
   CalculatingFunction({
     this.name = "none",
     this.version = "0.0.1",
     this.child,
-    this.author = "",
+    this.author = "none",
     this.website = "",
+    this.updataFunction = const [],
     this.isCustom = false,
     DateTime? creationTime,
   }) {
