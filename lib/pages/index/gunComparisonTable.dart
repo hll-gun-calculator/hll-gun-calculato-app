@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../../component/keyboard/index2.dart';
+import '../../constants/app.dart';
 import '../../data/index.dart';
 import '../../provider/calc_provider.dart';
 import '../../utils/index.dart';
@@ -18,11 +19,7 @@ class GunComparisonTablePage extends StatefulWidget {
   State<GunComparisonTablePage> createState() => _GunComparisonTablePageState();
 }
 
-class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
-  CalcUtil calcUtil = CalcUtil();
-
-  UrlUtil urlUtil = UrlUtil();
-
+class _GunComparisonTablePageState extends State<GunComparisonTablePage> with AutomaticKeepAliveClientMixin {
   Factions inputFactions = Factions.None;
 
   TextEditingController controller = TextEditingController(text: "");
@@ -42,8 +39,8 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
 
   @override
   void initState() {
-    CalculatingFunction currentCalculatingFunction = ProviderUtil().ofCalc(context).currentCalculatingFunction;
-    String firstName = "";
+    CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
+    Factions firstName = Factions.None;
 
     if (currentCalculatingFunction.child != null) {
       firstName = currentCalculatingFunction.child!.keys.first;
@@ -51,28 +48,37 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
 
     setState(() {
       // 初始所支持的阵营
-      if (Factions.values.where((e) => e.value == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e.value == firstName).first;
+      if (Factions.values.where((e) => e == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e == firstName).first;
     });
+    super.initState();
   }
 
   /// 生成火炮位表格
-  List<TableRow> _grFrom(CalcProvider calcData) {
+  List<TableRow> get _generateFromWidget {
     List<TableRow> list = [];
-    Map e = calcData.defaultCalculatingFunction.child![inputFactions.value];
-    int maximumRange = e["maximumRange"]; // 最大角度
-    int minimumRange = e["minimumRange"]; // 最小角度
+    CalcProvider calcData = App.provider.ofCalc(context);
+    CalculatingFunctionChild e = calcData.defaultCalculatingFunction.childValue(inputFactions)!;
+    int maximumRange = e.maximumRange; // 最大角度
+    int minimumRange = e.minimumRange; // 最小角度
     int inputRangValue = controller.text.isEmpty ? -1 : int.parse((controller.text).toString());
 
     /// 输入值范围表
     if (inputRangValue >= 0) {
       length = (inputRangValue + valueRange) - (inputRangValue - valueRange);
 
-      int start = inputRangValue - valueRange;
-      int end = inputRangValue + valueRange;
-      int count = start; // 初始赋予开始值 count
+      num start = inputRangValue - valueRange;
+      num end = inputRangValue + valueRange;
+      num count = start; // 初始赋予开始值 count
 
       while (count >= start && count <= end) {
-        String outputValue = calcUtil.on(inputFactions: inputFactions, inputValue: count, calculatingFunctionInfo: calcData.currentCalculatingFunction).outputValue;
+        String outputValue = App.calc
+            .on(
+              inputFactions: inputFactions,
+              inputValue: count,
+              calculatingFunctionInfo: calcData.currentCalculatingFunction,
+            )
+            .outputValue;
+
         list.add(TableRow(
           children: [
             TableCell(
@@ -102,10 +108,16 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
 
     /// 所有
     if (inputRangValue < 0) {
-      int count = minimumRange ?? 100;
+      int count = minimumRange;
 
       while (count >= minimumRange && count <= maximumRange) {
-        String outputValue = calcUtil.on(inputFactions: inputFactions, inputValue: count, calculatingFunctionInfo: calcData.currentCalculatingFunction).outputValue;
+        String outputValue = App.calc
+            .on(
+              inputFactions: inputFactions,
+              inputValue: count,
+              calculatingFunctionInfo: calcData.currentCalculatingFunction,
+            )
+            .outputValue;
 
         list.add(TableRow(
           children: [
@@ -151,6 +163,13 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
             padding: const EdgeInsets.all(10),
             children: [
               TextField(
+                readOnly: true,
+                decoration: const InputDecoration(
+                  hintText: "0",
+                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  label: Text("测试值"),
+                ),
+                keyboardType: TextInputType.number,
                 controller: TextEditingController(text: valueRange.toString()),
               )
             ],
@@ -177,12 +196,11 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                   children: Factions.values.where((i) => i != Factions.None).map((i) {
                     return ListTile(
                       selected: inputFactions.value == i.value,
-                      enabled: calcData.currentCalculatingFunction.child!.containsKey(i.value) ,
+                      enabled: calcData.currentCalculatingFunction.hasChildValue(i),
                       title: Text(FlutterI18n.translate(context, "basic.factions.${i.value}")),
-                      trailing: Text(calcData.currentCalculatingFunction.child!.containsKey(i.value) ? "" : "不支持"),
+                      trailing: Text(calcData.currentCalculatingFunction.hasChildValue(i) ? "" : "不支持"),
                       onTap: () {
-                        if (!calcData.currentCalculatingFunction.child!.containsKey(i.value)) {
-                          Fluttertoast.showToast(msg: "当前${calcData.currentCalculatingFunctionName}函数,不支持该阵营,请切换其他函数");
+                        if (!calcData.currentCalculatingFunction.hasChildValue(i)) {
                           return;
                         }
 
@@ -191,7 +209,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                         });
                         modalSetState(() {});
 
-                        Future.delayed(const Duration(milliseconds: 600)).then((value) {
+                        Future.delayed(const Duration(milliseconds: 500)).then((value) {
                           Navigator.pop(context);
                         });
                       },
@@ -207,10 +225,10 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
   }
 
   /// 范围-加减范围按钮
-  void _setValue(String type, calcData) {
-    Map e = calcData.defaultCalculatingFunction.child![inputFactions.value];
-    int maximumRange = e["maximumRange"]; // 最大角度
-    int minimumRange = e["minimumRange"]; // 最小角度
+  void _setValue(String type) {
+    CalculatingFunctionChild e = App.provider.ofCalc(context).defaultCalculatingFunction.childValue(inputFactions)!;
+    int maximumRange = e.maximumRange; // 最大角度
+    int minimumRange = e.minimumRange; // 最小角度
 
     int input = int.parse(controller.text.isEmpty ? minimumRange.toString() : controller.text);
 
@@ -236,6 +254,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer<CalcProvider>(
       builder: (context, calcData, widget) {
         return Column(
@@ -274,7 +293,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                       style: BorderStyle.solid,
                       color: Theme.of(context).primaryColor.withOpacity(.1),
                     )),
-                    children: _grFrom(calcData),
+                    children: _generateFromWidget,
                   )
                 ],
               ),
@@ -327,7 +346,11 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                         ),
                       ),
                       onTap: () => {
-                        UrlUtil().opEnPage(context, "/calculatingFunctionConfig"),
+                        App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
+                          setState(() {
+                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child!.keys.first;
+                          });
+                        }),
                       },
                     ),
                   ],
@@ -351,7 +374,12 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
               Container(
                 color: Theme.of(context).primaryColor.withOpacity(.2),
                 height: 200,
-                margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                padding: const EdgeInsets.only(
+                  top: 5,
+                  right: 20,
+                  left: 20,
+                  bottom: kBottomNavigationBarHeight + 5,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -359,7 +387,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                       width: 80,
                       child: IconButton.filledTonal(
                         onPressed: () {
-                          _setValue("+", calcData);
+                          _setValue("+");
                         },
                         icon: const Icon(
                           Icons.arrow_upward,
@@ -388,7 +416,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
                       width: 80,
                       child: IconButton.filledTonal(
                         onPressed: () {
-                          _setValue("-", calcData);
+                          _setValue("-");
                         },
                         icon: const Icon(
                           Icons.arrow_downward,
@@ -437,9 +465,16 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
 
                   /// 键盘
                   SizedBox(
-                    height: 380,
+                    height: 400,
                     child: NumberKeyboardWidget(
-                      theme: NumberKeyboardTheme(),
+                      theme: NumberKeyboardTheme(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                          right: 20,
+                          left: 20,
+                          bottom: kBottomNavigationBarHeight + 5,
+                        ),
+                      ),
                       onSubmit: () {
                         setState(() {});
                         // historyData.add(_calcSubmit(calcData));
@@ -454,4 +489,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'router/router.dart';
 import 'package:fluro/fluro.dart';
@@ -19,6 +20,8 @@ import 'provider/translation_provider.dart';
 void runMain() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  SharedPreferences.setPrefix("Hll.");
 
   // 路由初始
   Routes.configureRoutes(FluroRouter());

@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 
 export 'package:dio/dio.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
 
 import '../constants/api.dart';
 import '../utils/index.dart';
@@ -149,9 +147,6 @@ class Http {
       receiveTimeout: RECEIVE_TIMEOUT,
     );
     dio = Dio(options);
-
-    // Cookie管理
-    dio.interceptors.add(CookieManager(CookieJar()));
 
     // 缓存实例
     // by https://pub.dev/packages/dio_cache_interceptor

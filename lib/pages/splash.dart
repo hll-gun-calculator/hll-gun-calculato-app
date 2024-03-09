@@ -47,6 +47,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             })
         });
 
+    await providerUtil.ofApp(context).init();
     await providerUtil.ofCalc(context).init();
     await providerUtil.ofTheme(context).init();
     await providerUtil.ofCollect(context).init();

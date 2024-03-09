@@ -11,32 +11,13 @@ class LandingTimerPage extends StatefulWidget {
   State<LandingTimerPage> createState() => _LandingTimerPageState();
 }
 
-class Landing {
-  String id;
-  late Duration duration;
-  late int countdownTime;
-  Timer? timer;
-  bool show;
-
-  Landing({
-    this.id = "0",
-    Duration? duration,
-    Duration? countdownTime,
-    this.timer,
-    this.show = true,
-  }) {
-    this.duration = duration ?? const Duration(seconds: 14);
-    this.countdownTime = countdownTime?.inSeconds ?? 14;
-  }
-}
-
-class _LandingTimerPageState extends State<LandingTimerPage> {
+class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepAliveClientMixin {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   // 炮弹
   List<Landing> landings = [];
 
-  int index = 0;
+  int index = 1;
 
   ScrollController _scrollController = ScrollController();
 
@@ -99,7 +80,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> {
 
   /// 滚动底部
   void scrollFooter() {
-    if (landings.isNotEmpty && isAutoScrollFooter) {
+    if (_scrollController.positions.isNotEmpty && landings.isNotEmpty && isAutoScrollFooter) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
   }
@@ -135,11 +116,18 @@ class _LandingTimerPageState extends State<LandingTimerPage> {
     landing.timer!.cancel();
   }
 
+  /// 删除计时
+  void deleteTimer (Landing landing) {
+    stopTimer(landing);
+    landings.removeWhere((i) => i.id == landing.id);
+  }
+
   /// 清空计时堆
   void clearLandings() {
     if (landings.isEmpty) return;
     setState(() {
       landings.clear();
+      index = 1;
     });
   }
 
@@ -221,16 +209,26 @@ class _LandingTimerPageState extends State<LandingTimerPage> {
                             leading: Text("${e.countdownTime}s"),
                             title: Text(e.id),
                             subtitle: landingsSubtitleWidget(e),
-                            trailing: IconButton.filled(
-                              color: Colors.white,
-                              icon: e.timer!.isActive ? const Icon(Icons.stop) : const Icon(Icons.arrow_right_sharp),
-                              onPressed: () {
-                                if (e.timer!.isActive) {
-                                  stopTimer(e);
-                                } else {
-                                  startCountdownTimer(e);
-                                }
-                              },
+                            trailing: Wrap(
+                              children: [
+                                IconButton.filled(
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  icon: e.timer!.isActive ? const Icon(Icons.stop) : const Icon(Icons.play_arrow),
+                                  onPressed: () {
+                                    if (e.timer!.isActive) {
+                                      stopTimer(e);
+                                    } else {
+                                      startCountdownTimer(e);
+                                    }
+                                  },
+                                ),
+                                if (!e.timer!.isActive)
+                                  IconButton.filled(
+                                    color: Theme.of(context).colorScheme.primaryContainer,
+                                    icon: const Icon(Icons.delete),
+                                    onPressed: () => deleteTimer(e),
+                                  ),
+                              ],
                             ),
                           ),
                         ],
@@ -285,7 +283,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> {
         Container(
           color: Theme.of(context).primaryColor.withOpacity(.2),
           height: 200,
-          margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          padding: const EdgeInsets.only(
+            bottom: kBottomNavigationBarHeight,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
@@ -373,6 +373,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> {
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 typedef RemovedItemBuilder<T> = Widget Function(T item, BuildContext context, Animation<double> animation);
@@ -413,4 +416,23 @@ class ListModel<E> {
   E operator [](int index) => _items[index];
 
   int indexOf(E item) => _items.indexOf(item);
+}
+
+class Landing {
+  String id;
+  late Duration duration;
+  late int countdownTime;
+  Timer? timer;
+  bool show;
+
+  Landing({
+    this.id = "0",
+    Duration? duration,
+    Duration? countdownTime,
+    this.timer,
+    this.show = true,
+  }) {
+    this.duration = duration ?? const Duration(seconds: 14);
+    this.countdownTime = countdownTime?.inSeconds ?? 14;
+  }
 }

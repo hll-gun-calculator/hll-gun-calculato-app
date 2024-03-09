@@ -22,9 +22,9 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
   late String fun = "";
 
   @override
-  late Map<String, dynamic>? child = {};
+  late Map<Factions, CalculatingFunctionChild>? child = {};
 
-  String factionName = "";
+  Factions factionName = Factions.None;
 
   CalculatingFunctionChildTextController({
     required this.faction,
@@ -33,7 +33,7 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
     required this.envs,
     required this.fun,
   }) {
-    factionName = faction.value.value;
+    factionName = faction.value;
     maximumRangeController.text = maximumRange.toString();
     minimumRangeController.text = minimumRange.toString();
     funController.text = fun;
@@ -45,31 +45,42 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
         envs[key] = value;
       });
     }
+
     child!.addAll({
-      factionName: {
-        'maximumRange': maximumRangeController.text,
-        'minimumRange': minimumRangeController.text,
-        'envs': envs,
-        'fun': funController.text,
-      },
+      faction.value: CalculatingFunctionChild(
+        maximumRange: maximumRangeController.text,
+        minimumRange: minimumRangeController.text,
+        envs: envs,
+        fun: funController.text,
+      ),
     });
+
+    // child!.addAll({
+    //   factionName: {
+    //     'maximumRange': maximumRangeController.text,
+    //     'minimumRange': minimumRangeController.text,
+    //     'envs': envs,
+    //     'fun': funController.text,
+    //   },
+    // });
 
     // 变动
     faction.addListener(() {
-      String newFaction = faction.value.value;
+      Factions newFaction = faction.value;
       // 当阵营配置内没有，创建新的Map
-      child![newFaction] = child![factionName];
+      child![newFaction] = child![factionName]!;
+      // child![newFaction] = child![factionName];
       child!.removeWhere((key, value) => key == factionName);
       factionName = newFaction;
     });
     maximumRangeController.addListener(() {
-      child![factionName]['maximumRange'] = maximumRangeController.text;
+      child![factionName]!.maximumRange = maximumRangeController.text;
     });
     minimumRangeController.addListener(() {
-      child![factionName]['minimumRange'] = minimumRangeController.text;
+      child![factionName]!.minimumRange = minimumRangeController.text;
     });
     funController.addListener(() {
-      child![factionName]['fun'] = funController.text;
+      child![factionName]!.fun = funController.text;
     });
   }
 
@@ -494,7 +505,7 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                           children: [
                             Opacity(
                               opacity: .2,
-                              child: Text(const Uuid().v4()),
+                              child: Text(e.id),
                             ),
                           ],
                         ),

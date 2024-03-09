@@ -23,28 +23,32 @@ class CalcProvider with ChangeNotifier {
   late final List<CalculatingFunction> _customCalcList = [];
 
   // 列表 自定义+内置
-  List<CalculatingFunction> get calcList {
-    print(_customCalcList);
-    return [..._internalCalcList, ..._customCalcList];
-  }
+  List<CalculatingFunction> get calcList => [..._internalCalcList, ..._customCalcList];
+
+  CalculatingFunction _defaultCalculatingFunction = CalculatingFunction(name: "internal-calc");
 
   // 默认计算函数实例
-  CalculatingFunction get defaultCalculatingFunction => calcList.isEmpty ? CalculatingFunction(name: "internal-calc") : calcList[0];
+  CalculatingFunction get defaultCalculatingFunction => calcList.isEmpty ? _defaultCalculatingFunction : calcList[0];
 
-  late String _currentCalculatingFunctionName = defaultCalculatingFunction.name;
+  late ValueNotifier<String> _currentCalculatingFunctionName = ValueNotifier<String>(defaultCalculatingFunction.name);
+
+  // 当前函数监听器
+  ValueNotifier<String> get currentCalculatingFunctionNameValueNotifier => _currentCalculatingFunctionName;
 
   // 当前哟路虎所选计算函数实例
   CalculatingFunction get currentCalculatingFunction {
-    if (calcList.where((i) => i.name == _currentCalculatingFunctionName).isEmpty) return defaultCalculatingFunction;
-    return calcList.where((i) => i.name == _currentCalculatingFunctionName).first;
+    if (calcList.where((i) => i.name == _currentCalculatingFunctionName.value).isEmpty) return defaultCalculatingFunction;
+    return calcList.where((i) => i.name == _currentCalculatingFunctionName.value).first;
   }
 
   // 当前用户所选计算函数名称
-  String get currentCalculatingFunctionName => _currentCalculatingFunctionName;
+  String get currentCalculatingFunctionName => _currentCalculatingFunctionName.value;
 
   // 设置选择计算函数
   set currentCalculatingFunctionName(String value) {
-    _currentCalculatingFunctionName = value;
+    _currentCalculatingFunctionName.value = value;
+    _defaultCalculatingFunction = calcList.where((element) => element.name == value).first;
+    notifyListeners();
   }
 
   init() async {
@@ -57,7 +61,7 @@ class CalcProvider with ChangeNotifier {
   /// 保存
   void _save() {
     storage.set(packageName, value: {
-      "custom": _customCalcList.where((i) => i.isCustom).toList(),
+      "custom": _customCalcList.where((i) => i.type == CalculatingFunctionType.Custom).toList(),
       "currentCalculatingFunctionName": currentCalculatingFunction.name,
     });
   }
@@ -67,7 +71,7 @@ class CalcProvider with ChangeNotifier {
     for (var i in _localCalcPath) {
       dynamic d = await rootBundle.loadString(i["path"]);
       CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(jsonDecode(d));
-      calculatingFunction.isCustom = false;
+      calculatingFunction.type = CalculatingFunctionType.Internal;
       _internalCalcList.add(calculatingFunction);
     }
     return true;
@@ -82,12 +86,12 @@ class CalcProvider with ChangeNotifier {
 
       for (var i in (calcLocalData.value["custom"] as List)) {
         CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(i);
-        calculatingFunction.isCustom = true;
+        calculatingFunction.type = CalculatingFunctionType.Custom;
         calculatingFunctions.add(calculatingFunction);
       }
 
       _customCalcList.addAll(calculatingFunctions);
-      _currentCalculatingFunctionName = calcLocalData.value["currentCalculatingFunctionName"];
+      _currentCalculatingFunctionName.value = calcLocalData.value["currentCalculatingFunctionName"] ?? _defaultCalculatingFunction.name;
     }
 
     return true;
@@ -107,9 +111,17 @@ class CalcProvider with ChangeNotifier {
 
   /// 删除本地自定义
   void deleteLocalCustom(String name) {
-    _customCalcList.removeWhere((i) => i.name == name && i.isCustom);
+    _customCalcList.removeWhere((i) => i.name == name && i.type == CalculatingFunctionType.Custom);
 
     _save();
+    notifyListeners();
+  }
+
+  /// 更新配置
+  void updataCustomConfig (String id, CalculatingFunction data) {
+    if (id.isEmpty) return;
+    int index = _customCalcList.indexWhere((i) => i.id == id);
+    _customCalcList[index] = data;
     notifyListeners();
   }
 
@@ -120,7 +132,7 @@ class CalcProvider with ChangeNotifier {
   }) {
     dynamic json = jsonDecode(data);
     CalculatingFunction calculatingFunction = CalculatingFunction.fromJson(json);
-    calculatingFunction.isCustom = true;
+    calculatingFunction.type = CalculatingFunctionType.Custom;
     calculatingFunction.name = title;
     _customCalcList.add(calculatingFunction);
 
@@ -132,7 +144,7 @@ class CalcProvider with ChangeNotifier {
   /// 视图选择保存
   void selectCalculatingFunction(String name) {
     if (name.isEmpty) return;
-    _currentCalculatingFunctionName = name;
+    _currentCalculatingFunctionName.value = name;
     _save();
     notifyListeners();
   }

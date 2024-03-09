@@ -6,7 +6,10 @@ class CalcHistoryItemData extends CalcResult {
   late String id;
 
   CalcHistoryItemData({String id = ""}) : super () {
-    this.id = const Uuid().v4();
+    this.id = const Uuid().v5(
+      Uuid.NAMESPACE_NIL,
+      "CalcHistoryItemData",
+    );
   }
 
   as(CalcResult? calcResult) {

@@ -1,14 +1,17 @@
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hll_gun_calculator/component/_empty/index.dart';
 import 'package:hll_gun_calculator/component/_time/index.dart';
+import 'package:hll_gun_calculator/constants/api.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/app.dart';
 import '/provider/calc_provider.dart';
 import '/utils/index.dart';
 import '/data/index.dart';
@@ -42,15 +45,11 @@ class CalculatingFunctionPage extends StatefulWidget {
 }
 
 class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
-  CalcUtil calcUtil = CalcUtil();
-
-  UrlUtil urlUtil = UrlUtil();
-
-  ProviderUtil providerUtil = ProviderUtil();
-
   Regular regular = Regular();
 
   String _currentCalculatingFunctionName = "";
+
+  bool updataLoad = false;
 
   /// 导入 S
   /// 导入实例
@@ -69,8 +68,28 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
 
   @override
   void initState() {
-    _currentCalculatingFunctionName = providerUtil.ofCalc(context).currentCalculatingFunctionName;
+    _currentCalculatingFunctionName = App.provider.ofCalc(context).currentCalculatingFunctionName;
     super.initState();
+  }
+
+  /// 更新配置
+  void _updataConfigDetail(CalculatingFunction i, modalSetState) async {
+    modalSetState(() {
+      updataLoad = true;
+    });
+
+    List requestList = [];
+    for (var i in i.updataFunction!) {
+      Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
+      requestList.add(jsonDecode(result.data));
+    }
+
+    modalSetState(() {
+      CalculatingFunction newCalculatingFunction = CalculatingFunction.fromJson(requestList.first);
+      newCalculatingFunction.type = CalculatingFunctionType.Custom;
+      App.provider.ofCalc(context).updataCustomConfig(i.id, newCalculatingFunction);
+      updataLoad = false;
+    });
   }
 
   /// 查看配置详情
@@ -85,7 +104,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
             appBar: AppBar(
               leading: const CloseButton(),
               actions: [
-                if (i.isCustom)
+                if (i.type == CalculatingFunctionType.Custom)
                   IconButton(
                     onPressed: () => _deleteConfig(i.name),
                     icon: const Icon(Icons.delete),
@@ -110,8 +129,15 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                   title: const Text("作者"),
                   trailing: Text(i.author),
                 ),
-                if (i.isCustom) const Divider(),
-                if (i.isCustom)
+                if (i.type == CalculatingFunctionType.Custom && i.updataFunction!.isNotEmpty)
+                  ListTile(
+                    title: const Text("更新"),
+                    subtitle: Text("更新此配置文件"),
+                    trailing: updataLoad ? CircularProgressIndicator() : Icon(Icons.chevron_right),
+                    onTap: () => _updataConfigDetail(i, modalSetState),
+                  ),
+                if (i.type == CalculatingFunctionType.Custom) const Divider(),
+                if (i.type == CalculatingFunctionType.Custom)
                   ListTile(
                     title: const Text("创建时间"),
                     trailing: TimeWidget(data: i.creationTime.toString()),
@@ -126,8 +152,8 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                       return Column(
                         children: [
                           ListTile(
-                            title: Text(FlutterI18n.translate(context, "basic.factions.${e.key}")),
-                            subtitle: Text(e.value.toString()),
+                            title: Text(FlutterI18n.translate(context, "basic.factions.${e.key.value}")),
+                            subtitle: Text(e.value.toJson().toString()),
                           ),
                         ],
                       );
@@ -135,6 +161,11 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                   )
                 else
                   const EmptyWidget(),
+                Divider(),
+                ListTile(
+                  title: Text("id"),
+                  trailing: Text(i.id),
+                )
               ],
             ),
           );
@@ -150,7 +181,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       return;
     }
 
-    providerUtil.ofCalc(context).deleteLocalCustom(name);
+    App.provider.ofCalc(context).deleteLocalCustom(name);
     Navigator.pop(context);
   }
 
@@ -162,11 +193,25 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       return;
     }
 
-    providerUtil.ofCalc(context).addCustomConfig(
+    App.provider.ofCalc(context).addCustomConfig(
           title: titleController.text,
           data: jsonEncode(importCalculatingFunction.toJson()),
         );
     Navigator.pop(context);
+  }
+
+  /// 函数重命名
+  /// 列表重复时添加副本后缀
+  String _hasCalcNameRename(String name) {
+    String newName = "";
+    CalcProvider calcData = App.provider.ofCalc(context);
+    if (calcData.calcList.where((i) => i.name == name).isNotEmpty) {
+      num length = calcData.calcList.where((i) => i.name == name).length;
+      newName = "$name 副本$length";
+    } else {
+      newName = name;
+    }
+    return newName;
   }
 
   /// 从远程网络下载配置文件
@@ -188,13 +233,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       // 将下载的配置，同步到输入框内
       setState(() {
         importCalculatingFunction = CalculatingFunction.fromJson(json);
-
-        if (calcData.calcList.where((i) => i.name == json["name"]).isNotEmpty) {
-          num length = calcData.calcList.where((i) => i.name == json["name"]).length;
-          titleController.text = "${json["name"]} 副本$length";
-        } else {
-          titleController.text = json["name"];
-        }
+        titleController.text = _hasCalcNameRename(json["name"]);
       });
     }
 
@@ -212,20 +251,24 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       allowedExtensions: ['json'],
     );
 
-    if (result != null) {
-      PlatformFile file = result.files.first;
-      String localImportResult = await rootBundle.loadString(file.path!);
-      dynamic json = jsonDecode(localImportResult);
+    if (result != null && result.files.isNotEmpty) {
+      Uint8List? fileBytes;
+      String localImportResult = "";
+      dynamic json;
+
+      if (kIsWeb) {
+        fileBytes = result.files.first.bytes;
+        localImportResult = String.fromCharCodes(fileBytes!);
+        json = jsonDecode(localImportResult);
+      } else {
+        PlatformFile file = result.files.first;
+        localImportResult = await rootBundle.loadString(file.path!);
+        json = jsonDecode(localImportResult);
+      }
 
       setState(() {
         importCalculatingFunction = CalculatingFunction.fromJson(json);
-
-        if (providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).isNotEmpty) {
-          num length = providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).length;
-          titleController.text = "${json["name"]} 副本$length";
-        } else {
-          titleController.text = json["name"];
-        }
+        titleController.text = _hasCalcNameRename(json["name"]);
         pathController.text = "local://${titleController.text}";
       });
     }
@@ -233,19 +276,12 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
 
   /// 从本地创建配置文件
   Future _localCreateConfigType() async {
-    urlUtil.opEnPage(context, "/calculatingFunctionCreate").then((value) {
+    App.url.opEnPage(context, "/calculatingFunctionCreate").then((value) {
       if (value is Map) {
         Map<String, dynamic> json = Map<String, dynamic>.from(value);
         setState(() {
-          print(json);
-          // importCalculatingFunction = CalculatingFunction.fromJson(json);
-
-          if (providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).isNotEmpty) {
-            num length = providerUtil.ofCalc(context).calcList.where((i) => i.name == json["name"]).length;
-            titleController.text = "${json["name"]} 副本$length";
-          } else {
-            titleController.text = json["name"];
-          }
+          importCalculatingFunction = CalculatingFunction.fromJson(json);
+          titleController.text = _hasCalcNameRename(json["name"]);
           pathController.text = "local://${json["name"]}";
         });
       }
@@ -259,7 +295,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     setState(() {
       // 重置
       importCalculatingFunction = CalculatingFunction();
-      pathController.text = "";
+      if (Config.env == Env.PROD) pathController.text = "";
     });
 
     showModalBottomSheet<void>(

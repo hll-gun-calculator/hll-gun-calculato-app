@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../constants/app.dart';
 import '/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -21,14 +22,10 @@ class calcPage extends StatefulWidget {
   State<calcPage> createState() => _calcPageState();
 }
 
-class _calcPageState extends State<calcPage> {
+class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin {
   TextEditingController _textController = TextEditingController(text: "");
 
   FocusNode focusNode = FocusNode();
-
-  CalcUtil calcUtil = CalcUtil();
-
-  UrlUtil urlUtil = UrlUtil();
 
   Factions inputFactions = Factions.None;
 
@@ -39,8 +36,8 @@ class _calcPageState extends State<calcPage> {
 
   @override
   void initState() {
-    CalculatingFunction currentCalculatingFunction = ProviderUtil().ofCalc(context).currentCalculatingFunction;
-    String firstName = "";
+    CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
+    Factions firstName = Factions.None;
 
     if (currentCalculatingFunction.child != null) {
       firstName = currentCalculatingFunction.child!.keys.first;
@@ -48,7 +45,7 @@ class _calcPageState extends State<calcPage> {
 
     setState(() {
       // 初始所支持的阵营
-      if (Factions.values.where((e) => e.value == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e.value == firstName).first;
+      if (Factions.values.where((e) => e == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e == firstName).first;
     });
 
     super.initState();
@@ -71,12 +68,11 @@ class _calcPageState extends State<calcPage> {
                   children: Factions.values.where((i) => i != Factions.None).map((i) {
                     return ListTile(
                       selected: inputFactions.value == i.value,
-                      enabled: calcData.currentCalculatingFunction.child!.containsKey(i.value),
+                      enabled: calcData.currentCalculatingFunction.hasChildValue(i),
                       title: Text(FlutterI18n.translate(context, "basic.factions.${i.value}")),
-                      trailing: Text(calcData.currentCalculatingFunction.child!.containsKey(i.value) ? "" : "不支持"),
+                      trailing: Text(calcData.currentCalculatingFunction.hasChildValue(i) ? "" : "不支持"),
                       onTap: () {
-                        if (!calcData.currentCalculatingFunction.child!.containsKey(i.value)) {
-                          Fluttertoast.showToast(msg: "当前${calcData.currentCalculatingFunctionName}函数,不支持该阵营,请切换其他函数");
+                        if (!calcData.currentCalculatingFunction.hasChildValue(i)) {
                           return;
                         }
 
@@ -85,7 +81,7 @@ class _calcPageState extends State<calcPage> {
                         });
                         modalSetState(() {});
 
-                        Future.delayed(const Duration(milliseconds: 600)).then((value) {
+                        Future.delayed(const Duration(milliseconds: 500)).then((value) {
                           Navigator.pop(context);
                         });
                       },
@@ -137,7 +133,7 @@ class _calcPageState extends State<calcPage> {
 
   /// 计算
   CalcResult _calcSubmit(CalcProvider calcData) {
-    CalcResult result = calcUtil.on(
+    CalcResult result = App.calc.on(
       inputFactions: inputFactions,
       inputValue: _textController.text,
       calculatingFunctionInfo: calcData.currentCalculatingFunction,
@@ -202,111 +198,107 @@ class _calcPageState extends State<calcPage> {
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: Scrollbar(
+              child: InkWell(
                 child: ListView(
                   reverse: true,
                   children: [
                     /// 当前计算
-                    InkWell(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                TextFormField(
-                                  readOnly: true,
-                                  showCursor: true,
-                                  style: const TextStyle(fontSize: 50),
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.zero,
-                                    hintText: "0",
-                                  ),
-                                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-                                  maxLines: 3,
-                                  minLines: 1,
-                                  autocorrect: true,
-                                  autofocus: true,
-                                  textAlign: TextAlign.end,
-                                  controller: _textController,
-                                  focusNode: focusNode,
-                                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                                  validator: (value) {
-                                    if (value!.isEmpty) return null;
-                                    if (num.parse(value.toString()) > 1600) return "超出限制, 数字应该在100-1600";
-                                    if (num.parse(value.toString()) < 100) return "小于限制, 数字应该在100-1600";
-                                    return null;
-                                  },
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              TextFormField(
+                                readOnly: true,
+                                showCursor: true,
+                                style: const TextStyle(fontSize: 50),
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.zero,
+                                  hintText: "0",
                                 ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton.filledTonal(
-                                      enableFeedback: true,
-                                      icon: const Icon(Icons.remove),
-                                      onPressed: () {
-                                        num minimumRange = calcData.currentCalculatingFunction.child![inputFactions.value]["minimumRange"];
-                                        if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) > minimumRange) {
-                                          setState(() {
-                                            _textController.text = (num.parse(_textController.text.toString()) - 1).toString();
-                                          });
-                                        } else {
-                                          setState(() {
-                                            _textController.text = minimumRange.toString();
-                                          });
-                                        }
-                                        _calcSubmit(calcData);
-                                      },
-                                    ),
-                                    IconButton.filledTonal(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {
-                                        num maximumRange = calcData.currentCalculatingFunction.child![inputFactions.value]["maximumRange"];
-                                        if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) < maximumRange) {
-                                          setState(() {
-                                            _textController.text = (num.parse(_textController.text.toString()) + 1).toString();
-                                          });
-                                        } else {
-                                          _textController.text = maximumRange.toString();
-                                        }
-                                        _calcSubmit(calcData);
-                                      },
-                                    ),
-                                    const SizedBox(width: 10),
-                                    const Text("米"),
-                                  ],
-                                ),
-                                TextField(
-                                  readOnly: true,
-                                  showCursor: false,
-                                  style: const TextStyle(fontSize: 50).copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+                                maxLines: 3,
+                                minLines: 1,
+                                autocorrect: true,
+                                autofocus: true,
+                                textAlign: TextAlign.end,
+                                controller: _textController,
+                                focusNode: focusNode,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                validator: (value) {
+                                  if (value!.isEmpty) return null;
+                                  if (num.parse(value.toString()) > 1600) return "超出限制, 数字应该在100-1600";
+                                  if (num.parse(value.toString()) < 100) return "小于限制, 数字应该在100-1600";
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  IconButton.filledTonal(
+                                    enableFeedback: true,
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: () {
+                                      num minimumRange = calcData.currentCalculatingFunction.child![inputFactions]!.minimumRange;
+                                      if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) > minimumRange) {
+                                        setState(() {
+                                          _textController.text = (num.parse(_textController.text.toString()) - 1).toString();
+                                        });
+                                      } else {
+                                        setState(() {
+                                          _textController.text = minimumRange.toString();
+                                        });
+                                      }
+                                      _calcSubmit(calcData);
+                                    },
                                   ),
-                                  decoration: const InputDecoration(
-                                    counterText: '角度 (结果)',
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.zero,
-                                    hintText: "0",
+                                  IconButton.filledTonal(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: () {
+                                      num maximumRange = calcData.currentCalculatingFunction.child![inputFactions]!.maximumRange;
+                                      if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) < maximumRange) {
+                                        setState(() {
+                                          _textController.text = (num.parse(_textController.text.toString()) + 1).toString();
+                                        });
+                                      } else {
+                                        _textController.text = maximumRange.toString();
+                                      }
+                                      _calcSubmit(calcData);
+                                    },
                                   ),
-                                  textAlign: TextAlign.end,
-                                  keyboardType: TextInputType.number,
-                                  controller: TextEditingController(text: outputValue),
+                                  const SizedBox(width: 10),
+                                  const Text("米"),
+                                ],
+                              ),
+                              TextField(
+                                readOnly: true,
+                                showCursor: false,
+                                style: const TextStyle(fontSize: 50).copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
-                              ],
-                            ),
+                                decoration: const InputDecoration(
+                                  counterText: '角度 (结果)',
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                  hintText: "0",
+                                ),
+                                textAlign: TextAlign.end,
+                                keyboardType: TextInputType.number,
+                                controller: TextEditingController(text: outputValue),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      onLongPress: () {
-                        _openSelectFactions();
-                      },
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                onLongPress: () => _openSelectFactions(),
               ),
             ),
 
@@ -351,7 +343,11 @@ class _calcPageState extends State<calcPage> {
                         ),
                       ),
                       onTap: () => {
-                        UrlUtil().opEnPage(context, "/calculatingFunctionConfig"),
+                        App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
+                          setState(() {
+                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child!.keys.first;
+                          });
+                        }),
                       },
                     ),
                   ],
@@ -374,7 +370,6 @@ class _calcPageState extends State<calcPage> {
             const Divider(height: 1, thickness: 1),
 
             /// 预选建议
-            // if (collectData.primarySelection(_textController.text).isNotEmpty)
             AnimatedContainer(
               duration: const Duration(milliseconds: 350),
               clipBehavior: Clip.hardEdge,
@@ -468,12 +463,17 @@ class _calcPageState extends State<calcPage> {
 
             /// 键盘
             SizedBox(
-              height: 380,
+              height: 400,
               child: NumberKeyboardWidget(
-                theme: NumberKeyboardTheme(padding: const EdgeInsets.only(top: 5, right: 20, left: 20, bottom: 20)),
-                onSubmit: () {
-                  historyData.add(_calcSubmit(calcData));
-                },
+                theme: NumberKeyboardTheme(
+                  padding: const EdgeInsets.only(
+                    top: 5,
+                    right: 20,
+                    left: 20,
+                    bottom: kBottomNavigationBarHeight + 5,
+                  ),
+                ),
+                onSubmit: () => historyData.add(_calcSubmit(calcData)),
                 controller: _textController,
               ),
             ),
@@ -482,4 +482,7 @@ class _calcPageState extends State<calcPage> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

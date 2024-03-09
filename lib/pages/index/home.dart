@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -97,48 +99,63 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             length: 3,
             child: Scaffold(
               appBar: HomeAppBar(
-                contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : 0,
+                contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : .0,
                 tabIndex: tabIndex,
               ),
               drawer: Drawer(
                 backgroundColor: Theme.of(context).canvasColor,
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        children: [
-                          ListTile(
-                            title: Text(FlutterI18n.translate(context, "history.title")),
-                            onTap: () => _openComputingHistory(),
-                          ),
-                          ListTile(
-                            title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
-                            onTap: () => _openCalculatingFunctionConfig(),
-                          ),
-                          ListTile(
-                            title: Text(FlutterI18n.translate(context, "collect.title")),
-                            onTap: () => _openCollect(),
-                          ),
-                          const Divider(),
-                          ListTile(
-                            title: const Text('设置'),
-                            onTap: () {
-                              _openSetting();
-                            },
-                          ),
-                        ],
+                child: SafeArea(
+                  maintainBottomViewPadding: true,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            DrawerHeader(
+                              curve: Curves.bounceIn,
+                              child: Title(
+                                color: Colors.black,
+                                child: Text(
+                                  packageData.package!.appName.toString(),
+                                  style: TextStyle(
+                                    fontSize: Theme.of(context).appBarTheme.titleTextStyle?.fontSize ?? 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            ListTile(
+                              title: Text(FlutterI18n.translate(context, "history.title")),
+                              onTap: () => _openComputingHistory(),
+                            ),
+                            ListTile(
+                              title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
+                              onTap: () => _openCalculatingFunctionConfig(),
+                            ),
+                            ListTile(
+                              title: Text(FlutterI18n.translate(context, "collect.title")),
+                              onTap: () => _openCollect(),
+                            ),
+                            const Divider(),
+                            ListTile(
+                              title: const Text('设置'),
+                              onTap: () {
+                                _openSetting();
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: const Text('版本'),
-                      trailing: Text(packageData.currentVersion),
-                      onTap: () {
-                        _openVersion();
-                      },
-                    ),
-                  ],
+                      ListTile(
+                        title: const Text('版本'),
+                        trailing: Text(packageData.currentVersion),
+                        onTap: () {
+                          _openVersion();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               body: HomeBody(
@@ -184,6 +201,13 @@ class _HomeAppBarState extends State<HomeAppBar> {
         widget.contentHeight = kToolbarHeight;
 
         return AppBar(
+          forceMaterialTransparency: true,
+          flexibleSpace: FlexibleSpaceBar(
+            background: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: const SizedBox(),
+            ),
+          ),
           title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
           leading: Builder(
             builder: (BuildContext context) {
@@ -201,9 +225,10 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
       widget.contentHeight = 0.0;
 
-      return PreferredSize(preferredSize: const Size(0.0, 0.0), child: Container(
-        color: Colors.red,
-      ));
+      return PreferredSize(
+        preferredSize: const Size(0.0, 0.0),
+        child: Container( ),
+      );
     });
   }
 }
@@ -230,10 +255,8 @@ class _HomeBodyState extends State<HomeBody> {
       return Center(
         child: OverflowBox(
           maxWidth: constraints.maxWidth > AppSize.kRang ? double.parse(AppSize.kRang.toString()) : null,
-          maxHeight: MediaQuery.of(context).size.height,
           child: Container(
             transformAlignment: Alignment.center,
-            decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Theme.of(context).dividerTheme.color!), boxShadow: [BoxShadow(color: Theme.of(context).dividerColor.withOpacity(.2), spreadRadius: 10, blurRadius: 10)]),
             constraints: BoxConstraints(
               maxWidth: double.parse(AppSize.kRang.toString()),
               minWidth: 100,

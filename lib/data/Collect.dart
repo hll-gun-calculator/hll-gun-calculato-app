@@ -26,7 +26,10 @@ class CollectItemData extends CalcResult {
     this.remark = "",
     this.updateTime,
   }) {
-    this.id = const Uuid().v4();
+    this.id = const Uuid().v5(
+      Uuid.NAMESPACE_NIL,
+      "CollectItemData",
+    );
   }
 
   as(CalcResult? calcResult) {

@@ -43,9 +43,9 @@ class PackageProvider with ChangeNotifier {
 
   // 包状态
   PackageStatus? package = PackageStatus(
-    appName: "",
+    appName: "none",
     packageName: "",
-    currentVersion: "0.0.0-beta",
+    currentVersion: "0.0.0",
     loadCurrent: false,
     onlineVersion: "",
     loadOnline: false,
@@ -59,7 +59,7 @@ class PackageProvider with ChangeNotifier {
   /// 初始
   Future init() async {
     await getPackage();
-    await getOnlinePackage();
+    // await getOnlinePackage();
 
     notifyListeners();
     return true;

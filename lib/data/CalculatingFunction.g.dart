@@ -11,26 +11,23 @@ CalculatingFunctionUpData _$CalculatingFunctionUpDataFromJson(
     CalculatingFunctionUpData(
       name: json['name'] as String? ?? "none",
       path: json['path'] as String? ?? "",
-    )..type = $enumDecode(_$CalculatingFunctionUpDataTypeEnumMap, json['type']);
+    );
 
 Map<String, dynamic> _$CalculatingFunctionUpDataToJson(
         CalculatingFunctionUpData instance) =>
     <String, dynamic>{
       'name': instance.name,
       'path': instance.path,
-      'type': _$CalculatingFunctionUpDataTypeEnumMap[instance.type]!,
     };
-
-const _$CalculatingFunctionUpDataTypeEnumMap = {
-  CalculatingFunctionUpDataType.None: 'None',
-  CalculatingFunctionUpDataType.Network: 'Network',
-};
 
 CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
     CalculatingFunction(
       name: json['name'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
-      child: json['child'] as Map<String, dynamic>?,
+      child: (json['child'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry($enumDecode(_$FactionsEnumMap, k),
+            CalculatingFunctionChild.fromJson(e as Map<String, dynamic>)),
+      ),
       author: json['author'] as String? ?? "none",
       website: json['website'] as String? ?? "",
       updataFunction: (json['updataFunction'] as List<dynamic>?)
@@ -38,7 +35,9 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
                   CalculatingFunctionUpData.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      isCustom: json['isCustom'] as bool? ?? false,
+      type:
+          $enumDecodeNullable(_$CalculatingFunctionTypeEnumMap, json['type']) ??
+              CalculatingFunctionType.Internal,
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
@@ -49,10 +48,44 @@ Map<String, dynamic> _$CalculatingFunctionToJson(
     <String, dynamic>{
       'name': instance.name,
       'version': instance.version,
-      'child': instance.child,
+      'child':
+          instance.child?.map((k, e) => MapEntry(_$FactionsEnumMap[k]!, e)),
       'author': instance.author,
       'website': instance.website,
       'updataFunction': instance.updataFunction,
       'creationTime': instance.creationTime.toIso8601String(),
-      'isCustom': instance.isCustom,
+      'type': _$CalculatingFunctionTypeEnumMap[instance.type]!,
+    };
+
+const _$FactionsEnumMap = {
+  Factions.None: 'None',
+  Factions.America: 'America',
+  Factions.Germany: 'Germany',
+  Factions.TheSovietUnion: 'TheSovietUnion',
+  Factions.GreatBritain: 'GreatBritain',
+};
+
+const _$CalculatingFunctionTypeEnumMap = {
+  CalculatingFunctionType.Internal: 'Internal',
+  CalculatingFunctionType.Custom: 'Custom',
+};
+
+CalculatingFunctionChild _$CalculatingFunctionChildFromJson(
+        Map<String, dynamic> json) =>
+    CalculatingFunctionChild(
+      maximumRange:
+          CalculatingFunctionChild.readValue(json, 'maximumRange') ?? 1600,
+      minimumRange:
+          CalculatingFunctionChild.readValue(json, 'minimumRange') ?? 100,
+      envs: json['envs'] as Map<String, dynamic>? ?? {},
+      fun: json['fun'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$CalculatingFunctionChildToJson(
+        CalculatingFunctionChild instance) =>
+    <String, dynamic>{
+      'maximumRange': instance.maximumRange,
+      'minimumRange': instance.minimumRange,
+      'envs': instance.envs,
+      'fun': instance.fun,
     };
