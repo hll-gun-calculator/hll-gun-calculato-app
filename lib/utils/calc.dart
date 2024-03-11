@@ -1,10 +1,13 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:dartfx/dartfx.dart';
 
 import '../constants/api.dart';
-import '../constants/app.dart';
 import '../data/index.dart';
 
 class CalcUtil {
+  /// 计算MIL
   CalcResult on({
     required Factions inputFactions,
     required dynamic inputValue,
@@ -57,7 +60,7 @@ class CalcUtil {
         return CalcResult(result: result);
       }
 
-      if (fun == null || fun == "") {
+      if (fun == "") {
         result = CalcResultStatus(message: "此${calculatingFunctionInfo.name}函数包配置${inputFactions.value}函数公式无效", code: 1105);
         return CalcResult(result: result);
       }
@@ -95,5 +98,17 @@ class CalcUtil {
         result: result,
       );
     }
+  }
+
+  /// 计算角度
+  MapGunResult onAngle(Offset inputOffset, Offset targetOffset) {
+    var angle = atan2(targetOffset.dy - inputOffset.dy, targetOffset.dx - inputOffset.dx);
+    var angleInDegrees = angle * 180 / pi;
+
+    return MapGunResult(
+      inputOffset: inputOffset,
+      targetOffset: targetOffset,
+      outputAngle: angleInDegrees,
+    );
   }
 }

@@ -50,10 +50,7 @@ class _LicensePageState extends State<LicensePage> {
                                 body: ListView(
                                   padding: const EdgeInsets.all(10),
                                   children: [
-                                    // HtmlCore(
-                                    //   data: packageLicenses.map((e) => e.paragraphs.map((e) => e.text).toList().reduce((value, element) => "$value<br/><br/>$element")).reduce((value, element) => "$value<br/><br/>$element"),
-                                    //   style: CardUtil().styleHtml(context),
-                                    // ),
+                                    Text(packageLicenses.map((e) => e.paragraphs.map((e) => e.text).toList().reduce((value, element) => "$value<br/><br/>$element")).reduce((value, element) => "$value<br/><br/>$element"))
                                   ],
                                 ),
                               );

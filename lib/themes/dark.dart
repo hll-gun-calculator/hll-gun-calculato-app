@@ -22,7 +22,6 @@ class DarkTheme extends AppBaseThemeItem {
   @override
   get d => data;
 
-  @override
   static dynamic data = AppThemeItem(
     name: "dark",
     isDefault: false,
@@ -60,6 +59,9 @@ class DarkTheme extends AppBaseThemeItem {
         onInverseSurface: Color(0xff303034),
         inversePrimary: Color(0xff355ca8),
         surfaceTint: Color(0xffafc6ff),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.black,
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.transparent,

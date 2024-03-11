@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, constant_identifier_names
+
 enum Factions {
   None(value: "None"),
   America(value: "America"),
@@ -23,9 +25,4 @@ enum Factions {
     if (i == -1) return Factions.None;
     return Factions.values[i];
   }
-}
-
-/// 阵营
-class FactionItem {
-
 }

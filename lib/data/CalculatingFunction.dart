@@ -1,5 +1,6 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:json_annotation/json_annotation.dart';
-import 'package:uuid/data.dart';
 import 'package:uuid/uuid.dart';
 
 import 'Factions.dart';
@@ -37,8 +38,8 @@ class CalculatingFunction {
   late String version;
 
   // 阵营
-  // final Map<String, dynamic>? child;
-  final Map<Factions, CalculatingFunctionChild>? child;
+  @JsonKey(toJson: ChildToJson)
+  late Map<Factions, CalculatingFunctionChild> child = {};
 
   // 作者
   late String author;
@@ -47,7 +48,7 @@ class CalculatingFunction {
   late String website;
 
   // 更新地址
-  late List<CalculatingFunctionUpData>? updataFunction;
+  late List<CalculatingFunctionUpData> updataFunction;
 
   // 创建时间
   late DateTime creationTime;
@@ -60,23 +61,39 @@ class CalculatingFunction {
   CalculatingFunction({
     this.name = "none",
     this.version = "0.0.1",
-    this.child,
+    this.child = const {},
     this.author = "none",
     this.website = "",
     this.updataFunction = const [],
     this.type = CalculatingFunctionType.Internal,
+    this.id = "none",
     DateTime? creationTime,
   }) {
     this.creationTime = creationTime ?? DateTime.now();
-    this.id = const Uuid().v5(
+    id = const Uuid().v5(
       Uuid.NAMESPACE_NIL,
       "CalculatingFunction",
     );
   }
 
-  bool hasChildValue(Factions faction) => child![faction] != null;
+  bool hasChildValue(Factions faction) => child[faction] != null;
 
-  CalculatingFunctionChild? childValue(Factions faction) => hasChildValue(faction) ? child![faction] : CalculatingFunctionChild(maximumRange: 1600, minimumRange: 100, envs: {}, fun: "");
+  CalculatingFunctionChild? childValue(Factions faction) => hasChildValue(faction)
+      ? child[faction]
+      : CalculatingFunctionChild(
+          maximumRange: 1600,
+          minimumRange: 100,
+          envs: {},
+          fun: "",
+        );
+
+  static Map<String, dynamic> ChildToJson(Map<Factions, CalculatingFunctionChild>? child) {
+    Map<String, dynamic> map = {};
+    for (var i in child!.entries) {
+      map.addAll({i.key.value: i.value.toJson()});
+    }
+    return map;
+  }
 
   factory CalculatingFunction.fromJson(Map<String, dynamic> json) => _$CalculatingFunctionFromJson(json);
 

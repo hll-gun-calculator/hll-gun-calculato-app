@@ -12,8 +12,8 @@ class CalcProvider with ChangeNotifier {
   String packageName = "calc";
 
   final List<Map> _localCalcPath = [
-    {"name": "internal-calc", "path": "assets/json/internal-calc.json"},
-    {"name": "easyarty", "path": "assets/json/easyarty.json"}
+    {"name": "internal-calc", "path": "assets/json/fun-internal-calc.json"},
+    {"name": "easyarty", "path": "assets/json/fun-easyarty.json"}
   ];
 
   // 内置配置列表

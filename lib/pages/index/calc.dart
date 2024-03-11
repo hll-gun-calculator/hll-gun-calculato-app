@@ -1,19 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../constants/app.dart';
-import '/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../component/_empty/index.dart';
-import '../../component/keyboard/index2.dart';
-import '../../data/index.dart';
-import '../../provider/calc_provider.dart';
-import '../../provider/history_provider.dart';
-import '../../utils/index.dart';
-import '../../widgets/hisroy_calc_card.dart';
+import '/component/_empty/index.dart';
+import '/component/_keyboard/index.dart';
+import '/data/index.dart';
+import '/provider/calc_provider.dart';
+import '/provider/history_provider.dart';
+import '/widgets/hisroy_calc_card.dart';
+import '/constants/app.dart';
+import '/provider/collect_provider.dart';
 
 class calcPage extends StatefulWidget {
   const calcPage({super.key});
@@ -192,6 +192,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer3<CalcProvider, HistoryProvider, CollectProvider>(
       builder: (consumerContext, calcData, historyData, collectData, widget) {
         return Column(
@@ -463,7 +464,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
 
             /// 键盘
             SizedBox(
-              height: 400,
+              // height: 200,
               child: NumberKeyboardWidget(
                 theme: NumberKeyboardTheme(
                   padding: const EdgeInsets.only(

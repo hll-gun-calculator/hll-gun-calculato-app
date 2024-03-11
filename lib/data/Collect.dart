@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'CalcResult.dart';
 import 'CalculatingFunction.dart';
 import 'Factions.dart';
+import 'index.dart';
 
 part 'Collect.g.dart';
 
@@ -20,11 +21,14 @@ class CollectItemData extends CalcResult {
   // 更新时间
   DateTime? updateTime;
 
+  MapInfo? mapInfo;
+
   CollectItemData({
     String id = "",
     this.title = "",
     this.remark = "",
     this.updateTime,
+    this.mapInfo,
   }) {
     this.id = const Uuid().v5(
       Uuid.NAMESPACE_NIL,

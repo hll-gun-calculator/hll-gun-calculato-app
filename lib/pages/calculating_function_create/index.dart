@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hll_gun_calculator/utils/index.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../component/_time/index.dart';
 import '../../data/index.dart';
@@ -22,7 +21,7 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
   late String fun = "";
 
   @override
-  late Map<Factions, CalculatingFunctionChild>? child = {};
+  late Map<Factions, CalculatingFunctionChild> child = {};
 
   Factions factionName = Factions.None;
 
@@ -46,7 +45,7 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
       });
     }
 
-    child!.addAll({
+    child.addAll({
       faction.value: CalculatingFunctionChild(
         maximumRange: maximumRangeController.text,
         minimumRange: minimumRangeController.text,
@@ -68,19 +67,19 @@ class CalculatingFunctionChildTextController extends CalculatingFunction {
     faction.addListener(() {
       Factions newFaction = faction.value;
       // 当阵营配置内没有，创建新的Map
-      child![newFaction] = child![factionName]!;
+      child[newFaction] = child[factionName]!;
       // child![newFaction] = child![factionName];
-      child!.removeWhere((key, value) => key == factionName);
+      child.removeWhere((key, value) => key == factionName);
       factionName = newFaction;
     });
     maximumRangeController.addListener(() {
-      child![factionName]!.maximumRange = maximumRangeController.text;
+      child[factionName]!.maximumRange = maximumRangeController.text;
     });
     minimumRangeController.addListener(() {
-      child![factionName]!.minimumRange = minimumRangeController.text;
+      child[factionName]!.minimumRange = minimumRangeController.text;
     });
     funController.addListener(() {
-      child![factionName]!.fun = funController.text;
+      child[factionName]!.fun = funController.text;
     });
   }
 

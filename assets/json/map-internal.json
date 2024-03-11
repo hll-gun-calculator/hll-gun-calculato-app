@@ -1,0 +1,204 @@
+{
+  "name": "internal",
+  "auth": "mattwright324",
+  "version": "0.0.1",
+  "data": [
+    {
+      "name": "Carentan",
+      "size": [
+        4096,
+        4096
+      ],
+      "initialPosition": [
+        500,
+        500
+      ],
+      "gunPosition": [
+        {
+          "name": "1",
+          "offset": [
+            14.0,
+            440
+          ]
+        },
+        {
+          "name": "2",
+          "offset": [
+            14.0,
+            446
+          ]
+        },
+        {
+          "name": "3",
+          "offset": [
+            14.0,
+            452
+          ]
+        }
+      ],
+      "factions": {
+        "America": {
+          "points": [
+            [
+              40,
+              300
+            ],
+            [
+              40,
+              500
+            ],
+            [
+              40,
+              600
+            ]
+          ],
+          "direction": "Left"
+        },
+        "Germany": {
+          "points": [
+            [
+              900,
+              300
+            ],
+            [
+              900,
+              500
+            ],
+            [
+              900,
+              600
+            ]
+          ],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Carentan_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [
+        {
+          "name": "Arty Rand",
+          "index": 1,
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Carentan_Arty1.png"
+        },
+        {
+          "name": "plain grid",
+          "index": 2,
+          "type": "PlainGrid",
+          "network": "https://mattw.io/maps-let-loose/assets/plain-grid.png"
+        }
+      ],
+      "marker": [
+        {
+          "name": "PrimaryArty",
+          "iconType": "PresupposeArty",
+          "points": [
+            {
+              "name": "A1 Point",
+              "x": 174.07146099069496,
+              "y": 370.5690403823987
+            },
+            {
+              "name": "A2 Point",
+              "x": 223.1429219813896907,
+              "y": 459.85770940264865
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Driel",
+      "size": [
+        4340,
+        4340
+      ],
+      "initialPosition": [
+        500,
+        500
+      ],
+      "gunPosition": [
+        {
+          "name": "1",
+          "offset": [
+            38.0,
+            490.9
+          ]
+        },
+        {
+          "name": "2",
+          "offset": [
+            41.0,
+            490.9
+          ]
+        },
+        {
+          "name": "3",
+          "offset": [
+            43.0,
+            490.9
+          ]
+        }
+      ],
+      "factions": {
+        "America": {
+          "points": [
+            [
+              40,
+              300
+            ],
+            [
+              40,
+              500
+            ],
+            [
+              40,
+              600
+            ]
+          ],
+          "direction": "Left"
+        },
+        "Germany": {
+          "points": [
+            [
+              900,
+              300
+            ],
+            [
+              900,
+              500
+            ],
+            [
+              900,
+              600
+            ]
+          ],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Driel_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "marker": [
+        {
+          "name": "PrimaryArty",
+          "iconType": "Arty",
+          "points": [
+            {
+              "name": "A1 Point",
+              "x": 174.07146099069496,
+              "y": 370.5690403823987
+            },
+            {
+              "name": "A2 Point",
+              "x": 3.1429219813896907,
+              "y": 459.85770940264865
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

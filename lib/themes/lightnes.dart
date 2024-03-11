@@ -20,7 +20,6 @@ class LightnesTheme extends AppBaseThemeItem {
   @override
   get d => data;
 
-  @override
   static dynamic data = AppThemeItem(
     name: "lightnes",
     isDefault: true,
@@ -61,6 +60,9 @@ class LightnesTheme extends AppBaseThemeItem {
       ),
       dividerTheme: const DividerThemeData(
         color: Colors.black12,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.white,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.transparent,

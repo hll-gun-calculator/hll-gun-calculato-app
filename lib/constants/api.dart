@@ -1,4 +1,6 @@
 /// 全局接口配置
+// ignore_for_file: constant_identifier_names
+
 import '../data/Url.dart';
 
 enum Env { PROD, DEV }

@@ -12,7 +12,6 @@ class LandingTimerPage extends StatefulWidget {
 }
 
 class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepAliveClientMixin {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   // 炮弹
   List<Landing> landings = [];
@@ -186,6 +185,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         /// 炮弹推

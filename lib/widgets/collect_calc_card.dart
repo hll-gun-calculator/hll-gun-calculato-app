@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +10,12 @@ import '/data/Collect.dart';
 
 class CollectCalcCard extends StatefulWidget {
   final CollectItemData i;
+  final Widget? leading;
 
   CollectCalcCard({
     super.key,
     required this.i,
+    this.leading,
   });
 
   @override
@@ -39,8 +43,8 @@ class _historyCalcCardState extends State<CollectCalcCard> {
                   DropdownButton(
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.more_horiz),
-                    items: [
-                      const DropdownMenuItem(
+                    items: const [
+                      DropdownMenuItem(
                         value: 1,
                         child: Text("删除"),
                       ),
@@ -169,6 +173,7 @@ class _historyCalcCardState extends State<CollectCalcCard> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      leading: widget.leading,
       title: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

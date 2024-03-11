@@ -114,7 +114,6 @@ class Http {
             data: {'error': -2, 'message': 'bad certificate'},
             requestOptions: RequestOptions(path: url, method: method),
           );
-          break;
         case DioExceptionType.badResponse:
           return Response(
             data: {'error': -2, 'message': 'bad response'},

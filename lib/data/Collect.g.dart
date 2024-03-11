@@ -14,6 +14,9 @@ CollectItemData _$CollectItemDataFromJson(Map<String, dynamic> json) =>
       updateTime: json['updateTime'] == null
           ? null
           : DateTime.parse(json['updateTime'] as String),
+      mapInfo: json['mapInfo'] == null
+          ? null
+          : MapInfo.fromJson(json['mapInfo'] as Map<String, dynamic>),
     )
       ..inputFactions = $enumDecode(_$FactionsEnumMap, json['inputFactions'])
       ..inputValue = json['inputValue'] as String
@@ -40,6 +43,7 @@ Map<String, dynamic> _$CollectItemDataToJson(CollectItemData instance) =>
       'title': instance.title,
       'remark': instance.remark,
       'updateTime': instance.updateTime?.toIso8601String(),
+      'mapInfo': instance.mapInfo,
     };
 
 const _$FactionsEnumMap = {

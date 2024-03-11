@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import '/utils/index.dart';
 
-import 'package:provider/provider.dart';
 
-import '../provider/package_provider.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -52,6 +49,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     await providerUtil.ofTheme(context).init();
     await providerUtil.ofCollect(context).init();
     await providerUtil.ofLang(context).init();
+    await providerUtil.ofMap(context).init();
 
     onMain();
   }

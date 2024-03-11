@@ -12,10 +12,6 @@ class TranslationProvider with ChangeNotifier {
   // 语言字典列表
   List _listDictionaryFrom = [];
 
-  // 语言配置列表
-  // 如: { 'zh': {} }
-  Map _list = {};
-
   // 默认语言
   String _default = "zh_CN";
 

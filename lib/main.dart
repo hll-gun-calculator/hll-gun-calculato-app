@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'router/router.dart';
@@ -46,6 +47,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => HistoryProvider()),
         ChangeNotifierProvider(create: (context) => CollectProvider()),
         ChangeNotifierProvider(create: (context) => CalcProvider()),
+        ChangeNotifierProvider(create: (context) => MapProvider()),
         ChangeNotifierProvider(create: (context) => PackageProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],

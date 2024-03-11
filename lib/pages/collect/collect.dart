@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -40,30 +41,29 @@ class _CollectPageState extends State<CollectPage> {
           ),
           body: data.list.isNotEmpty
               ? ListView(
-                  children: data.sort().list.map((i) => Row(
-                            children: [
-                              if (isEdit)
-                                Checkbox(
-                                  value: selectList.contains(i.id),
-                                  onChanged: (v) {
-                                    setState(() {
-                                      if (selectList.where((id) => id == i.id).isNotEmpty) {
-                                        selectList.removeWhere((tId) => tId == i.id);
-                                      } else {
-                                        selectList.add(i.id.toString());
-                                      }
+                  children: data
+                      .sort()
+                      .list
+                      .map((i) => CollectCalcCard(
+                            i: i,
+                            leading: isEdit
+                                ? Checkbox(
+                                    value: selectList.contains(i.id),
+                                    onChanged: (v) {
+                                      setState(() {
+                                        if (selectList.where((id) => id == i.id).isNotEmpty) {
+                                          selectList.removeWhere((tId) => tId == i.id);
+                                        } else {
+                                          selectList.add(i.id.toString());
+                                        }
 
-                                      if (selectList.length != data.list.length) {
-                                        selectAll = false;
-                                      }
-                                    });
-                                  },
-                                ),
-                              Expanded(
-                                flex: 1,
-                                child: CollectCalcCard(i: i),
-                              ),
-                            ],
+                                        if (selectList.length != data.list.length) {
+                                          selectAll = false;
+                                        }
+                                      });
+                                    },
+                                  )
+                                : null,
                           ))
                       .toList(),
                 )

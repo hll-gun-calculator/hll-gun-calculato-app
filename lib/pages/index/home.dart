@@ -1,5 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +15,7 @@ import '/constants/config.dart';
 import '/provider/package_provider.dart';
 
 import 'landingTimer.dart';
+import 'map.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,9 +26,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late TabController _tabController;
+
   List<dynamic> navs = [
     {
       "name": "gunCalc",
+      "icon": const Icon(Icons.calculate_outlined, size: 30),
+      "activeIcon": const Icon(Icons.calculate, size: 30),
+    },
+    {
+      "name": "maps",
       "icon": const Icon(Icons.calculate_outlined, size: 30),
       "activeIcon": const Icon(Icons.calculate, size: 30),
     },
@@ -49,8 +59,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // 初始tab
     _tabController = TabController(
       vsync: this,
-      length: 3,
-      initialIndex: 0,
+      length: navs.length,
+      initialIndex: 1,
     )..addListener(() {
         setState(() {
           tabIndex = _tabController.index;
@@ -83,6 +93,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     urlUtil.opEnPage(context, "/collect");
   }
 
+  /// 包管理
+  void _openMapPackage () {
+    Navigator.pop(context);
+    urlUtil.opEnPage(context, "/setting/mapPackage");
+  }
+
   /// 打开收藏
   void _openVersion() {
     Navigator.pop(context);
@@ -96,8 +112,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       child: Consumer2<PackageProvider, HistoryProvider>(
         builder: (consumerContext, packageData, historyData, widget) {
           return DefaultTabController(
-            length: 3,
+            length: navs.length,
             child: Scaffold(
+              extendBodyBehindAppBar: true,
               appBar: HomeAppBar(
                 contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : .0,
                 tabIndex: tabIndex,
@@ -136,6 +153,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             ListTile(
                               title: Text(FlutterI18n.translate(context, "collect.title")),
                               onTap: () => _openCollect(),
+                            ),
+                            ListTile(
+                              title: Text(FlutterI18n.translate(context, "collect.title")),
+                              onTap: () => _openMapPackage(),
                             ),
                             const Divider(),
                             ListTile(
@@ -182,6 +203,7 @@ class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   late double contentHeight;
 
   HomeAppBar({
+    super.key,
     required this.tabIndex,
     this.contentHeight = kToolbarHeight,
   });
@@ -202,13 +224,20 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
         return AppBar(
           forceMaterialTransparency: true,
+          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
           flexibleSpace: FlexibleSpaceBar(
+            collapseMode: CollapseMode.parallax,
             background: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: const SizedBox(),
+              filter: ImageFilter.blur(
+                sigmaX: 10,
+                sigmaY: 10,
+              ),
+              blendMode: BlendMode.srcIn,
+              child: Container(
+                color: Theme.of(context).appBarTheme.backgroundColor!.withOpacity(.9),
+              ),
             ),
           ),
-          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
@@ -225,9 +254,9 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
       widget.contentHeight = 0.0;
 
-      return PreferredSize(
-        preferredSize: const Size(0.0, 0.0),
-        child: Container( ),
+      return const PreferredSize(
+        preferredSize: Size(0.0, 0.0),
+        child: SizedBox(),
       );
     });
   }
@@ -239,6 +268,7 @@ class HomeBody extends StatefulWidget {
   final TabController tabController;
 
   HomeBody({
+    super.key,
     required this.navs,
     required this.tabIndex,
     required this.tabController,
@@ -289,6 +319,8 @@ class _HomeBodyState extends State<HomeBody> {
                     children: const [
                       /// 计算机
                       calcPage(),
+
+                      MapPage(),
 
                       /// 落地时间计算
                       LandingTimerPage(),

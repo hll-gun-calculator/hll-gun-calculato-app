@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-import '../../component/keyboard/index2.dart';
+import '../../component/_keyboard/index.dart';
 import '../../constants/app.dart';
 import '../../data/index.dart';
 import '../../provider/calc_provider.dart';
-import '../../utils/index.dart';
 
 class GunComparisonTablePage extends StatefulWidget {
   const GunComparisonTablePage({

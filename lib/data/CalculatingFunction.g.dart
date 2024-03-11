@@ -25,9 +25,10 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
       child: (json['child'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry($enumDecode(_$FactionsEnumMap, k),
-            CalculatingFunctionChild.fromJson(e as Map<String, dynamic>)),
-      ),
+            (k, e) => MapEntry($enumDecode(_$FactionsEnumMap, k),
+                CalculatingFunctionChild.fromJson(e as Map<String, dynamic>)),
+          ) ??
+          const {},
       author: json['author'] as String? ?? "none",
       website: json['website'] as String? ?? "",
       updataFunction: (json['updataFunction'] as List<dynamic>?)
@@ -38,6 +39,7 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
       type:
           $enumDecodeNullable(_$CalculatingFunctionTypeEnumMap, json['type']) ??
               CalculatingFunctionType.Internal,
+      id: json['id'] as String? ?? "none",
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
@@ -48,13 +50,13 @@ Map<String, dynamic> _$CalculatingFunctionToJson(
     <String, dynamic>{
       'name': instance.name,
       'version': instance.version,
-      'child':
-          instance.child?.map((k, e) => MapEntry(_$FactionsEnumMap[k]!, e)),
+      'child': CalculatingFunction.ChildToJson(instance.child),
       'author': instance.author,
       'website': instance.website,
       'updataFunction': instance.updataFunction,
       'creationTime': instance.creationTime.toIso8601String(),
       'type': _$CalculatingFunctionTypeEnumMap[instance.type]!,
+      'id': instance.id,
     };
 
 const _$FactionsEnumMap = {

@@ -1,5 +1,7 @@
 /// 版本管理器
 
+// ignore_for_file: constant_identifier_names
+
 enum VersionReleaseType { None, Beta, Release }
 
 class Version {
@@ -14,13 +16,13 @@ class Version {
   /// 对比版本
   /// 通常格式 0.0.1-beta
   bool compareVersions(String v1, String v2) {
-    VersionData _version_1 = _setSplitFactory(v1);
-    VersionData _version_2 = _setSplitFactory(v2);
+    VersionData version_1 = _setSplitFactory(v1);
+    VersionData version_2 = _setSplitFactory(v2);
 
-    if (_version_1.number > _version_2.number) {
+    if (version_1.number > version_2.number) {
       return true;
-    } else if (_version_1.number == _version_2.number) {
-      return _releaseTypeWeights[_version_1.releaseType] > _releaseTypeWeights[_version_2.releaseType];
+    } else if (version_1.number == version_2.number) {
+      return _releaseTypeWeights[version_1.releaseType] > _releaseTypeWeights[version_2.releaseType];
     } else {
       return false;
     }

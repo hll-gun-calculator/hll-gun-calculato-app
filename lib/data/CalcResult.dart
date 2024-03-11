@@ -36,7 +36,7 @@ class CalcResult {
   }) {
     this.calculatingFunctionInfo = calculatingFunctionInfo ?? CalculatingFunction();
     this.result = result ?? CalcResultStatus(message: "", code: 0);
-    this.creationTime = DateTime.now();
+    creationTime = DateTime.now();
   }
 
   static Map ValueToJson(dynamic value) => value.toJson();
