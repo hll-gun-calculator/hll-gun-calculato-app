@@ -2,7 +2,6 @@
 
 import 'dart:ui';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -143,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               ),
                             ),
                             ListTile(
-                              title: Text(FlutterI18n.translate(context, "history.title")),
+                              title: Text(FlutterI18n.translate(context, "setting.cell.history.title")),
                               onTap: () => _openComputingHistory(),
                             ),
                             ListTile(
@@ -155,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               onTap: () => _openCollect(),
                             ),
                             ListTile(
-                              title: Text(FlutterI18n.translate(context, "collect.title")),
+                              title: Text(FlutterI18n.translate(context, "setting.cell.mapConfig.title")),
                               onTap: () => _openMapPackage(),
                             ),
                             const Divider(),
@@ -224,7 +223,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
         return AppBar(
           forceMaterialTransparency: true,
-          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'landingTimer', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
+          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'map', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
             background: BackdropFilter(

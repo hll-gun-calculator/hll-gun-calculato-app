@@ -32,7 +32,7 @@ class CollectItemData extends CalcResult {
   }) {
     this.id = const Uuid().v5(
       Uuid.NAMESPACE_NIL,
-      "CollectItemData",
+      "CollectItemData-$id-$title-${updateTime!.millisecondsSinceEpoch}",
     );
   }
 

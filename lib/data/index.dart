@@ -9,3 +9,4 @@ export 'Map.dart';
 export 'MapIconType.dart';
 export 'MapCompilation.dart';
 export 'Gun.dart';
+export 'Landing.dart';

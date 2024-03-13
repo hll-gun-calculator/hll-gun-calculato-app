@@ -5,13 +5,13 @@ import '../data/index.dart';
 
 class MapCardWidget extends StatefulWidget {
   final MapInfo i;
-  final String? selected;
+  final String selected;
   final Function()? onTap;
 
   const MapCardWidget({
     super.key,
     required this.i,
-    this.selected,
+    this.selected = "",
     this.onTap,
   });
 
@@ -38,7 +38,7 @@ class _MapCardWidgetState extends State<MapCardWidget> {
           ),
           title: Text(widget.i.name),
           subtitle: Text("${widget.i.size.dx} x ${widget.i.size.dy} | marker:${widget.i.marker!.length}"),
-          trailing: widget.i.name == widget.selected ? Icon(Icons.radio_button_checked) : SizedBox(),
+          trailing: widget.i.name == widget.selected ? const Icon(Icons.radio_button_checked) : const SizedBox(),
           selected: widget.onTap != null ? widget.i.name == widget.selected : false,
           onTap: widget.onTap,
         ),

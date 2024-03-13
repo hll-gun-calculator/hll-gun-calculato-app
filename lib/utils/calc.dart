@@ -19,10 +19,10 @@ class CalcUtil {
       CalcResultStatus result = CalcResultStatus(message: "成功", code: 0);
 
       if (calculatingFunctionInfo.hasChildValue(inputFactions)) {
-        expression = calculatingFunctionInfo.child![inputFactions]!;
+        expression = calculatingFunctionInfo.child[inputFactions]!;
       } else {
-        Factions newInputFactions = calculatingFunctionInfo.child!.keys.first;
-        expression = calculatingFunctionInfo.child![newInputFactions]!;
+        Factions newInputFactions = calculatingFunctionInfo.child.keys.first;
+        expression = calculatingFunctionInfo.child[newInputFactions]!;
         result = CalcResultStatus(message: "初始新的默认阵营", code: 0);
         return CalcResult(result: result);
       }
@@ -34,17 +34,17 @@ class CalcUtil {
         return CalcResult(result: result);
       }
 
-      if (calculatingFunctionInfo.child!.isEmpty) {
+      if (calculatingFunctionInfo.child.isEmpty) {
         result = CalcResultStatus(message: "此函数包没有配置阵营函数", code: 1100);
         return CalcResult(result: result);
       }
 
-      if (calculatingFunctionInfo.child!.isEmpty) {
+      if (calculatingFunctionInfo.child.isEmpty) {
         result = CalcResultStatus(message: "此${calculatingFunctionInfo.name}函数包没有配置任何阵营函数", code: 1101);
         return CalcResult(result: result);
       }
 
-      if (calculatingFunctionInfo.child!.isEmpty) {
+      if (calculatingFunctionInfo.child.isEmpty) {
         result = CalcResultStatus(message: "此${calculatingFunctionInfo.name}函数包没有配置任何函数公式，无法计算结果", code: 1102);
         return CalcResult(result: result);
       }

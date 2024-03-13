@@ -45,6 +45,22 @@
   "collect": {
     "title": "收藏"
   },
+  "map": {
+    "title": "地图测量",
+    "selectNewMap": "选择新地图",
+    "searchMapTip": "搜索地图",
+    "layerMap": "地图图层",
+    "timer": "定时器",
+    "collect": "结果收藏",
+    "layers": {
+      "Arty": "火炮",
+      "PresupposeArty": "预设火炮位置",
+      "CollectArty": "收藏火炮",
+      "PlainGrid": "网格",
+      "ArtyRadius": "火炮范围",
+      "Landmark": "地标"
+    }
+  },
   "gunComputer": {
     "meter": "米",
     "result": "角度 (结果)",
@@ -54,13 +70,16 @@
   "setting": {
     "title": "设置中心",
     "cell": {
-      "history": {
-        "title": "游览历史",
-        "describe": "游览过往内容"
+      "mapConfig": {
+        "title": "地图配置"
       },
-      "website": {
-        "title": "网站地址",
-        "describe": "网站"
+      "history": {
+        "title": "计算历史",
+        "describe": "计算历史内容"
+      },
+      "collect": {
+        "title": "收藏",
+        "describe": "坐标收藏"
       }
     },
     "versions": {

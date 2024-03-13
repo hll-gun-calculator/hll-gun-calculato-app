@@ -1,5 +1,8 @@
 {
   "name": "internal",
+  "description": {
+    "zh_CN": "位置"
+  },
   "auth": "mattwright324",
   "version": "0.0.1",
   "data": [
@@ -10,34 +13,37 @@
         4096
       ],
       "initialPosition": [
-        500,
-        500
-      ],
-      "gunPosition": [
-        {
-          "name": "1",
-          "offset": [
-            14.0,
-            440
-          ]
-        },
-        {
-          "name": "2",
-          "offset": [
-            14.0,
-            446
-          ]
-        },
-        {
-          "name": "3",
-          "offset": [
-            14.0,
-            452
-          ]
-        }
+        128,
+        1905
       ],
       "factions": {
         "America": {
+          "gunPosition": [
+            {
+              "name": "America Gun 1",
+              "description": {
+                "zh_CN": "位置"
+              },
+              "offset": [
+                114.876,
+                1890
+              ]
+            },
+            {
+              "name": "America Gun 2",
+              "offset": [
+                114.876,
+                1905
+              ]
+            },
+            {
+              "name": "America Gun 3",
+              "offset": [
+                114.876,
+                1925
+              ]
+            }
+          ],
           "points": [
             [
               40,
@@ -45,7 +51,7 @@
             ],
             [
               40,
-              500
+              4096
             ],
             [
               40,
@@ -55,6 +61,29 @@
           "direction": "Left"
         },
         "Germany": {
+          "gunPosition": [
+            {
+              "name": "1",
+              "offset": [
+                3982,
+                1890
+              ]
+            },
+            {
+              "name": "2",
+              "offset": [
+                3982,
+                1905
+              ]
+            },
+            {
+              "name": "3",
+              "offset": [
+                3982,
+                1925
+              ]
+            }
+          ],
           "points": [
             [
               900,
@@ -78,6 +107,12 @@
       },
       "childs": [
         {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Carentan_SP_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
           "name": "Arty Rand",
           "index": 1,
           "type": "ArtyRadius",
@@ -97,13 +132,8 @@
           "points": [
             {
               "name": "A1 Point",
-              "x": 174.07146099069496,
-              "y": 370.5690403823987
-            },
-            {
-              "name": "A2 Point",
-              "x": 223.1429219813896907,
-              "y": 459.85770940264865
+              "x": 714.392,
+              "y": 1210.546
             }
           ]
         }
@@ -116,34 +146,34 @@
         4340
       ],
       "initialPosition": [
-        500,
-        500
-      ],
-      "gunPosition": [
-        {
-          "name": "1",
-          "offset": [
-            38.0,
-            490.9
-          ]
-        },
-        {
-          "name": "2",
-          "offset": [
-            41.0,
-            490.9
-          ]
-        },
-        {
-          "name": "3",
-          "offset": [
-            43.0,
-            490.9
-          ]
-        }
+        2000,
+        2000
       ],
       "factions": {
         "America": {
+          "gunPosition": [
+            {
+              "name": "1",
+              "offset": [
+                38.0,
+                490.9
+              ]
+            },
+            {
+              "name": "2",
+              "offset": [
+                41.0,
+                490.9
+              ]
+            },
+            {
+              "name": "3",
+              "offset": [
+                43.0,
+                490.9
+              ]
+            }
+          ],
           "points": [
             [
               40,
@@ -161,6 +191,7 @@
           "direction": "Left"
         },
         "Germany": {
+          "gunPosition": [],
           "points": [
             [
               900,
@@ -185,18 +216,7 @@
         {
           "name": "PrimaryArty",
           "iconType": "Arty",
-          "points": [
-            {
-              "name": "A1 Point",
-              "x": 174.07146099069496,
-              "y": 370.5690403823987
-            },
-            {
-              "name": "A2 Point",
-              "x": 3.1429219813896907,
-              "y": 459.85770940264865
-            }
-          ]
+          "points": []
         }
       ]
     }

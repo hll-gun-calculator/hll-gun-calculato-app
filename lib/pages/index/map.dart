@@ -1,18 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/constants/api.dart';
-import 'package:hll_gun_calculator/data/Gun.dart';
+import 'package:hll_gun_calculator/component/_empty/index.dart';
+import 'package:hll_gun_calculator/provider/gun_timer_provider.dart';
 import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:hll_gun_calculator/utils/calc.dart';
 import 'package:hll_gun_calculator/utils/map.dart';
@@ -21,6 +17,7 @@ import 'package:provider/provider.dart';
 import '../../constants/app.dart';
 import '../../data/index.dart';
 import '../../provider/calc_provider.dart';
+import '../../utils/index.dart';
 import '../../widgets/map_card.dart';
 import '../../widgets/wave_border.dart';
 
@@ -31,36 +28,67 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _mapPageState();
 }
 
-class _mapPageState extends State<MapPage> {
-  GlobalKey<MapCoreState> _mapCoreKey = GlobalKey<MapCoreState>();
+class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+  final GlobalKey<MapCoreState> _mapCoreKey = GlobalKey<MapCoreState>();
+
+  I18nUtil i18nUtil = I18nUtil();
 
   Factions inputFactions = Factions.None;
-
-  MapGunResult mapGunResult = MapGunResult();
 
   bool _lock = false;
 
   Map<MapIconType, bool> _markerManagementSwitch = {};
 
+  // 火炮下标
+  List listTimerIndex = [];
+
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _mapCoreKey.currentState!.mapGunResult.addListener(() {
-        setState(() {
-          mapGunResult = _mapCoreKey.currentState!.mapGunResult.value;
-        });
-      });
+    CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
+    Factions firstName = Factions.None;
 
+    if (currentCalculatingFunction.child != null) {
+      firstName = currentCalculatingFunction.child.keys.first;
+    }
+
+    setState(() {
+      // 初始所支持的阵营
+      if (Factions.values.where((e) => e == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e == firstName).first;
+    });
+
+    // 依照地图火炮创建下标列表
+    // 更新id
+    listTimerIndex = List.generate(App.provider.ofMap(context).currentMapInfo.gunPositions.length, (index) {
+      int gunTimerIndex = 1;
+      Gun gunItem = App.provider.ofMap(context).currentMapInfo.gunPositions[index];
+      String id = "${gunItem.name}-${gunItem.id}-$gunTimerIndex";
+
+      return {
+        'id': id,
+        'index': gunTimerIndex,
+        'faction': gunItem.factions!.value,
+      };
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // 地图标记锁定
       _mapCoreKey.currentState!.isLock.addListener(() {
         _lock = _mapCoreKey.currentState!.isLock.value;
       });
 
+      // 图层管理
       _markerManagementSwitch = _mapCoreKey.currentState!.markerManagementSwitch.value;
       _mapCoreKey.currentState!.markerManagementSwitch.addListener(() {
         _markerManagementSwitch = _mapCoreKey.currentState!.markerManagementSwitch.value;
       });
     });
     super.initState();
+  }
+
+  /// 切换火炮列表
+  /// 重新计算结果
+  void _calcResult() {
+    _mapCoreKey.currentState!.calc();
   }
 
   /// 选择阵营
@@ -110,8 +138,10 @@ class _mapPageState extends State<MapPage> {
 
   /// 打开地图选择
   void _openMapsModal() {
-    MapCompilation i = App.provider.ofMap(context).currentMapCompilation;
-    MapInfo? newMapInfo;
+    TextEditingController mapSearchTextEditingController = TextEditingController();
+    MapCompilation currentMapCompilation = App.provider.ofMap(context).currentMapCompilation;
+    MapInfo currentMapInfo = App.provider.ofMap(context).currentMapInfo;
+    late MapInfo newMapInfo = currentMapInfo;
 
     showModalBottomSheet<void>(
       context: context,
@@ -122,47 +152,62 @@ class _mapPageState extends State<MapPage> {
           return Scaffold(
             appBar: AppBar(
               leading: const CloseButton(),
+              title: Text(i18nUtil.as(context, currentMapCompilation.name)),
               actions: [
+                Text(i18nUtil.as(context, currentMapCompilation.description)),
                 IconButton(
                   onPressed: () {
                     modalSetState(() {
-                      if (newMapInfo == null) {
-                        Fluttertoast.showToast(msg: "请先选择一个地图");
+                      if (newMapInfo.name == App.provider.ofMap(context).currentMapInfo) {
+                        Fluttertoast.showToast(msg: "请选择一个新地图");
                         return;
                       }
-                      App.provider.ofMap(context).currentMapInfo = newMapInfo!;
                     });
+
+                    Navigator.of(context).pop();
+                    App.provider.ofMap(context).currentMapInfo = newMapInfo;
+
+                    _mapCoreKey.currentState!.unlock();
+                    _mapCoreKey.currentState!.setState(() {});
                   },
                   icon: const Icon(Icons.done),
                 ),
               ],
             ),
-            body: ListView(
+            body: Column(
               children: [
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: const SearchBar(
-                    hintText: "搜索地图",
-                    elevation: MaterialStatePropertyAll(0),
-                    leading: Icon(Icons.search),
+                  child: SearchBar(
+                    hintText: FlutterI18n.translate(context, "map.searchMapTip"),
+                    elevation: const MaterialStatePropertyAll(0),
+                    leading: const Icon(Icons.search),
+                    controller: mapSearchTextEditingController,
                   ),
                 ),
                 const Divider(),
-                ...i.data.asMap().entries.map((e) {
-                  return MapCardWidget(
-                    i: e.value,
-                    selected: newMapInfo?.name ?? i.data.first.name,
-                    onTap: () {
-                      modalSetState(() {
-                        newMapInfo = e.value;
-                      });
-                    },
-                  );
-                }).toList(),
-                const Divider(),
-                Align(
-                  child: Text("by ${i.name}"),
-                ),
+                Expanded(
+                  flex: 1,
+                  child: ListView(
+                    children: [
+                      ...currentMapCompilation.data.where((i) => i.name.indexOf(mapSearchTextEditingController.text) >= 0).toList().asMap().entries.map((e) {
+                        return MapCardWidget(
+                          i: e.value,
+                          selected: newMapInfo.name,
+                          onTap: () {
+                            modalSetState(() {
+                              newMapInfo = e.value;
+                            });
+                          },
+                        );
+                      }).toList(),
+                      const Divider(),
+                      Align(
+                        child: Text("by ${currentMapCompilation.name}"),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
           );
@@ -173,7 +218,7 @@ class _mapPageState extends State<MapPage> {
 
   /// 打开图层筛选器
   void _openMarkerModal() {
-    bool all = _markerManagementSwitch.values.every((v) => v == true) ?? false;
+    bool all = _markerManagementSwitch.values.every((v) => v == true);
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
@@ -203,7 +248,8 @@ class _mapPageState extends State<MapPage> {
                 ...MapIconType.values.skipWhile((e) => e == MapIconType.None || e == MapIconType.Url || e == MapIconType.Assets).map((e) {
                   return SwitchListTile(
                     value: _markerManagementSwitch[e] ?? false,
-                    title: Text(e.value),
+                    title: Text(FlutterI18n.translate(context, "map.layers.${e.value}")),
+                    subtitle: Text(e.value),
                     secondary: Icon(_markerManagementSwitch[e] ?? false ? Icons.layers : Icons.layers_outlined),
                     onChanged: (value) {
                       modalSetState(() {
@@ -228,6 +274,7 @@ class _mapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Consumer2<CalcProvider, MapProvider>(
       builder: (context, calcData, mapData, widget) {
         return Column(
@@ -258,18 +305,28 @@ class _mapPageState extends State<MapPage> {
                   },
                   icon: const Icon(Icons.restart_alt),
                 ),
-                IconButton(
-                  onPressed: () {
-                    _mapCoreKey.currentState!.scale("+");
-                  },
-                  icon: const Icon(Icons.add),
-                ),
-                IconButton(
-                  onPressed: () {
-                    _mapCoreKey.currentState!.scale("-");
-                  },
-                  icon: const Icon(Icons.remove),
-                ),
+                // IconButton(
+                //   onPressed: () {
+                //     _mapCoreKey.currentState!.scale("+");
+                //   },
+                //   icon: const Icon(Icons.add),
+                // ),
+                // IconButton(
+                //   onPressed: () {
+                //     _mapCoreKey.currentState!.scale("-");
+                //   },
+                //   icon: const Icon(Icons.remove),
+                // ),
+                if (_lock)
+                  IconButton.filled(
+                    onPressed: () {
+                      _mapCoreKey.currentState!.unlock();
+                      setState(() {
+                        _lock = false;
+                      });
+                    },
+                    icon: const Icon(Icons.location_off_sharp),
+                  ),
               ],
             ),
 
@@ -330,114 +387,187 @@ class _mapPageState extends State<MapPage> {
 
                   /// 火炮列表
                   Flexible(
-                    child: MediaQuery.removePadding(
-                      context: context,
-                      removeTop: true,
-                      child: ListView(
-                        children: mapData.currentMapInfo.gunPosition.asMap().entries.map((e) {
-                          return GestureDetector(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                        value: e.value,
-                                        toggleable: true,
-                                        groupValue: mapData.currentMapGun,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            mapData.currentMapGun = e.value;
-                                          });
-                                        },
-                                      ),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Card(
-                                          color: e.value.color.withOpacity((e.key + .5) * 0.2),
-                                          margin: EdgeInsets.zero,
-                                          child: SizedBox(
-                                            width: 44,
-                                            height: 44,
-                                            child: Center(
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(10),
-                                                child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                    child: Consumer<GunTimerProvider>(
+                      builder: (context, gunTimerData, widget) {
+                        return MediaQuery.removePadding(
+                          context: context,
+                          removeTop: true,
+                          child: ListView(
+                            children: mapData.currentMapInfo.gunPositions.isNotEmpty
+                                ? mapData.currentMapInfo.gunPositions.asMap().entries.map((e) {
+                                    String id = listTimerIndex[e.key]['id'];
+                                    String querId = "$id-${LandingType.MapGun.name}"; // 查询id，与生成的id缺少类型
+                                    return Stack(
+                                      children: [
+                                        // Text(id),
+                                        if (gunTimerData.hasItemId(querId))
+                                          Positioned.fill(
+                                            child: Opacity(
+                                              opacity: .3,
+                                              child: LinearProgressIndicator(
+                                                value: gunTimerData.getItem(querId).countdownTimeSeconds / gunTimerData.getItem(querId).duration.inSeconds * 1,
+                                                backgroundColor: Colors.transparent,
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Card(
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      mapGunResult.inputValue.toString(),
-                                                      style: const TextStyle(
-                                                        fontSize: 28,
-                                                      ),
-                                                    ),
-                                                    const Icon(Icons.chevron_right),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                                      children: [
-                                                        Text(
-                                                          mapGunResult.outputValue,
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Theme.of(context).primaryColor,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          "${mapGunResult.outputAngle.ceil()}",
-                                                          style: const TextStyle(fontSize: 12),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                            Container(
+                                              margin: const EdgeInsets.only(left: 55, top: 5),
+                                              child: Wrap(
+                                                spacing: 10,
+                                                children: [Text(e.value.name), Text(FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}"))],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Row(
+                                                    children: [
+                                                      Radio(
+                                                        value: e.value,
+                                                        toggleable: true,
+                                                        groupValue: mapData.currentMapGun,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            mapData.currentMapGun = e.value;
+                                                          });
+                                                          _calcResult();
+                                                        },
+                                                      ),
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Card(
+                                                          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.only(right: 10, top: 2, bottom: 3, left: 3),
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: [
+                                                                Card(
+                                                                  color: e.value.name == mapData.currentMapGun.name ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                                                                  margin: EdgeInsets.zero,
+                                                                  child: SizedBox(
+                                                                    width: 44,
+                                                                    height: 44,
+                                                                    child: Center(
+                                                                      child: Padding(
+                                                                        padding: const EdgeInsets.all(10),
+                                                                        child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  "${e.value.result?.inputValue ?? 0}",
+                                                                  style: const TextStyle(
+                                                                    fontSize: 28,
+                                                                  ),
+                                                                ),
+                                                                const Icon(Icons.chevron_right),
+                                                                Column(
+                                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                                  children: [
+                                                                    Text(
+                                                                      "${e.value.result?.outputValue ?? 0}",
+                                                                      style: TextStyle(
+                                                                        fontSize: 16,
+                                                                        color: Theme.of(context).primaryColor,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      "${e.value.result?.outputAngle.ceil() ?? 0}",
+                                                                      style: const TextStyle(fontSize: 12),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
 
-                                /// map button
-                                IconButton.filledTonal(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.timer_outlined),
-                                ),
-                                IconButton.filledTonal(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.star_border),
-                                ),
-                                if (_lock)
-                                  IconButton.filled(
-                                    onPressed: () {
-                                      _mapCoreKey.currentState!.unlock();
-                                      setState(() {
-                                        _lock = false;
-                                      });
-                                    },
-                                    icon: const Icon(Icons.restart_alt),
-                                  ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                                                /// map button
+                                                PopupMenuButton(
+                                                  icon: Icon(
+                                                    Icons.adaptive.more,
+                                                    color: Theme.of(context).iconTheme.color,
+                                                  ),
+                                                  itemBuilder: (context) {
+                                                    return <PopupMenuEntry>[
+                                                      const PopupMenuItem(
+                                                        value: "gunDescription",
+                                                        child: Row(
+                                                          children: [Icon(Icons.text_fields), Text("火炮描述")],
+                                                        ),
+                                                      ),
+                                                      const PopupMenuDivider(),
+                                                      const PopupMenuItem(
+                                                        value: "timer",
+                                                        child: Row(
+                                                          children: [Icon(Icons.timer_outlined), Text("定时器")],
+                                                        ),
+                                                      ),
+                                                      const PopupMenuItem(
+                                                        value: "timer",
+                                                        child: Row(
+                                                          children: [Icon(Icons.star_border), Text("收藏")],
+                                                        ),
+                                                      )
+                                                    ];
+                                                  },
+                                                  onSelected: (v) {
+                                                    switch (v) {
+                                                      case "gunDescription":
+                                                        _mapCoreKey.currentState!._openGunDetailModal(e.value);
+                                                        break;
+                                                      case "timer":
+                                                        if (gunTimerData.getItem(querId).isTimerActive) {
+                                                          Fluttertoast.showToast(msg: "计时还在继续，需停止后重计时，详情可以前往计时器管理");
+                                                          return;
+                                                        }
+
+                                                        setState(() {
+                                                          Map currerGun = listTimerIndex.where((element) => element["id"] == id).first;
+
+                                                          // 添加
+                                                          print(currerGun['id']);
+                                                          gunTimerData.add(
+                                                            id: currerGun['id'],
+                                                            type: LandingType.MapGun,
+                                                            isAutoShow: true,
+                                                            endCallback: (l) {
+                                                              // 添加后更新
+                                                              currerGun['index'] = currerGun['index'] = currerGun['index'] + 1;
+                                                              currerGun['id'] = "${e.value.name}-${e.value.id}-${currerGun['index']}";
+                                                            },
+                                                          );
+                                                        });
+                                                        break;
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  }).toList()
+                                : [
+                                    const Center(
+                                      child: EmptyWidget(),
+                                    )
+                                  ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -448,11 +578,11 @@ class _mapPageState extends State<MapPage> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
-const mapUrl = 'assets/images/maps/Carentan.png';
-const mapSize = [1000.0, 1000.0];
-const mapOrigin = [.0, .0];
 const markerSize = 32.0;
 
 class MapCore extends StatefulWidget {
@@ -472,13 +602,17 @@ class MapCoreState extends State<MapCore> {
 
   final StreamController<double> stream = StreamController.broadcast();
 
-  CalcUtil _calcUtil = CalcUtil();
+  final CalcUtil _calcUtil = CalcUtil();
 
-  GlobalKey _mapBoxKey = GlobalKey();
+  final I18nUtil i18nUtil = I18nUtil();
+
+  final GlobalKey _mapBoxKey = GlobalKey();
 
   late MapCompilation mapCompilation;
 
   double _scale = 1;
+  double _scaleMax = 1.1;
+  double _scaleMin = .1;
 
   ValueNotifier<bool> isLock = ValueNotifier(false);
 
@@ -488,6 +622,9 @@ class MapCoreState extends State<MapCore> {
 
   Offset newMarker = const Offset(-1, -1);
 
+  // 地图加载状态
+  bool mapLoading = true;
+
   // 图层管理控制
   ValueNotifier<Map<MapIconType, bool>> markerManagementSwitch = ValueNotifier({
     MapIconType.Arty: true,
@@ -495,7 +632,11 @@ class MapCoreState extends State<MapCore> {
     MapIconType.CollectArty: true,
     MapIconType.PlainGrid: false,
     MapIconType.ArtyRadius: false,
+    MapIconType.Landmark: true,
   });
+
+  // 地图盒子高度
+  double mapBoxHeight = 0;
 
   @override
   void initState() {
@@ -505,21 +646,21 @@ class MapCoreState extends State<MapCore> {
 
   /// 初始地图
   initMap() async {
-    // todo test
     mapCompilation = widget.mapProvider.currentMapCompilation;
-    print(mapCompilation);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final size = MediaQuery.of(context).size;
-      // 初始显示地图全貌
-      transformation.value.scale(
-        max(size.width / mapSize[0], size.height / mapSize[1]),
-      );
-      setState(() {});
+      setState(() {
+        mapBoxHeight = _mapBoxKey.currentContext?.findRenderObject()!.paintBounds.size.height ?? 0;
+      });
+      _resetMap();
     });
 
     transformation.addListener(() {
       stream.sink.add(transformation.value[0]);
+    });
+
+    setState(() {
+      mapLoading = false;
     });
   }
 
@@ -527,16 +668,27 @@ class MapCoreState extends State<MapCore> {
   void scale(type) {
     switch (type) {
       case "+":
-        _scale = 1.2;
+        setState(() {
+          _scale += 0.1;
+          var screenCenter = MediaQuery.of(context).size.width / 2;
+          transformation.value = Matrix4.identity()
+            ..translate(screenCenter, screenCenter)
+            ..scale(_scale)
+            ..translate(-screenCenter, -screenCenter);
+        });
+
         break;
       case "-":
-        _scale = 0.8;
+        setState(() {
+          _scale -= 0.1;
+          var screenCenter = MediaQuery.of(context).size.width / 2;
+          transformation.value = Matrix4.identity()
+            ..translate(screenCenter, screenCenter)
+            ..scale(_scale)
+            ..translate(-screenCenter, -screenCenter);
+        });
         break;
     }
-    print(_scale.toStringAsFixed(1));
-    setState(() {
-      transformation.value.scale(_scale);
-    });
   }
 
   /// 解锁
@@ -549,17 +701,30 @@ class MapCoreState extends State<MapCore> {
 
   /// 地图坐标重置
   void onResetMapPosition() {
-    double? size = _mapBoxKey.currentContext?.findRenderObject()?.paintBounds.size.height;
-
-    _setNewMapPosition(
-      -(mapSize[0] / 2) - -(MediaQuery.of(context).size.width),
-      -(mapSize[1] / 2) - -(size! / 2) - -(kToolbarHeight + 50),
-    );
+    _resetMap();
+    _scale = 1;
   }
 
-  /// 设置地图位置
-  void _setNewMapPosition(double x, double y) {
-    transformation.value = Matrix4.identity()..translate(x, y);
+  /// 重置地图
+  void _resetMap() {
+    final size = MediaQuery.of(context).size;
+    setState(() {
+      // 初始显示地图全貌
+      _scale = max(
+        size.width / App.provider.ofMap(context).currentMapInfo.size.dx,
+        size.height / App.provider.ofMap(context).currentMapInfo.size.dy,
+      );
+      _scaleMax = _scale + .4;
+      _scaleMin = .1;
+      transformation.value = Matrix4.identity()
+        ..scale(_scale)
+        ..translate(
+          -(App.provider.ofMap(context).currentMapInfo.size.dx / 2) - -(MediaQuery.of(context).size.width / 2),
+          -(mapBoxHeight) - -(kToolbarHeight + kTextTabBarHeight),
+        );
+
+      _scale = transformation.value.getMaxScaleOnAxis();
+    });
   }
 
   /// 设置地图图层
@@ -569,81 +734,56 @@ class MapCoreState extends State<MapCore> {
     });
   }
 
-  /// 地图标记计算
-  void _onPositionCalcResult(TapDownDetails detail) {
-    if (isLock.value) return;
+  /// 计算结果
+  /// 火炮角度、方向
+  void calc() {
+    if (newMarker.dx < 0 || newMarker.dy < 0) return; // 未选择标记
 
     // 选中的火炮
     Offset gunPostionSelect = App.provider.ofMap(context).currentMapGun.offset;
 
-    // 地图盒子高度
-    double? size = _mapBoxKey.currentContext?.findRenderObject()?.paintBounds.size.height;
-
-    // 对照标记居中
-    _setNewMapPosition(
-      -detail.localPosition.dx - -(MediaQuery.of(context).size.width / 2),
-      -detail.localPosition.dy + (size! / 2),
-    );
-
     setState(() {
-      newMarker = detail.localPosition;
-      double distance = (gunPostionSelect - newMarker).distance * 2.35;
+      double distance = (gunPostionSelect - newMarker).distance / 2.0;
+
+      // 计算mil
       CalcResult result = _calcUtil.on(
         inputFactions: Factions.America,
         inputValue: distance.ceil(),
         calculatingFunctionInfo: App.provider.ofCalc(context).currentCalculatingFunction,
       );
-      print(result.outputValue);
-      // marker.add({"id": 0, "x": detail.localPosition.dx, "y": detail.localPosition.dy});
-      // print(result.calculatingFunctionInfo.toJson());
 
       // 计算角度
       MapGunResult _mapGunResult = MapGunResult.fromJson(result.toJson());
       _mapGunResult.outputAngle = _calcUtil.onAngle(gunPostionSelect, newMarker).outputAngle;
+      _mapGunResult.outputValue = result.outputValue;
       _mapGunResult.inputOffset = gunPostionSelect;
       _mapGunResult.targetOffset = newMarker;
-      mapGunResult.value = _mapGunResult;
-      print("角度:${_mapGunResult.outputAngle}");
+      App.provider.ofMap(context).setCurrentMapGunResult(_mapGunResult);
+
+      // mapGunResult.value = _mapGunResult;
+      // print("角度:${_mapGunResult.outputAngle}");
 
       isLock.value = true;
     });
   }
 
-  /// 打开火炮信息
-  void _openGunDetailModal(Gun gunInfo) {
-    showModalBottomSheet<void>(
-      context: context,
-      clipBehavior: Clip.hardEdge,
-      builder: (context) {
-        return StatefulBuilder(builder: (context, modalSetState) {
-          return Scaffold(
-            appBar: AppBar(
-              leading: const CloseButton(),
-            ),
-            body: ListView(
-              children: [
-                ListTile(
-                  leading: Card(
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      padding: const EdgeInsets.all(10),
-                      child: MapUtil().putArtyIcon,
-                    ),
-                  ),
-                  title: Text(gunInfo.name),
-                ),
-                const Divider(),
-                ListTile(
-                  title: const Text("坐标"),
-                  trailing: Text("x:${gunInfo.offset.dx} y:${gunInfo.offset.dy}"),
-                )
-              ],
-            ),
-          );
-        });
-      },
-    );
+  /// 地图标记计算
+  void _onPositionCalcResult(dynamic detail) {
+    if (isLock.value) return;
+
+    setState(() {
+      newMarker = detail.localPosition;
+
+      calc();
+    });
+  }
+
+  /// 地图标记 擦除选择
+  void _onPositionDelete() {
+    Navigator.of(context).pop();
+    setState(() {
+      newMarker = const Offset(-1, -1);
+    });
   }
 
   /// 打开图标信息
@@ -664,7 +804,7 @@ class MapCoreState extends State<MapCore> {
                       isLock.value = true;
                     });
                   },
-                  child: Text("Use"),
+                  child: const Text("Use"),
                 ),
               ],
             ),
@@ -699,8 +839,8 @@ class MapCoreState extends State<MapCore> {
     );
   }
 
-  /// 打开新坐标详情
-  void _openNewGunPointModal() {
+  /// 打开火炮信息
+  void _openGunDetailModal(Gun gunInfo) {
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
@@ -717,21 +857,90 @@ class MapCoreState extends State<MapCore> {
                     child: Container(
                       width: 50,
                       height: 50,
-                      padding: EdgeInsets.all(10),
-                      child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                      padding: const EdgeInsets.all(10),
+                      child: MapUtil().putArtyIcon,
                     ),
                   ),
-                  title: Text("新标记"),
+                  title: Text(i18nUtil.as(context, gunInfo.name)),
                 ),
                 const Divider(),
                 ListTile(
-                  title: const Text("x"),
-                  trailing: Text("${newMarker.dx}"),
+                  title: const Text("火炮描述"),
+                  subtitle: Text(i18nUtil.as(context, gunInfo.description)),
                 ),
                 ListTile(
-                  title: const Text("y"),
-                  trailing: Text("${newMarker.dy}"),
+                  title: const Text("坐标"),
+                  trailing: Text("x:${gunInfo.offset.dx} y:${gunInfo.offset.dy}"),
                 )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  /// 打开新坐标详情
+  void _openNewGunPointModal() {
+    showModalBottomSheet<void>(
+      context: context,
+      clipBehavior: Clip.hardEdge,
+      scrollControlDisabledMaxHeightRatio: .8,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, modalSetState) {
+          return Scaffold(
+            appBar: AppBar(
+              leading: const CloseButton(),
+              actions: [
+                IconButton(
+                  onPressed: () => _onPositionDelete(),
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
+            body: ListView(
+              children: [
+                ListTile(
+                  leading: Card(
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      padding: const EdgeInsets.all(10),
+                      child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                    ),
+                  ),
+                  title: const Text("新标记"),
+                ),
+                const Divider(),
+                const ListTile(
+                  title: Text("x"),
+                ),
+                TextField(
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    hintText: "0",
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  ),
+                  controller: TextEditingController(text: newMarker.dx.toString()),
+                ),
+                const ListTile(
+                  title: Text("y"),
+                ),
+                TextField(
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    hintText: "0",
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  ),
+                  controller: TextEditingController(text: newMarker.dy.toString()),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text("发射源"),
+                  subtitle: const Text("发射火炮信息"),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _openGunDetailModal(App.provider.ofMap(context).currentMapGun),
+                ),
               ],
             ),
           );
@@ -744,40 +953,43 @@ class MapCoreState extends State<MapCore> {
   Widget build(BuildContext context) {
     return GestureDetector(
       key: _mapBoxKey,
-      onHorizontalDragUpdate: (d) {
-        // Prevent horizontal drag
-        // You can customize this logic as needed
+      onHorizontalDragUpdate: (details) {
+        setState(() {
+          transformation.value = transformation.value..translate(details.delta.dx * 3, 0, 0);
+        });
       },
       child: InteractiveViewer(
-        boundaryMargin: const EdgeInsets.all(0),
+        boundaryMargin: const EdgeInsets.only(),
         transformationController: transformation,
+        maxScale: _scaleMax,
+        minScale: _scaleMin,
         constrained: false,
-        maxScale: 1.5,
-        minScale: 0.5,
         child: Container(
-          width: mapSize[0],
-          height: mapSize[1],
-          padding: const EdgeInsets.only(top: kTextTabBarHeight + 50),
+          padding: const EdgeInsets.only(top: kToolbarHeight + 290 + 500, left: 500, right: 500, bottom: 500),
+          decoration: const BoxDecoration(
+            image: DecorationImage(image: AssetImage("assets/images/maps/map-backdrop.png"), fit: BoxFit.scaleDown, repeat: ImageRepeat.repeat, opacity: .1, scale: .2),
+          ),
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               /// 地图底层
-              // FadeInImage(
-              //   placeholder: const AssetImage('assets/images/maps/Carentan.png'),
-              //   image: mapCompilation.data[0].assets!.image!,
-              // ),
-
               GestureDetector(
-                onTapDown: (TapDownDetails detail) => _onPositionCalcResult(detail),
+                onTapUp: (detail) => _onPositionCalcResult(detail),
+                // onLongPressDown: (LongPressDownDetails detail) => _onPositionCalcResult(detail),
                 child: ExtendedImage(
-                  image: mapCompilation.data[0].assets!.image!,
-                  excludeFromSemantics: true,
+                  image: widget.mapProvider.currentMapInfo.assets!.image!,
+                  width: widget.mapProvider.currentMapInfo.size.dx,
+                  height: widget.mapProvider.currentMapInfo.size.dy,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
                   loadStateChanged: (ExtendedImageState state) {
                     switch (state.extendedImageLoadState) {
                       case LoadState.completed:
                         return ExtendedRawImage(
                           image: state.extendedImageInfo?.image,
                         );
+                      case LoadState.loading:
+                        return const SizedBox();
                       case LoadState.failed:
                       default:
                         return Center(
@@ -794,13 +1006,19 @@ class MapCoreState extends State<MapCore> {
               ),
 
               /// 地图图层
-              ...mapCompilation.data[0].childs.where((e) {
+              ...widget.mapProvider.currentMapInfo.childs.where((e) {
                 // 检查图层管理开关是否开启
                 return markerManagementSwitch.value[e.type] == true;
               }).map((e) {
                 return GestureDetector(
-                  onTapDown: (TapDownDetails detail) => _onPositionCalcResult(detail),
-                  child: ExtendedImage(image: e.image),
+                  onTapUp: (detail) => _onPositionCalcResult(detail),
+                  child: ExtendedImage(
+                    image: e.image,
+                    width: widget.mapProvider.currentMapInfo.size.dx,
+                    height: widget.mapProvider.currentMapInfo.size.dy,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                  ),
                 );
               }).toList(),
 
@@ -831,7 +1049,7 @@ class MapCoreState extends State<MapCore> {
                   ),
                 ),
 
-              /// 新坐标
+              /// 选择坐标
               if (newMarker.dy >= 0 || newMarker.dx >= 0)
                 Positioned(
                   left: newMarker.dx,
@@ -841,14 +1059,16 @@ class MapCoreState extends State<MapCore> {
                   child: StreamBuilder(
                     stream: stream.stream,
                     builder: (context, snapshot) {
-                      final scale = snapshot.data ?? transformation.value[0];
-                      const double boxSize = 33;
+                      double scale = snapshot.data ?? transformation.value[0];
                       return Transform.translate(
-                        offset: const Offset(-boxSize / 2, -boxSize - 5),
-                        child: CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => _openNewGunPointModal(),
-                          child: MapUtil().ArtyIcon,
+                        offset: const Offset(-markerSize / 2, (-markerSize / 2)),
+                        child: AnimatedScale(
+                          scale: 1 / scale,
+                          duration: const Duration(milliseconds: 300),
+                          child: ArtyIconWidget(
+                            onPressed: () => _openNewGunPointModal(),
+                            resultNumber: App.provider.ofMap(context).currentMapGun.result!.outputValue,
+                          ),
                         ),
                       );
                     },
@@ -856,33 +1076,37 @@ class MapCoreState extends State<MapCore> {
                 ),
 
               /// 火炮位置
-              ...widget.mapProvider.currentMapInfo.gunPosition.map((i) {
+              ...widget.mapProvider.currentMapInfo.gunPositions.map((i) {
                 return Positioned(
-                  left: i.offset.dx + mapOrigin[0] - markerSize / 2,
-                  top: i.offset.dy + mapOrigin[1] - markerSize,
-                  width: markerSize,
-                  height: markerSize,
+                  left: i.offset.dx,
+                  top: i.offset.dy,
                   child: StreamBuilder(
                     stream: stream.stream,
                     builder: (context, snapshot) {
                       final scale = snapshot.data ?? transformation.value[0];
 
-                      if (scale < 1.7) {
+                      if (_scale < 1.7) {
                         return Transform.translate(
-                          offset: const Offset(0, 16),
-                          child: CupertinoButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: () {
-                              setState(() {
-                                widget.mapProvider.currentMapGun = i;
-                              });
-                            },
-                            child: Container(
-                              width: 5,
-                              height: 5,
-                              decoration: BoxDecoration(
-                                color: i.name == widget.mapProvider.currentMapGun.name ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(.5),
-                                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                          offset: const Offset(-20, -20),
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 300),
+                            scale: 1 / scale,
+                            child: CupertinoButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                setState(() {
+                                  widget.mapProvider.currentMapGun = i;
+                                });
+
+                                _openGunDetailModal(i);
+                              },
+                              child: Container(
+                                width: 5,
+                                height: 5,
+                                decoration: BoxDecoration(
+                                  color: i.name == widget.mapProvider.currentMapGun.name ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(.5),
+                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                ),
                               ),
                             ),
                           ),
@@ -915,8 +1139,8 @@ class MapCoreState extends State<MapCore> {
                 return markerManagementSwitch.value[e.iconType] == true;
               }).map(
                 (i) => Positioned(
-                  left: i.x + mapOrigin[0] - markerSize / 2,
-                  top: i.y + mapOrigin[1] - markerSize,
+                  left: i.x - markerSize / 2,
+                  top: i.y - -markerSize,
                   width: markerSize,
                   height: markerSize,
                   child: StreamBuilder(
@@ -961,7 +1185,7 @@ class LinePainter extends CustomPainter {
     this.width,
   }) {
     _paint = Paint()
-      ..color = color! ?? Colors.red
+      ..color = color!
       ..strokeWidth = width ?? 2.5
       ..strokeCap = StrokeCap.square;
   }
@@ -994,6 +1218,99 @@ class LineWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: LinePainter(start, end, color: color, width: width),
+    );
+  }
+}
+
+class ArtyIconWidget extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final String resultNumber;
+
+  ArtyIconWidget({
+    super.key,
+    this.onPressed,
+    this.resultNumber = "0",
+  });
+
+  Color headerColor = const Color(0xffffd27c);
+  Color color = const Color(0xffe5b452);
+  double opacity = .9;
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoButton(
+      pressedOpacity: .8,
+      padding: EdgeInsets.zero,
+      onPressed: onPressed,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: -12,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 14,
+              decoration: BoxDecoration(
+                color: headerColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(2),
+                  topRight: Radius.circular(2),
+                ),
+              ),
+              child: Wrap(
+                runAlignment: WrapAlignment.center,
+                alignment: WrapAlignment.center,
+                children: [
+                  if (resultNumber.isEmpty)
+                    const Icon(Icons.layers, size: 12)
+                  else
+                    Text(
+                      resultNumber.toString(),
+                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          ClipPath(
+            clipBehavior: Clip.hardEdge,
+            child: Container(
+              color: color.withOpacity(opacity),
+              height: 24,
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 24,
+            child: ClipPath(
+              clipBehavior: Clip.hardEdge,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: const BorderSide(color: Colors.transparent, width: 10, style: BorderStyle.solid),
+                    right: const BorderSide(color: Colors.transparent, width: 15, style: BorderStyle.solid),
+                    left: const BorderSide(color: Colors.transparent, width: 15, style: BorderStyle.solid),
+                    top: BorderSide(color: color.withOpacity(opacity), width: 10, style: BorderStyle.solid),
+                  ),
+                ),
+                child: const SizedBox(),
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 8),
+              child: MapUtil().icon(
+                MapInfoMarkerItem(
+                  iconType: MapIconType.Arty,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

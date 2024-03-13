@@ -4,6 +4,15 @@
   "author": "Max Leiter",
   "website": "easyarty.com",
   "child": {
+    "America": {
+      "maximumRange": 1600,
+      "minimumRange": 100,
+      "envs": {
+        "m": -0.237035714285714,
+        "b": 1001.46547619048
+      },
+      "fun": "{m}*{inputValue}+{b}"
+    },
     "Germany": {
       "maximumRange": 1600,
       "minimumRange": 100,

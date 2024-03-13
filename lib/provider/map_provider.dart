@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../constants/app.dart';
 import '../data/index.dart';
 
 class MapProvider with ChangeNotifier {
@@ -45,18 +44,25 @@ class MapProvider with ChangeNotifier {
   // 设置选择地图
   set currentMapInfo(MapInfo mapInfo) {
     _currentMapInfoName = mapInfo.name;
+    notifyListeners();
   }
 
   // 是否有地图信息
   bool get hasMapInfo => false;
 
   // 当前选择火炮
-  late Gun _currentMapGun = currentMapInfo.gunPosition.first;
+  late Gun _currentMapGun = currentMapInfo.gunPositions.first;
 
   Gun get currentMapGun => _currentMapGun;
 
   set currentMapGun(Gun gun) {
     _currentMapGun = gun;
+    notifyListeners();
+  }
+
+  // 给当前选择的火炮添加计算结果
+  void setCurrentMapGunResult (MapGunResult mapGunResult) {
+    _currentMapGun.result = mapGunResult;
     notifyListeners();
   }
 

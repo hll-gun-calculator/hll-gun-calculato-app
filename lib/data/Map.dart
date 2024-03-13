@@ -1,10 +1,9 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/data/MapIconType.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'MapToI18n.dart';
 import 'index.dart';
 
 part 'Map.g.dart';
@@ -12,7 +11,11 @@ part 'Map.g.dart';
 @JsonSerializable()
 class MapInfo {
   // 地图名称
+  @StringOrMapConverter()
   final String name;
+
+  @StringOrMapConverter()
+  dynamic description;
 
   // 地图大小
   @JsonKey(toJson: OffsetAsList, fromJson: ListAsOffset)
@@ -21,9 +24,6 @@ class MapInfo {
   // 初始位置
   @JsonKey(toJson: OffsetAsList, fromJson: ListAsOffset)
   final Offset initialPosition;
-
-  // 火炮位置
-  late List<Gun> gunPosition = [];
 
   // 阵营，通常2名
   late Map<Factions, MapInfoFactionInfo>? factions;
@@ -37,6 +37,17 @@ class MapInfo {
 
   // 标记
   final List<MapInfoMarkerItem>? marker;
+
+  List<Gun> get gunPositions {
+    List<Gun> list = [];
+    factions?.forEach((key, value) {
+      for (Gun gun in value.gunPosition) {
+        gun.factions = key;
+        list.add(gun);
+      }
+    });
+    return list;
+  }
 
   List<MapInfoMarkerItem_Fll> get markerPointAll {
     List<MapInfoMarkerItem_Fll> list = [];
@@ -69,7 +80,7 @@ class MapInfo {
 
   static List OffsetAsList(Offset value) => [value.dx, value.dy];
 
-  static List<Map<String, dynamic>> childsToJson (List<MapInfoAssets> list) => list.map((e) => e.toJson()).toList();
+  static List<Map<String, dynamic>> childsToJson(List<MapInfoAssets> list) => list.map((e) => e.toJson()).toList();
 
   factory MapInfo.fromJson(Map<String, dynamic> json) => _$MapInfoFromJson(json);
 
@@ -93,6 +104,9 @@ enum MapInfoFactionInfoDirection {
 /// 地图阵营信息
 @JsonSerializable()
 class MapInfoFactionInfo {
+  // 火炮位置
+  List<Gun> gunPosition = [];
+
   // HQ点
   @JsonKey(toJson: pointsToJson, fromJson: pointsFromJson)
   List<Offset> points = [];
@@ -101,6 +115,7 @@ class MapInfoFactionInfo {
   MapInfoFactionInfoDirection direction;
 
   MapInfoFactionInfo({
+    this.gunPosition = const [],
     this.points = const [],
     this.direction = MapInfoFactionInfoDirection.Left,
   });
@@ -194,7 +209,10 @@ class MarkerPointItem {
     this.y = -.0,
     this.id,
   }) {
-    id = const Uuid().v4();
+    id = const Uuid().v5(
+      Uuid.NAMESPACE_NIL,
+      "MarkerPointItem-$id-$name-$x,$y"
+    );
   }
 
   factory MarkerPointItem.fromJson(Map<String, dynamic> json) => _$MarkerPointItemFromJson(json);
@@ -207,6 +225,7 @@ class MarkerPointItem {
 class MapInfoAssets {
   // 下标排序
   int index;
+
   // 类型
   MapIconType type;
   String? network;

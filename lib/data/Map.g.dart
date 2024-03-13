@@ -28,15 +28,14 @@ MapInfo _$MapInfoFromJson(Map<String, dynamic> json) => MapInfo(
       marker: (json['marker'] as List<dynamic>?)
           ?.map((e) => MapInfoMarkerItem.fromJson(e as Map<String, dynamic>))
           .toList(),
-    )..gunPosition = (json['gunPosition'] as List<dynamic>)
-        .map((e) => Gun.fromJson(e as Map<String, dynamic>))
-        .toList();
+    )..description = _$JsonConverterFromJson<Object, dynamic>(
+        json['description'], const StringOrMapConverter().fromJson);
 
 Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
       'name': instance.name,
+      'description': const StringOrMapConverter().toJson(instance.description),
       'size': MapInfo.OffsetAsList(instance.size),
       'initialPosition': MapInfo.OffsetAsList(instance.initialPosition),
-      'gunPosition': instance.gunPosition,
       'factions':
           instance.factions?.map((k, e) => MapEntry(_$FactionsEnumMap[k]!, e)),
       'assets': instance.assets,
@@ -52,8 +51,18 @@ const _$FactionsEnumMap = {
   Factions.GreatBritain: 'GreatBritain',
 };
 
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
+
 MapInfoFactionInfo _$MapInfoFactionInfoFromJson(Map<String, dynamic> json) =>
     MapInfoFactionInfo(
+      gunPosition: (json['gunPosition'] as List<dynamic>?)
+              ?.map((e) => Gun.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       points: json['points'] == null
           ? const []
           : MapInfoFactionInfo.pointsFromJson(json['points'] as List),
@@ -64,6 +73,7 @@ MapInfoFactionInfo _$MapInfoFactionInfoFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$MapInfoFactionInfoToJson(MapInfoFactionInfo instance) =>
     <String, dynamic>{
+      'gunPosition': instance.gunPosition,
       'points': MapInfoFactionInfo.pointsToJson(instance.points),
       'direction': _$MapInfoFactionInfoDirectionEnumMap[instance.direction]!,
     };
@@ -103,6 +113,7 @@ const _$MapIconTypeEnumMap = {
   MapIconType.CollectArty: 'CollectArty',
   MapIconType.PlainGrid: 'PlainGrid',
   MapIconType.ArtyRadius: 'ArtyRadius',
+  MapIconType.Landmark: 'Landmark',
 };
 
 MarkerPointItem _$MarkerPointItemFromJson(Map<String, dynamic> json) =>

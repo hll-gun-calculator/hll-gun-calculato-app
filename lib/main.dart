@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hll_gun_calculator/provider/map_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'router/router.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'constants/api.dart';
@@ -17,6 +16,8 @@ import 'provider/collect_provider.dart';
 import 'provider/history_provider.dart';
 import 'provider/package_provider.dart';
 import 'provider/translation_provider.dart';
+import 'provider/gun_timer_provider.dart';
+import 'provider/map_provider.dart';
 
 void runMain() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => CalcProvider()),
         ChangeNotifierProvider(create: (context) => MapProvider()),
         ChangeNotifierProvider(create: (context) => PackageProvider()),
+        ChangeNotifierProvider(create: (context) => GunTimerProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: Consumer<ThemeProvider>(

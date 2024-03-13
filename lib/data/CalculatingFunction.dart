@@ -72,7 +72,7 @@ class CalculatingFunction {
     this.creationTime = creationTime ?? DateTime.now();
     id = const Uuid().v5(
       Uuid.NAMESPACE_NIL,
-      "CalculatingFunction",
+      "CalculatingFunction-$id-$name-${child.length}",
     );
   }
 

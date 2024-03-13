@@ -8,7 +8,7 @@ class CalcHistoryItemData extends CalcResult {
   CalcHistoryItemData({String id = ""}) : super () {
     this.id = const Uuid().v5(
       Uuid.NAMESPACE_NIL,
-      "CalcHistoryItemData",
+      "CalcHistoryItemData-$id",
     );
   }
 

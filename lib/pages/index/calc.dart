@@ -40,7 +40,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
     Factions firstName = Factions.None;
 
     if (currentCalculatingFunction.child != null) {
-      firstName = currentCalculatingFunction.child!.keys.first;
+      firstName = currentCalculatingFunction.child.keys.first;
     }
 
     setState(() {
@@ -245,7 +245,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                     enableFeedback: true,
                                     icon: const Icon(Icons.remove),
                                     onPressed: () {
-                                      num minimumRange = calcData.currentCalculatingFunction.child![inputFactions]!.minimumRange;
+                                      num minimumRange = calcData.currentCalculatingFunction.child[inputFactions]!.minimumRange;
                                       if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) > minimumRange) {
                                         setState(() {
                                           _textController.text = (num.parse(_textController.text.toString()) - 1).toString();
@@ -261,7 +261,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                   IconButton.filledTonal(
                                     icon: const Icon(Icons.add),
                                     onPressed: () {
-                                      num maximumRange = calcData.currentCalculatingFunction.child![inputFactions]!.maximumRange;
+                                      num maximumRange = calcData.currentCalculatingFunction.child[inputFactions]!.maximumRange;
                                       if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) < maximumRange) {
                                         setState(() {
                                           _textController.text = (num.parse(_textController.text.toString()) + 1).toString();
@@ -346,7 +346,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                       onTap: () => {
                         App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
                           setState(() {
-                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child!.keys.first;
+                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
                           });
                         }),
                       },

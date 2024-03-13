@@ -41,7 +41,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     Factions firstName = Factions.None;
 
     if (currentCalculatingFunction.child != null) {
-      firstName = currentCalculatingFunction.child!.keys.first;
+      firstName = currentCalculatingFunction.child.keys.first;
     }
 
     setState(() {
@@ -346,7 +346,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                       onTap: () => {
                         App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
                           setState(() {
-                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child!.keys.first;
+                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
                           });
                         }),
                       },
