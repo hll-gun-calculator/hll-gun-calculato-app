@@ -1,102 +1,153 @@
+import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:hll_gun_calculator/component/_keyboard/increase_decrease.dart';
+import 'package:hll_gun_calculator/component/_keyboard/number.dart';
+import 'package:hll_gun_calculator/component/_keyboard/slider.dart';
 
-class NumberKeyboardWidget extends StatelessWidget {
+import '../../data/Factions.dart';
+import 'theme.dart';
+
+enum KeyboardType { Number, Slider, IncreaseAndDecrease }
+
+class KeyboardWidget extends StatefulWidget {
   final TextEditingController controller;
   final Function onSubmit;
-  late NumberKeyboardTheme theme;
+  final Factions? inputFactions;
+  final KeyboardType? initializeKeyboardType;
 
-  NumberKeyboardWidget({
+  KeyboardWidget({
     Key? key,
-    NumberKeyboardTheme? theme,
+    KeyboardTheme? theme,
     required this.onSubmit,
     required this.controller,
-  }) : super(key: key) {
-    this.theme = theme ?? NumberKeyboardTheme();
+    this.inputFactions = Factions.None,
+    this.initializeKeyboardType,
+  }) : super(key: key) {}
+
+  @override
+  State<KeyboardWidget> createState() => _KeyboardWidgetState();
+}
+
+class _KeyboardWidgetState extends State<KeyboardWidget> {
+  late KeyboardType selectKeyboards;
+  late Map keyboards;
+
+  @override
+  void initState() {
+    super.initState();
+    selectKeyboards =  widget.initializeKeyboardType ?? KeyboardType.Number;
+    keyboards = {
+      KeyboardType.Number: NumberKeyboardWidget(
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
+        theme: KeyboardTheme(
+          padding: const EdgeInsets.only(
+            top: 5,
+            right: 20,
+            left: 20,
+            bottom: kBottomNavigationBarHeight + 5,
+          ),
+        ),
+      ),
+      KeyboardType.Slider: SliderKeyboaed(
+        theme: KeyboardTheme(
+          padding: const EdgeInsets.only(
+            top: 5,
+            right: 20,
+            left: 20,
+            bottom: kBottomNavigationBarHeight + 5,
+          ),
+        ),
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
+      ),
+      KeyboardType.IncreaseAndDecrease: IncreaseAndDecreaseKeyboard(
+        theme: KeyboardTheme(
+          padding: const EdgeInsets.only(
+            top: 5,
+            right: 20,
+            left: 20,
+            bottom: kBottomNavigationBarHeight + 5,
+          ),
+        ),
+        inputFactions: widget.inputFactions,
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
+      ),
+    };
+  }
+
+  /// 选择键盘
+  void _openModal(context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      clipBehavior: Clip.hardEdge,
+      useRootNavigator: true,
+      builder: (context) {
+        return StatefulBuilder(builder: (modalContext, modalSetState) {
+          return Scaffold(
+            appBar: AppBar(),
+            body: GridView(
+              padding: const EdgeInsets.all(15),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+              ),
+              children: [
+                ...KeyboardType.values
+                    .map(
+                      (e) => GestureDetector(
+                        onTap: () {
+                          modalSetState(() {
+                            selectKeyboards = e;
+                          });
+                          setState(() {
+                            Navigator.of(modalContext).pop();
+                          });
+                        },
+                        child: Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/images/keyboard/${e.name}.png",
+                                height: 100,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(e.name.toString()),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ],
+            ),
+          );
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).primaryColor.withOpacity(.2),
-      padding: theme.padding,
-      child: MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        removeBottom: true,
-        child: GridView(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 15, mainAxisSpacing: 15, mainAxisExtent: 70),
-          children: [
-            NumberButton(
-              number: 1,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 15,
+            bottom: 15,
+            child: IconButton(
+              onPressed: () => _openModal(context),
+              icon: const Icon(Icons.settings),
             ),
-            NumberButton(
-              number: 2,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 3,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 4,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 5,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 6,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 7,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 8,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 9,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            Container(),
-            NumberButton(
-              number: 0,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            // this button is used to submit the entered value
-            IconButton.filled(
-              onPressed: () => onSubmit(),
-              icon: const Icon(Icons.done_rounded),
-              iconSize: theme.buttonSize,
-            ),
-          ],
-        ),
+          ),
+          keyboards[selectKeyboards],
+        ],
       ),
     );
   }
@@ -141,45 +192,4 @@ class NumberButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class NumberKeyboardTheme {
-  final double buttonSize;
-  final Color buttonColor;
-  final Color iconColor;
-  late EdgeInsets padding;
-
-  NumberKeyboardNumberButtonTheme? numberButtonTheme;
-  NumberKeyboardFeaturButtonTheme? featureButtonTheme;
-
-  NumberKeyboardTheme({
-    this.buttonSize = 50,
-    this.buttonColor = Colors.transparent,
-    this.iconColor = Colors.transparent,
-    EdgeInsets? padding,
-    this.numberButtonTheme,
-    this.featureButtonTheme,
-  }) {
-    this.padding = padding ?? const EdgeInsets.symmetric(vertical: 20, horizontal: 20);
-  }
-}
-
-class NumberKeyboardNumberButtonTheme {
-  final Color? color;
-  final TextStyle? textStyle;
-
-  NumberKeyboardNumberButtonTheme({
-    this.color,
-    this.textStyle,
-  });
-}
-
-class NumberKeyboardFeaturButtonTheme {
-  final Color? color;
-  final TextStyle? textStyle;
-
-  NumberKeyboardFeaturButtonTheme({
-    this.color,
-    this.textStyle,
-  });
 }

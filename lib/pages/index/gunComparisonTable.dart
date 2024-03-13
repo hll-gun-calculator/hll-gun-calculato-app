@@ -222,33 +222,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     );
   }
 
-  /// 范围-加减范围按钮
-  void _setValue(String type) {
-    CalculatingFunctionChild e = App.provider.ofCalc(context).defaultCalculatingFunction.childValue(inputFactions)!;
-    int maximumRange = e.maximumRange; // 最大角度
-    int minimumRange = e.minimumRange; // 最小角度
 
-    int input = int.parse(controller.text.isEmpty ? minimumRange.toString() : controller.text);
-
-    setState(() {
-      switch (type) {
-        case "-":
-          if (input > minimumRange) {
-            controller.text = (input - 10).toString();
-          } else {
-            controller.text = minimumRange.toString();
-          }
-          break;
-        case "+":
-          if (input > maximumRange) {
-            controller.text = (input + 10).toString();
-          } else {
-            controller.text = maximumRange.toString();
-          }
-          break;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -368,120 +342,49 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
             const Divider(height: 1, thickness: 1),
 
             /// 控制器
-            if (type == 0)
-              Container(
-                color: Theme.of(context).primaryColor.withOpacity(.2),
-                height: 200,
-                padding: const EdgeInsets.only(
-                  top: 5,
-                  right: 20,
-                  left: 20,
-                  bottom: kBottomNavigationBarHeight + 5,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: IconButton.filledTonal(
-                        onPressed: () {
-                          _setValue("+");
-                        },
-                        icon: const Icon(
-                          Icons.arrow_upward,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: 100,
-                      child: TextField(
-                        controller: controller,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-                        decoration: const InputDecoration(
-                          hintText: "0",
-                          isDense: true,
-                          // border: InputBorder.none,
-                          isCollapsed: false,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    SizedBox(
-                      width: 80,
-                      child: IconButton.filledTonal(
-                        onPressed: () {
-                          _setValue("-");
-                        },
-                        icon: const Icon(
-                          Icons.arrow_downward,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              Column(
+            Container(
+              color: Theme.of(context).primaryColor.withOpacity(.2),
+              child: Row(
                 children: [
-                  Container(
-                    color: Theme.of(context).primaryColor.withOpacity(.2),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 50),
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            readOnly: true,
-                            controller: controller,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-                            decoration: const InputDecoration(
-                              hintText: "0",
-                              isDense: true,
-                              // border: InputBorder.none,
-                              isCollapsed: false,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              controller.text = "";
-                            });
-                          },
-                          icon: const Icon(Icons.clear),
-                        ),
-                      ],
+                  const SizedBox(width: 50),
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      readOnly: true,
+                      controller: controller,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+                      decoration: const InputDecoration(
+                        hintText: "0",
+                        isDense: true,
+                        // border: InputBorder.none,
+                        isCollapsed: false,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
-
-                  /// 键盘
-                  SizedBox(
-                    height: 400,
-                    child: NumberKeyboardWidget(
-                      theme: NumberKeyboardTheme(
-                        padding: const EdgeInsets.only(
-                          top: 5,
-                          right: 20,
-                          left: 20,
-                          bottom: kBottomNavigationBarHeight + 5,
-                        ),
-                      ),
-                      onSubmit: () {
-                        setState(() {});
-                        // historyData.add(_calcSubmit(calcData));
-                      },
-                      controller: controller,
-                    ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        controller.text = "";
+                      });
+                    },
+                    icon: const Icon(Icons.clear),
                   ),
                 ],
-              )
+              ),
+            ),
+
+            /// 键盘
+            KeyboardWidget(
+              onSubmit: () {
+                setState(() {});
+                // historyData.add(_calcSubmit(calcData));
+              },
+              initializeKeyboardType: KeyboardType.IncreaseAndDecrease,
+              inputFactions: inputFactions,
+              controller: controller,
+            ),
           ],
         );
       },

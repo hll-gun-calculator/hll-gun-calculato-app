@@ -64,6 +64,7 @@ flutter:
     - assets/images/maps/
     - assets/images/icon/
     - assets/images/factions/
+    - assets/images/keyboard/
     - assets/splash/
     - assets/json/
     - assets/lang/

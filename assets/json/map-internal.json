@@ -1,9 +1,6 @@
 {
   "name": "internal",
-  "description": {
-    "zh_CN": "位置"
-  },
-  "auth": "mattwright324",
+  "description": "Built-in map collection as well as examples",
   "version": "0.0.1",
   "data": [
     {
@@ -136,87 +133,6 @@
               "y": 1210.546
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "Driel",
-      "size": [
-        4340,
-        4340
-      ],
-      "initialPosition": [
-        2000,
-        2000
-      ],
-      "factions": {
-        "America": {
-          "gunPosition": [
-            {
-              "name": "1",
-              "offset": [
-                38.0,
-                490.9
-              ]
-            },
-            {
-              "name": "2",
-              "offset": [
-                41.0,
-                490.9
-              ]
-            },
-            {
-              "name": "3",
-              "offset": [
-                43.0,
-                490.9
-              ]
-            }
-          ],
-          "points": [
-            [
-              40,
-              300
-            ],
-            [
-              40,
-              500
-            ],
-            [
-              40,
-              600
-            ]
-          ],
-          "direction": "Left"
-        },
-        "Germany": {
-          "gunPosition": [],
-          "points": [
-            [
-              900,
-              300
-            ],
-            [
-              900,
-              500
-            ],
-            [
-              900,
-              600
-            ]
-          ],
-          "direction": "Right"
-        }
-      },
-      "assets": {
-        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Driel_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
-      },
-      "marker": [
-        {
-          "name": "PrimaryArty",
-          "iconType": "Arty",
-          "points": []
         }
       ]
     }

@@ -7,7 +7,8 @@ import '../data/index.dart';
 
 class MapProvider with ChangeNotifier {
   List _localPath = [
-    {"name": "internal", "path": "assets/json/map-internal.json"}
+    {"name": "internal", "path": "assets/json/map-internal.json"},
+    {"name": "mattw", "path": "assets/json/map-mattw.json"}
   ];
 
   // 内置
@@ -25,6 +26,9 @@ class MapProvider with ChangeNotifier {
   MapCompilation get currentMapCompilation {
     return list.where((i) => i.name == currentMapCompilationName).first;
   }
+
+  // 是否空集合
+  bool get hasMapCompilation => currentMapCompilation.name == "empty";
 
   String? _currentMapCompilationName;
 
@@ -61,7 +65,7 @@ class MapProvider with ChangeNotifier {
   }
 
   // 给当前选择的火炮添加计算结果
-  void setCurrentMapGunResult (MapGunResult mapGunResult) {
+  void setCurrentMapGunResult(MapGunResult mapGunResult) {
     _currentMapGun.result = mapGunResult;
     notifyListeners();
   }

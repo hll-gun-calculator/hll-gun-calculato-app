@@ -91,6 +91,30 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     _mapCoreKey.currentState!.calc();
   }
 
+  /// 火炮落地时间计时
+  void _putGunTimer(gunTimerData, querId, e, id) {
+    if (gunTimerData.getItem(querId).isTimerActive) {
+      Fluttertoast.showToast(msg: "计时还在继续，需停止后重计时，详情可以前往计时器管理");
+      return;
+    }
+    setState(() {
+      Map currerGun = listTimerIndex.where((element) => element["id"] == id).first;
+
+      // 添加
+      print(currerGun['id']);
+      gunTimerData.add(
+        id: currerGun['id'],
+        type: LandingType.MapGun,
+        isAutoShow: true,
+        endCallback: (l) {
+          // 添加后更新
+          currerGun['index'] = currerGun['index'] = currerGun['index'] + 1;
+          currerGun['id'] = "${e.value.name}-${e.value.id}-${currerGun['index']}";
+        },
+      );
+    });
+  }
+
   /// 选择阵营
   void _openSelectFactions() {
     showModalBottomSheet<void>(
@@ -152,9 +176,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           return Scaffold(
             appBar: AppBar(
               leading: const CloseButton(),
-              title: Text(i18nUtil.as(context, currentMapCompilation.name)),
               actions: [
-                Text(i18nUtil.as(context, currentMapCompilation.description)),
                 IconButton(
                   onPressed: () {
                     modalSetState(() {
@@ -185,22 +207,33 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     controller: mapSearchTextEditingController,
                   ),
                 ),
+                ListTile(
+                  title: Text(i18nUtil.as(context, currentMapCompilation.name)),
+                  subtitle: Text(i18nUtil.as(context, currentMapCompilation.description)),
+                  trailing: Icon(Icons.chevron_right),
+                  onTap: () {
+                    App.url.opEnPage(context, "/setting/mapPackage");
+                  },
+                ),
                 const Divider(),
                 Expanded(
                   flex: 1,
                   child: ListView(
                     children: [
-                      ...currentMapCompilation.data.where((i) => i.name.indexOf(mapSearchTextEditingController.text) >= 0).toList().asMap().entries.map((e) {
-                        return MapCardWidget(
-                          i: e.value,
-                          selected: newMapInfo.name,
-                          onTap: () {
-                            modalSetState(() {
-                              newMapInfo = e.value;
-                            });
-                          },
-                        );
-                      }).toList(),
+                      if (currentMapCompilation.data.isNotEmpty)
+                        ...currentMapCompilation.data.where((i) => i.name.indexOf(mapSearchTextEditingController.text) >= 0).toList().asMap().entries.map((e) {
+                          return MapCardWidget(
+                            i: e.value,
+                            selected: newMapInfo.name,
+                            onTap: () {
+                              modalSetState(() {
+                                newMapInfo = e.value;
+                              });
+                            },
+                          );
+                        }).toList()
+                      else
+                        EmptyWidget(),
                       const Divider(),
                       Align(
                         child: Text("by ${currentMapCompilation.name}"),
@@ -281,10 +314,14 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           children: [
             Expanded(
               flex: 1,
-              child: Container(
-                color: Theme.of(context).colorScheme.primary.withOpacity(.1),
-                child: MapCore(key: _mapCoreKey, mapProvider: mapData),
-              ),
+              child: mapData.hasMapCompilation
+                  ? Center(
+                      child: Text("请选择地图合集"),
+                    )
+                  : Container(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                      child: MapCore(key: _mapCoreKey, mapProvider: mapData, inputFactions: inputFactions),
+                    ),
             ),
 
             /// tool
@@ -443,12 +480,12 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                         child: Card(
                                                           margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                                                           child: Padding(
-                                                            padding: const EdgeInsets.only(right: 10, top: 2, bottom: 3, left: 3),
+                                                            padding: const EdgeInsets.only(right: 10, top: 5, bottom: 5, left: 5),
                                                             child: Row(
                                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                               children: [
                                                                 Card(
-                                                                  color: e.value.name == mapData.currentMapGun.name ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                                                                  color: e.value.name == mapData.currentMapGun.name ? e.value.color : Colors.transparent,
                                                                   margin: EdgeInsets.zero,
                                                                   child: SizedBox(
                                                                     width: 44,
@@ -493,6 +530,22 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                   ),
                                                 ),
 
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _putGunTimer(gunTimerData, querId, e, id);
+                                                  },
+                                                  icon: Column(
+                                                    children: [
+                                                      Stack(
+                                                        children: [
+                                                          if (gunTimerData.getItem(querId).isTimerActive) Icon(Icons.timer) else Icon(Icons.timer_outlined),
+                                                        ],
+                                                      ),
+                                                      if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else Text("0")
+                                                    ],
+                                                  ),
+                                                ),
+
                                                 /// map button
                                                 PopupMenuButton(
                                                   icon: Icon(
@@ -528,27 +581,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                         _mapCoreKey.currentState!._openGunDetailModal(e.value);
                                                         break;
                                                       case "timer":
-                                                        if (gunTimerData.getItem(querId).isTimerActive) {
-                                                          Fluttertoast.showToast(msg: "计时还在继续，需停止后重计时，详情可以前往计时器管理");
-                                                          return;
-                                                        }
-
-                                                        setState(() {
-                                                          Map currerGun = listTimerIndex.where((element) => element["id"] == id).first;
-
-                                                          // 添加
-                                                          print(currerGun['id']);
-                                                          gunTimerData.add(
-                                                            id: currerGun['id'],
-                                                            type: LandingType.MapGun,
-                                                            isAutoShow: true,
-                                                            endCallback: (l) {
-                                                              // 添加后更新
-                                                              currerGun['index'] = currerGun['index'] = currerGun['index'] + 1;
-                                                              currerGun['id'] = "${e.value.name}-${e.value.id}-${currerGun['index']}";
-                                                            },
-                                                          );
-                                                        });
+                                                        _putGunTimer(gunTimerData, querId, e, id);
                                                         break;
                                                     }
                                                   },
@@ -587,10 +620,12 @@ const markerSize = 32.0;
 
 class MapCore extends StatefulWidget {
   final MapProvider mapProvider;
+  final Factions inputFactions;
 
   const MapCore({
     super.key,
     required this.mapProvider,
+    required this.inputFactions,
   });
 
   @override
@@ -743,12 +778,13 @@ class MapCoreState extends State<MapCore> {
     Offset gunPostionSelect = App.provider.ofMap(context).currentMapGun.offset;
 
     setState(() {
-      double distance = (gunPostionSelect - newMarker).distance / 2.0;
+      double distance = (gunPostionSelect - newMarker).distance;
+      double gridOnePx = (200 * 10) / App.provider.ofMap(context).currentMapInfo.size.dy;
 
       // 计算mil
       CalcResult result = _calcUtil.on(
         inputFactions: Factions.America,
-        inputValue: distance.ceil(),
+        inputValue: (distance * gridOnePx).ceil(),
         calculatingFunctionInfo: App.provider.ofCalc(context).currentCalculatingFunction,
       );
 
@@ -869,9 +905,24 @@ class MapCoreState extends State<MapCore> {
                   subtitle: Text(i18nUtil.as(context, gunInfo.description)),
                 ),
                 ListTile(
+                  title: const Text("阵营"),
+                  subtitle: Text(FlutterI18n.translate(context, "basic.factions.${gunInfo.factions!.value}")),
+                ),
+                ListTile(
                   title: const Text("坐标"),
                   trailing: Text("x:${gunInfo.offset.dx} y:${gunInfo.offset.dy}"),
-                )
+                ),
+                ListTile(
+                  title: const Text("颜色"),
+                  trailing: Card(
+                    color: gunInfo.color,
+                    child: SizedBox(height: 50, width: 50),
+                  ),
+                ),
+                ListTile(
+                  title: const Text("id"),
+                  trailing: Text(gunInfo.id),
+                ),
               ],
             ),
           );
@@ -1028,12 +1079,17 @@ class MapCoreState extends State<MapCore> {
                   stream: stream.stream,
                   builder: (context, snapshot) {
                     final scale = snapshot.data ?? transformation.value[0];
-                    return LineWidget(
-                      start: widget.mapProvider.currentMapGun.offset,
-                      end: newMarker,
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2.5 / scale,
-                    );
+                    return Consumer<CalcProvider>(builder: (calcContext, calcData, calcWidget) {
+                      Factions factions = widget.inputFactions;
+                      bool isCalcExceed = (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) > calcData.currentCalculatingFunction.child[factions]!.maximumRange) || (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) < calcData.currentCalculatingFunction.child[factions]!.minimumRange);
+
+                      return LineWidget(
+                        start: widget.mapProvider.currentMapGun.offset,
+                        end: newMarker,
+                        color: !isCalcExceed ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
+                        width: 2.5 / scale,
+                      );
+                    });
                   },
                 ),
               if (newMarker.dy >= 0 && newMarker.dx >= 0)

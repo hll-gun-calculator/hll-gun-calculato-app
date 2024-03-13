@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     },
   ];
 
-  int tabIndex = 0;
+  int tabIndex = 3;
 
   UrlUtil urlUtil = UrlUtil();
 
@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     _tabController = TabController(
       vsync: this,
       length: navs.length,
-      initialIndex: 1,
+      initialIndex: tabIndex,
     )..addListener(() {
         setState(() {
           tabIndex = _tabController.index;

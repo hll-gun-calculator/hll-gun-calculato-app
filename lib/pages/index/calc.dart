@@ -463,20 +463,9 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
             ),
 
             /// 键盘
-            SizedBox(
-              // height: 200,
-              child: NumberKeyboardWidget(
-                theme: NumberKeyboardTheme(
-                  padding: const EdgeInsets.only(
-                    top: 5,
-                    right: 20,
-                    left: 20,
-                    bottom: kBottomNavigationBarHeight + 5,
-                  ),
-                ),
-                onSubmit: () => historyData.add(_calcSubmit(calcData)),
-                controller: _textController,
-              ),
+            KeyboardWidget(
+              onSubmit: () => historyData.add(_calcSubmit(calcData)),
+              controller: _textController,
             ),
           ],
         );
