@@ -20,9 +20,9 @@ class GunComparisonTablePage extends StatefulWidget {
 class _GunComparisonTablePageState extends State<GunComparisonTablePage> with AutomaticKeepAliveClientMixin {
   Factions inputFactions = Factions.None;
 
-  TextEditingController controller = TextEditingController(text: "");
+  TextEditingController controller = TextEditingController();
 
-  int type = 0;
+  FocusNode focusNode = FocusNode();
 
   /// 配置S
 
@@ -40,9 +40,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
     Factions firstName = Factions.None;
 
-    if (currentCalculatingFunction.child != null) {
-      firstName = currentCalculatingFunction.child.keys.first;
-    }
+    firstName = currentCalculatingFunction.child.keys.first;
 
     setState(() {
       // 初始所支持的阵营
@@ -222,8 +220,6 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -274,18 +270,6 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
             /// tool
             Row(
               children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      if (type == 0)
-                        type = 1;
-                      else if (type == 1) type = 0;
-                    });
-                  },
-                  icon: Icon(
-                    type == 0 ? Icons.keyboard : Icons.front_hand_sharp,
-                  ),
-                ),
                 Wrap(
                   children: [
                     GestureDetector(
@@ -351,6 +335,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                     flex: 1,
                     child: TextField(
                       readOnly: true,
+                      focusNode: focusNode,
                       controller: controller,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
@@ -377,6 +362,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
 
             /// 键盘
             KeyboardWidget(
+              spatialName: "home_gun_comparison_table",
               onSubmit: () {
                 setState(() {});
                 // historyData.add(_calcSubmit(calcData));

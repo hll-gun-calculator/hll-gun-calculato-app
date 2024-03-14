@@ -12,6 +12,21 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   UrlUtil urlUtil = UrlUtil();
 
+  /// 打开计算配置
+  void _openCalculatingFunctionConfig() {
+    urlUtil.opEnPage(context, "/calculatingFunctionConfig");
+  }
+
+  /// 包管理
+  void _openMapPackage() {
+    urlUtil.opEnPage(context, "/setting/mapPackage");
+  }
+
+  /// 首页面板配置
+  void _openHomeAppConfig () {
+    urlUtil.opEnPage(context, "/setting/homeAppConfig");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +34,16 @@ class _SettingPageState extends State<SettingPage> {
       body: ListView(
         children: [
           ListTile(
-            title: Text(FlutterI18n.translate(context, "license.title")),
-            onTap: () => urlUtil.opEnPage(context, "/license"),
-            trailing: const Icon(Icons.chevron_right),
+            title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
+            onTap: () => _openCalculatingFunctionConfig(),
+          ),
+          ListTile(
+            title: Text(FlutterI18n.translate(context, "setting.cell.mapConfig.title")),
+            onTap: () => _openMapPackage(),
+          ),
+          ListTile(
+            title: Text(FlutterI18n.translate(context, "setting.cell.homeAppConfig.title")),
+            onTap: () => _openHomeAppConfig(),
           ),
           const Divider(),
           ListTile(
@@ -35,6 +57,11 @@ class _SettingPageState extends State<SettingPage> {
             trailing: const Icon(Icons.chevron_right),
           ),
           const Divider(),
+          ListTile(
+            title: Text(FlutterI18n.translate(context, "license.title")),
+            onTap: () => urlUtil.opEnPage(context, "/license"),
+            trailing: const Icon(Icons.chevron_right),
+          ),
           ListTile(
             title: const Text("网站"),
             onTap: () => urlUtil.onPeUrl("https://hll-app.cabbagelol.net"),

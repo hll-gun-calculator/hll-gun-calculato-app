@@ -146,7 +146,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                 const ListTile(
                   title: Text("支持阵营"),
                 ),
-                if (i.child != null && i.child.isNotEmpty)
+                if (i.child.isNotEmpty)
                   Column(
                     children: i.child.entries.map((e) {
                       return Column(

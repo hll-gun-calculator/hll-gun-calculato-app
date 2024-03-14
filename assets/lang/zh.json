@@ -1,5 +1,11 @@
 {
   "basic": {
+    "button": {
+      "next": "下一步",
+      "prev": "上一步",
+      "complete": "完成",
+      "resume": "继续"
+    },
     "function": {
       "auto": {
         "title": "自动",
@@ -9,44 +15,39 @@
     "tip": {
       "notContent": "空"
     },
+    "keyboards": {
+      "IncreaseAndDecrease": "增减键盘",
+      "IndependentDigit": "数字单例键盘",
+      "Number": "数字键盘",
+      "Slider": "滑块键盘"
+    },
     "factions": {
       "None": "未知",
       "America": "美国",
       "Germany": "德国",
       "TheSovietUnion": "苏联",
       "GreatBritain": "大不列颠"
-    },
-    "time": {
-      "seconds": "{s}秒前",
-      "minutes": "{s}分钟前",
-      "hours": "{s}小时前",
-      "today": "今天",
-      "yesterday": "昨天",
-      "beforeYesterday": "前天",
-      "dayAgo": "{s}天前"
     }
   },
   "home": {
     "title": "首页"
   },
   "gunCalc": {
-    "title": "火炮计算器"
+    "title": "火炮计算器",
+    "describe": "火炮密位计算器"
   },
   "landingTimer": {
     "title": "火炮倒计时",
+    "describe": "火炮炮弹落地计时器",
     "put": "发射"
   },
   "gunComparisonTable": {
-    "title": "火炮表格"
-  },
-  "license": {
-    "title": "开源"
-  },
-  "collect": {
-    "title": "收藏"
+    "title": "火炮表格",
+    "describe": "火炮密位大全表格"
   },
   "map": {
     "title": "地图测量",
+    "describe": "可视化地图标记测量",
     "selectNewMap": "选择新地图",
     "searchMapTip": "搜索地图",
     "layerMap": "地图图层",
@@ -65,7 +66,7 @@
     "meter": "米",
     "result": "角度 (结果)",
     "erase": "擦除计算",
-    "backDelet": "删减"
+    "backDelete": "删减"
   },
   "setting": {
     "title": "设置中心",
@@ -80,6 +81,12 @@
       "collect": {
         "title": "收藏",
         "describe": "坐标收藏"
+      },
+      "homeAppConfig": {
+        "title": "首页面板配置"
+      },
+      "license": {
+        "title": "开源"
       }
     },
     "versions": {
@@ -107,39 +114,6 @@
     "appInfo": {
       "title": "应用程序",
       "describe": "打开程序应用信息"
-    },
-    "notice": {
-      "title": "通知设置",
-      "describe": "应用相应通知管理",
-      "tagstitle": "身份标签",
-      "switch": {
-        "title": "应用推送",
-        "describe": "是否接收来自应用推送信息"
-      },
-      "site": {
-        "title": "站内推送",
-        "describe": "是否接收站内消息推送"
-      }
-    },
-    "support": {
-      "title": "支持",
-      "guide": "应用初始引导",
-      "feedbackTitle": "反馈群(612949946)",
-      "feedbackDescription": "和作者更加接近呢",
-      "githubTitle": "Github",
-      "githubDescription": "访问开源仓库",
-      "donateTitle": "捐赠",
-      "donateDescription": "向BFBAN APP的开发者捐赠",
-      "licenseTitle": "许可证",
-      "licenseDescription": "列出程序许可证",
-      "appDocumentationTitle": "应用文档",
-      "appDocumentationDescription": "帮助文档地址"
-    },
-    "publicTranslator": {
-      "title": "翻译模块",
-      "describe": "翻译密匙配置,开关",
-      "switch": "开关",
-      "switchDescription": "翻译模块启动开关"
     }
   },
   "history": {

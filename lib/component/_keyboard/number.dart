@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 
 import 'theme.dart';
@@ -27,7 +29,12 @@ class NumberKeyboardWidget extends StatelessWidget {
         child: GridView(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 15, mainAxisSpacing: 15, mainAxisExtent: 70),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            mainAxisExtent: 65,
+          ),
           children: [
             NumberButton(
               number: 1,

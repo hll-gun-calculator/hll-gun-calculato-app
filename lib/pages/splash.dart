@@ -50,6 +50,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     await providerUtil.ofCollect(context).init();
     await providerUtil.ofLang(context).init();
     await providerUtil.ofMap(context).init();
+    await providerUtil.ofHomeApp(context).init();
+
+    if (!await _onGuide()) return;
 
     onMain();
   }
@@ -65,6 +68,25 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       clearStack: false,
       rootNavigator: true,
     );
+  }
+
+  /// [Event]
+  /// 引导
+  Future<bool> _onGuide() async {
+    String guideName = "guide";
+
+    StorageData guideData = await storage.get(guideName);
+    dynamic guide = guideData.value;
+
+    if (guideData.code != 0 && guide == null) {
+      await _urlUtil.opEnPage(context, "/guide", transition: TransitionType.fadeIn).then((value) async {
+        onMain();
+        await storage.set(guideName, value: 1);
+      });
+      return false;
+    }
+
+    return true;
   }
 
   @override

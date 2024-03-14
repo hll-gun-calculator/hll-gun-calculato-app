@@ -39,9 +39,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
     CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
     Factions firstName = Factions.None;
 
-    if (currentCalculatingFunction.child != null) {
-      firstName = currentCalculatingFunction.child.keys.first;
-    }
+    firstName = currentCalculatingFunction.child.keys.first;
 
     setState(() {
       // 初始所支持的阵营
@@ -464,6 +462,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
 
             /// 键盘
             KeyboardWidget(
+              spatialName: "home_calc",
               onSubmit: () => historyData.add(_calcSubmit(calcData)),
               controller: _textController,
             ),

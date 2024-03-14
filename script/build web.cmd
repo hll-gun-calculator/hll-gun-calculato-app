@@ -1,1 +1,1 @@
-flutter build web -t ./lib/main.prod.dart --web-renderer html
+flutter build web -t ./lib/main.prod.dart

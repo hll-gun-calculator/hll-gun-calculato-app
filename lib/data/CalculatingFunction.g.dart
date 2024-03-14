@@ -76,9 +76,9 @@ CalculatingFunctionChild _$CalculatingFunctionChildFromJson(
         Map<String, dynamic> json) =>
     CalculatingFunctionChild(
       maximumRange:
-          CalculatingFunctionChild.readValue(json, 'maximumRange') ?? 1600,
+          CalculatingFunctionChild.readValue(json, 'maximumRange'),
       minimumRange:
-          CalculatingFunctionChild.readValue(json, 'minimumRange') ?? 100,
+          CalculatingFunctionChild.readValue(json, 'minimumRange'),
       envs: json['envs'] as Map<String, dynamic>? ?? {},
       fun: json['fun'] as String? ?? '',
     );

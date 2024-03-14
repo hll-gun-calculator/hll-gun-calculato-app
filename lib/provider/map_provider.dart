@@ -1,42 +1,56 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/index.dart';
+import '../utils/index.dart';
 
 class MapProvider with ChangeNotifier {
-  List _localPath = [
+  String PACKAGENAME = "map";
+
+  final Storage storage = Storage();
+
+  final List _localPath = [
     {"name": "internal", "path": "assets/json/map-internal.json"},
     {"name": "mattw", "path": "assets/json/map-mattw.json"}
   ];
 
   // 内置
-  List<MapCompilation> _internalPath = [];
+  final List<MapCompilation> _internalPath = [];
 
   // 自定义
-  List<MapCompilation> _customPath = [];
+  final List<MapCompilation> _customPath = [];
 
   List<MapCompilation> get list => [..._internalPath, ..._customPath];
 
   // 默认地图集合名称
-  String _defaultMapCompilationName = "internal";
-
-  // 当前地图集合实例
-  MapCompilation get currentMapCompilation {
-    return list.where((i) => i.name == currentMapCompilationName).first;
-  }
+  final String _defaultMapCompilationName = "internal";
 
   // 是否空集合
   bool get hasMapCompilation => currentMapCompilation.name == "empty";
 
+  // 获取当前地图集合实例
+  // 也可以使用[currentMapCompilationName]，效果一致
+  MapCompilation get currentMapCompilation => list.where((i) => i.name == currentMapCompilationName).first;
+
+  // 设置当前地图集合实例
+  set currentMapCompilation (MapCompilation mapCompilation) {
+    _currentMapCompilationName = mapCompilation.name;
+    _saveLocalStorage();
+    notifyListeners();
+  }
+
   String? _currentMapCompilationName;
 
   // 当前地图集合名称
+  // 也可以使用[currentMapCompilation]，效果一致
   String get currentMapCompilationName => _currentMapCompilationName == null ? _defaultMapCompilationName : _currentMapCompilationName!;
 
   set currentMapCompilationName(String name) {
     _currentMapCompilationName = name;
+    _saveLocalStorage();
     notifyListeners();
   }
 
@@ -71,25 +85,45 @@ class MapProvider with ChangeNotifier {
   }
 
   init() {
-    _readLocal();
+    _readLocalFiles();
+    _readLocalStorage();
+    notifyListeners();
+  }
+
+  // 从本地读取保存数据
+  Future _readLocalStorage () async {
+    StorageData mapData = await storage.get(PACKAGENAME);
+
+    if (mapData.code == 0) {
+      _currentMapCompilationName = mapData.value["currentMapCompilationName"];
+    }
+  }
+
+  // 保存地图数据
+  void _saveLocalStorage () {
+    Map value = {
+      "currentMapCompilationName": _currentMapCompilationName,
+    };
+
+    storage.set(PACKAGENAME, value: value);
+  }
+
+  // 删除合集
+  void deleteMapCompilation (MapCompilation mapCompilation) {
+    list.removeAt(list.indexWhere((element) => element.name == mapCompilation.name));
+    _currentMapCompilationName = list.first.name;
+    _saveLocalStorage();
     notifyListeners();
   }
 
   // 从本地读取自定义
-  Future _readLocal() async {
+  Future _readLocalFiles() async {
     for (var i in _localPath) {
       dynamic d = await rootBundle.loadString(i["path"]);
       MapCompilation mapCompilation = MapCompilation.fromJson(jsonDecode(d));
+      mapCompilation.type = MapCompilationType.None;
       _internalPath.add(mapCompilation);
     }
     return true;
   }
-}
-
-/// 地图包管理
-class MapPackage with ChangeNotifier {}
-
-/// 控制当前地图
-class MapWidget with ChangeNotifier {
-  init() {}
 }

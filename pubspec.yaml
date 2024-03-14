@@ -34,6 +34,7 @@ dependencies:
   flutter_map: ^5.0.0
   extended_image: ^8.2.0
   uuid: any
+  simple_page_indicator: 1.0.2
 
 dev_dependencies:
   flutter_test:

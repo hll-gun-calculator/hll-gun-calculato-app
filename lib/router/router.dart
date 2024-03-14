@@ -1,5 +1,7 @@
 import 'package:fluro/fluro.dart';
 import 'package:hll_gun_calculator/pages/calculating_function_create/index.dart';
+import 'package:hll_gun_calculator/pages/guide/index.dart';
+import 'package:hll_gun_calculator/pages/setting/home_app_config.dart';
 
 // S Pages
 import '../pages/map/index.dart';
@@ -22,6 +24,12 @@ class Routes {
       "url": '/',
       "item": (context, params) {
         return const MyHomePage();
+      }
+    },
+    {
+      "url": "/guide",
+      "item": (context, params) {
+        return const GuidePage();
       }
     },
     {
@@ -70,6 +78,12 @@ class Routes {
       "url": '/setting/version',
       "item": (context, params) {
         return const VersionPage();
+      }
+    },
+    {
+      "url": "/setting/homeAppConfig",
+      "item": (context, params) {
+        return const HomeAppConfigPage();
       }
     },
     {

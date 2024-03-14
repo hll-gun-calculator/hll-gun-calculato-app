@@ -50,44 +50,82 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
 
   /// 打开设置
   void _openSettingModal() {
+    bool timed_removal = true;
+    String timed_removal_value = "5";
+    bool keep_rolling_bottom = isAutoScrollFooter;
+    bool is_sound_value = App.provider.ofGunTimer(context).isPlayAudio;
+
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
       builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: const CloseButton(),
-          ),
-          body: ListView(
-            children: [
-              CheckboxListTile(
-                value: true,
-                title: const Text("是否开启自动消息"),
-                onChanged: (v) {},
+        return StatefulBuilder(
+          builder: (modalContext, modalSetState) {
+            return Scaffold(
+              appBar: AppBar(
+                leading: const CloseButton(),
               ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: "自动消失秒，范围0-50",
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                  border: InputBorder.none,
-                ),
-                controller: TextEditingController(text: ""),
+              body: ListView(
+                children: [
+                  CheckboxListTile(
+                    value: timed_removal,
+                    title: const Text("是否开启自动移除"),
+                    onChanged: (v) {
+                      modalSetState(() {
+                        timed_removal = v as bool;
+                      });
+                      App.config.updateAttr("landing_timer.timed_removal", timed_removal);
+                    },
+                  ),
+                  if (timed_removal)
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: "0",
+                        helperText: "自动消失秒，范围0-50",
+                        contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                        border: InputBorder.none,
+                      ),
+                      controller: TextEditingController(text: timed_removal_value),
+                      onChanged: (v) {
+                        modalSetState(() {
+                          timed_removal_value = v;
+                        });
+                        App.config.updateAttr("landing_timer.timed_removal.time_value", timed_removal_value);
+                      },
+                    ),
+                  const Divider(),
+                  CheckboxListTile(
+                    value: keep_rolling_bottom,
+                    title: const Text("是否一直滚动底部"),
+                    subtitle: const Text("实时查看最新炮弹"),
+                    onChanged: (v) {
+                      modalSetState(() {
+                        keep_rolling_bottom = v as bool;
+                      });
+                      setState(() {
+                        isAutoScrollFooter = v as bool;
+                      });
+                      App.config.updateAttr("landing_timer.keep_rolling_bottom", keep_rolling_bottom);
+                    },
+                  ),
+                  CheckboxListTile(
+                    value: is_sound_value,
+                    title: const Text("落地声音"),
+                    subtitle: const Text("计时结束播放声音"),
+                    onChanged: (v) {
+                      modalSetState(() {
+                        is_sound_value = v as bool;
+                      });
+                      setState(() {
+                        App.provider.ofGunTimer(context).isPlayAudio = !(v as bool);
+                      });
+                      App.config.updateAttr("landing_timer.is_sound_value", is_sound_value);
+                    },
+                  ),
+                ],
               ),
-              const Divider(),
-              CheckboxListTile(
-                value: true,
-                title: const Text("是否一直滚动底部"),
-                subtitle: const Text("实时查看最新炮弹"),
-                onChanged: (v) {},
-              ),
-              CheckboxListTile(
-                value: true,
-                title: const Text("落地声音"),
-                subtitle: const Text("计时结束播放声音"),
-                onChanged: (v) {},
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

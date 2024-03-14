@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -52,13 +54,15 @@ class _IncreaseAndDecreaseKeyboardState extends State<IncreaseAndDecreaseKeyboar
           break;
       }
     });
+
+    widget.onSubmit();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 200,
-      padding: widget.theme.padding,
+      // padding: widget.theme.padding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

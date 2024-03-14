@@ -1,3 +1,4 @@
+import 'provider/home_app_provider.dart';
 import 'router/router.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -52,6 +53,7 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => PackageProvider()),
         ChangeNotifierProvider(create: (context) => GunTimerProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => HomeAppProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (BuildContext context, ThemeProvider themeData, Widget? child) {

@@ -1,4 +1,5 @@
 /// 状态管理 工具包
+import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
 
 import '/provider/gun_timer_provider.dart';
@@ -37,5 +38,9 @@ class ProviderUtil {
 
   CollectProvider ofCollect(context) {
     return Provider.of<CollectProvider>(context, listen: false);
+  }
+
+  HomeAppProvider ofHomeApp (context) {
+    return Provider.of<HomeAppProvider>(context, listen: false);
   }
 }

@@ -989,6 +989,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  simple_page_indicator:
+    dependency: "direct main"
+    description:
+      name: simple_page_indicator
+      sha256: d4641502232060a525d7216c9141292aee421f356286f8fc8d5e1cb066a8d414
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.2"
   sky_engine:
     dependency: transitive
     description: flutter

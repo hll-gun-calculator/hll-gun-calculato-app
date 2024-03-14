@@ -4,17 +4,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:hll_gun_calculator/data/HomeApp.dart';
+import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:simple_page_indicator/simple_page_indicator.dart';
 
-import '/pages/index/calc.dart';
-import '/pages/index/gunComparisonTable.dart';
+import '/constants/app.dart';
 import '/utils/index.dart';
 import '/provider/history_provider.dart';
 import '/constants/config.dart';
 import '/provider/package_provider.dart';
-
-import 'landingTimer.dart';
-import 'map.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -24,47 +23,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  late TabController _tabController;
+  late PageController _pageController;
 
-  List<dynamic> navs = [
-    {
-      "name": "gunCalc",
-      "icon": const Icon(Icons.calculate_outlined, size: 30),
-      "activeIcon": const Icon(Icons.calculate, size: 30),
-    },
-    {
-      "name": "maps",
-      "icon": const Icon(Icons.calculate_outlined, size: 30),
-      "activeIcon": const Icon(Icons.calculate, size: 30),
-    },
-    {
-      "name": "landingTimer",
-      "icon": const Icon(Icons.timer_outlined, size: 30),
-      "activeIcon": const Icon(Icons.timer, size: 30),
-    },
-    {
-      "name": "gunComparisonTable",
-      "icon": const Icon(Icons.table_chart_outlined, size: 30),
-      "activeIcon": const Icon(Icons.table_chart, size: 30),
-    },
-  ];
+  int tabIndex = 0;
 
-  int tabIndex = 3;
+  int tabLength = 1;
 
   UrlUtil urlUtil = UrlUtil();
 
   @override
   void initState() {
+    List<HomeAppData> activeList = App.provider.ofHomeApp(context).activeList;
+
     // 初始tab
-    _tabController = TabController(
-      vsync: this,
-      length: navs.length,
-      initialIndex: tabIndex,
-    )..addListener(() {
-        setState(() {
-          tabIndex = _tabController.index;
-        });
-      });
+    tabLength = activeList.length;
+    _pageController = PageController(
+      initialPage: tabIndex,
+    );
     super.initState();
   }
 
@@ -80,22 +55,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     urlUtil.opEnPage(context, "/computingHistoryPage");
   }
 
-  /// 打开计算配置
-  void _openCalculatingFunctionConfig() {
-    Navigator.pop(context);
-    urlUtil.opEnPage(context, "/calculatingFunctionConfig");
-  }
-
   /// 打开收藏
   void _openCollect() {
     Navigator.pop(context);
     urlUtil.opEnPage(context, "/collect");
-  }
-
-  /// 包管理
-  void _openMapPackage () {
-    Navigator.pop(context);
-    urlUtil.opEnPage(context, "/setting/mapPackage");
   }
 
   /// 打开收藏
@@ -108,10 +71,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Consumer2<PackageProvider, HistoryProvider>(
-        builder: (consumerContext, packageData, historyData, widget) {
+      child: Consumer3<PackageProvider, HistoryProvider, HomeAppProvider>(
+        builder: (consumerContext, packageData, historyData, homeAppData, widget) {
           return DefaultTabController(
-            length: navs.length,
+            length: homeAppData.activeList.length,
             child: Scaffold(
               extendBodyBehindAppBar: true,
               appBar: HomeAppBar(
@@ -146,16 +109,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                               onTap: () => _openComputingHistory(),
                             ),
                             ListTile(
-                              title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
-                              onTap: () => _openCalculatingFunctionConfig(),
-                            ),
-                            ListTile(
                               title: Text(FlutterI18n.translate(context, "collect.title")),
                               onTap: () => _openCollect(),
-                            ),
-                            ListTile(
-                              title: Text(FlutterI18n.translate(context, "setting.cell.mapConfig.title")),
-                              onTap: () => _openMapPackage(),
                             ),
                             const Divider(),
                             ListTile(
@@ -180,13 +135,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ),
               body: HomeBody(
                 tabIndex: tabIndex,
-                tabController: _tabController,
-                navs: navs,
+                pageController: _pageController,
+                navs: homeAppData.activeList,
               ),
               bottomSheet: Container(
-                margin: const EdgeInsets.only(bottom: 5),
-                child: TabPageSelector(
-                  controller: _tabController,
+                margin: const EdgeInsets.only(bottom: 28),
+                child: SimplePageIndicator(
+                  itemCount: homeAppData.activeList.length,
+                  indicatorColor: Theme.of(context).colorScheme.primary,
+                  controller: _pageController,
+                  space: 20,
+                  maxSize: 4,
+                  minSize: 3,
                 ),
               ),
             ),
@@ -262,15 +222,15 @@ class _HomeAppBarState extends State<HomeAppBar> {
 }
 
 class HomeBody extends StatefulWidget {
-  final List navs;
+  final List<HomeAppData> navs;
   final int tabIndex;
-  final TabController tabController;
+  final PageController pageController;
 
   HomeBody({
     super.key,
     required this.navs,
     required this.tabIndex,
-    required this.tabController,
+    required this.pageController,
   });
 
   @override
@@ -296,7 +256,7 @@ class _HomeBodyState extends State<HomeBody> {
                   NavigationRail(
                     onDestinationSelected: (value) {
                       setState(() {
-                        widget.tabController.index = value;
+                        // widget.pageController.initialPage = value;
                       });
                     },
                     leading: const DrawerButton(),
@@ -304,29 +264,21 @@ class _HomeBodyState extends State<HomeBody> {
                     backgroundColor: Theme.of(context).bottomAppBarTheme.color,
                     destinations: widget.navs.map((nav) {
                       return NavigationRailDestination(
-                        icon: nav!["icon"],
-                        selectedIcon: nav!["activeIcon"],
-                        label: Text(FlutterI18n.translate(context, "${nav["name"]}.title")),
+                        icon: nav.icon,
+                        selectedIcon: nav.activeIcon,
+                        label: Text(FlutterI18n.translate(context, "${nav.name}.title")),
                       );
                     }).toList(),
                     selectedIndex: widget.tabIndex,
                   ),
+                // PageView(
+                //   children: homeAppData.widgets,
+                // ),
                 Expanded(
                   flex: 1,
-                  child: TabBarView(
-                    controller: widget.tabController,
-                    children: const [
-                      /// 计算机
-                      calcPage(),
-
-                      MapPage(),
-
-                      /// 落地时间计算
-                      LandingTimerPage(),
-
-                      /// 火炮表
-                      GunComparisonTablePage(),
-                    ],
+                  child: PageView(
+                    controller: widget.pageController,
+                    children: App.provider.ofHomeApp(context).widgets,
                   ),
                 ),
               ],

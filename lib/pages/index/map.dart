@@ -3,14 +3,13 @@ import 'dart:math';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hll_gun_calculator/component/_empty/index.dart';
 import 'package:hll_gun_calculator/provider/gun_timer_provider.dart';
 import 'package:hll_gun_calculator/provider/map_provider.dart';
-import 'package:hll_gun_calculator/utils/calc.dart';
 import 'package:hll_gun_calculator/utils/map.dart';
 import 'package:provider/provider.dart';
 
@@ -47,9 +46,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
     Factions firstName = Factions.None;
 
-    if (currentCalculatingFunction.child != null) {
-      firstName = currentCalculatingFunction.child.keys.first;
-    }
+    firstName = currentCalculatingFunction.child.keys.first;
 
     setState(() {
       // 初始所支持的阵营
@@ -71,16 +68,18 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // 地图标记锁定
-      _mapCoreKey.currentState!.isLock.addListener(() {
-        _lock = _mapCoreKey.currentState!.isLock.value;
-      });
+      if (mounted) {
+        // 地图标记锁定
+        _mapCoreKey.currentState!.isLock.addListener(() {
+          _lock = _mapCoreKey.currentState!.isLock.value;
+        });
 
-      // 图层管理
-      _markerManagementSwitch = _mapCoreKey.currentState!.markerManagementSwitch.value;
-      _mapCoreKey.currentState!.markerManagementSwitch.addListener(() {
+        // 图层管理
         _markerManagementSwitch = _mapCoreKey.currentState!.markerManagementSwitch.value;
-      });
+        _mapCoreKey.currentState!.markerManagementSwitch.addListener(() {
+          _markerManagementSwitch = _mapCoreKey.currentState!.markerManagementSwitch.value;
+        });
+      }
     });
     super.initState();
   }
@@ -101,7 +100,6 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       Map currerGun = listTimerIndex.where((element) => element["id"] == id).first;
 
       // 添加
-      print(currerGun['id']);
       gunTimerData.add(
         id: currerGun['id'],
         type: LandingType.MapGun,
@@ -210,7 +208,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 ListTile(
                   title: Text(i18nUtil.as(context, currentMapCompilation.name)),
                   subtitle: Text(i18nUtil.as(context, currentMapCompilation.description)),
-                  trailing: Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     App.url.opEnPage(context, "/setting/mapPackage");
                   },
@@ -233,7 +231,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                           );
                         }).toList()
                       else
-                        EmptyWidget(),
+                        const EmptyWidget(),
                       const Divider(),
                       Align(
                         child: Text("by ${currentMapCompilation.name}"),
@@ -315,7 +313,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             Expanded(
               flex: 1,
               child: mapData.hasMapCompilation
-                  ? Center(
+                  ? const Center(
                       child: Text("请选择地图合集"),
                     )
                   : Container(
@@ -371,57 +369,12 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
             /// 控制器
             Container(
-              height: 200,
+              height: 250,
               color: Theme.of(context).colorScheme.primary.withOpacity(.2),
               padding: const EdgeInsets.only(bottom: 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// 附件选项
-                  Wrap(
-                    children: [
-                      const SizedBox(width: 48),
-                      GestureDetector(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            child: Wrap(
-                              runAlignment: WrapAlignment.center,
-                              children: [
-                                Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
-                                const Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () => _openSelectFactions(),
-                      ),
-                      const SizedBox(width: 5),
-                      GestureDetector(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            child: Wrap(
-                              runAlignment: WrapAlignment.center,
-                              children: [
-                                Text(calcData.currentCalculatingFunctionName),
-                                const Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () => {
-                          App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
-                            setState(() {
-                              inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
-                            });
-                          }),
-                        },
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 1, thickness: 1),
-
                   /// 火炮列表
                   Flexible(
                     child: Consumer<GunTimerProvider>(
@@ -538,10 +491,10 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                     children: [
                                                       Stack(
                                                         children: [
-                                                          if (gunTimerData.getItem(querId).isTimerActive) Icon(Icons.timer) else Icon(Icons.timer_outlined),
+                                                          if (gunTimerData.getItem(querId).isTimerActive) const Icon(Icons.timer) else const Icon(Icons.timer_outlined),
                                                         ],
                                                       ),
-                                                      if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else Text("0")
+                                                      if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else const Text("0")
                                                     ],
                                                   ),
                                                 ),
@@ -601,6 +554,53 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                           ),
                         );
                       },
+                    ),
+                  ),
+                  const Divider(height: 1, thickness: 1),
+
+                  /// 附件选项
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              child: Wrap(
+                                runAlignment: WrapAlignment.center,
+                                children: [
+                                  Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
+                                  const Icon(Icons.arrow_drop_down),
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: () => _openSelectFactions(),
+                        ),
+                        const Expanded(flex: 1, child: SizedBox(width: 5)),
+                        GestureDetector(
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              child: Wrap(
+                                runAlignment: WrapAlignment.center,
+                                children: [
+                                  Text(calcData.currentCalculatingFunctionName),
+                                  const Icon(Icons.arrow_drop_down),
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: () => {
+                            App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
+                              setState(() {
+                                inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
+                              });
+                            }),
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -684,10 +684,12 @@ class MapCoreState extends State<MapCore> {
     mapCompilation = widget.mapProvider.currentMapCompilation;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        mapBoxHeight = _mapBoxKey.currentContext?.findRenderObject()!.paintBounds.size.height ?? 0;
-      });
-      _resetMap();
+      if (mounted) {
+        setState(() {
+          mapBoxHeight = _mapBoxKey.currentContext?.findRenderObject()!.paintBounds.size.height ?? 0;
+        });
+        _resetMap();
+      }
     });
 
     transformation.addListener(() {
@@ -916,7 +918,7 @@ class MapCoreState extends State<MapCore> {
                   title: const Text("颜色"),
                   trailing: Card(
                     color: gunInfo.color,
-                    child: SizedBox(height: 50, width: 50),
+                    child: const SizedBox(height: 50, width: 50),
                   ),
                 ),
                 ListTile(

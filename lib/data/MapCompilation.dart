@@ -20,15 +20,20 @@ class MapCompilation {
 
   List<MapInfo> data;
 
+  MapCompilationType type;
+
   MapCompilation({
     this.name = "none",
     this.description = "",
     this.author = "none",
     this.version = "0.0.1",
     this.data = const [],
+    this.type = MapCompilationType.None,
   });
 
   factory MapCompilation.fromJson(Map<String, dynamic> json) => _$MapCompilationFromJson(json);
 
   Map<String, dynamic> toJson() => _$MapCompilationToJson(this);
 }
+
+enum MapCompilationType { None, Custom }

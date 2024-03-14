@@ -3,6 +3,7 @@ import 'package:hll_gun_calculator/data/index.dart';
 import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/app.dart';
 import '../../widgets/map_card.dart';
 
 class MapPackagePage extends StatefulWidget {
@@ -13,6 +14,8 @@ class MapPackagePage extends StatefulWidget {
 }
 
 class _MapPackagePageState extends State<MapPackagePage> {
+  late MapCompilation selectMapCompilation;
+
   /// 查看配置详情
   void _openConfigDetail(MapCompilation i) {
     showModalBottomSheet<void>(
@@ -24,7 +27,16 @@ class _MapPackagePageState extends State<MapPackagePage> {
           return Scaffold(
             appBar: AppBar(
               leading: const CloseButton(),
-              actions: [],
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      App.provider.ofMap(context).deleteMapCompilation(i);
+                    });
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
             ),
             body: ListView(
               children: [
@@ -45,7 +57,9 @@ class _MapPackagePageState extends State<MapPackagePage> {
                   title: Text("地图"),
                 ),
                 ...i.data.asMap().entries.map((e) {
-                  return MapCardWidget(i: e.value);
+                  return MapCardWidget(
+                    i: e.value,
+                  );
                 }).toList()
               ],
             ),
@@ -56,17 +70,39 @@ class _MapPackagePageState extends State<MapPackagePage> {
   }
 
   @override
+  void initState() {
+    selectMapCompilation = App.provider.ofMap(context).currentMapCompilation;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<MapProvider>(
       builder: (context, data, widget) {
         return Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  App.provider.ofMap(context).currentMapCompilation = selectMapCompilation;
+                },
+                icon: Icon(Icons.done),
+              ),
+            ],
+          ),
           body: ListView(
             children: data.list.map((i) {
-              return ListTile(
+              return RadioListTile(
+                value: i.name,
+                groupValue: selectMapCompilation.name,
                 title: Text(i.name),
                 subtitle: Text(i.author),
-                trailing: IconButton(
+                onChanged: (String? value) {
+                  setState(() {
+                    selectMapCompilation = i;
+                  });
+                },
+                secondary: IconButton(
                   onPressed: () => _openConfigDetail(i),
                   icon: const Icon(Icons.more_horiz),
                 ),
