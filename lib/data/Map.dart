@@ -39,10 +39,12 @@ class MapInfo {
   // 标记
   final List<MapInfoMarkerItem>? marker;
 
+  // 所有火炮列表
   List<Gun> get gunPositions {
     List<Gun> list = [];
     factions?.forEach((key, value) {
       for (Gun gun in value.gunPosition) {
+        gun.direction = value.direction;
         gun.factions = key;
         list.add(gun);
       }
@@ -50,6 +52,7 @@ class MapInfo {
     return list;
   }
 
+  // 所有标记列表
   List<MapInfoMarkerItem_Fll> get markerPointAll {
     List<MapInfoMarkerItem_Fll> list = [];
     marker?.forEach((i) {

@@ -414,7 +414,11 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                               margin: const EdgeInsets.only(left: 55, top: 5),
                                               child: Wrap(
                                                 spacing: 10,
-                                                children: [Text(e.value.name), Text(FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}"))],
+                                                children: [
+                                                  Text(e.value.name),
+                                                  Text(FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")),
+                                                  Text(e.value.direction.name),
+                                                ],
                                               ),
                                             ),
                                             Row(
@@ -806,6 +810,9 @@ class MapCoreState extends State<MapCore> {
         calculatingFunctionInfo: App.provider.ofCalc(context).currentCalculatingFunction,
       );
 
+      // 添加计算会话历史
+      App.provider.ofHistory(context).add(result);
+
       // 计算角度
       MapGunResult _mapGunResult = MapGunResult.fromJson(result.toJson());
       _mapGunResult.outputAngle = _calcUtil.onAngle(gunPostionSelect, newMarker).outputAngle;
@@ -813,9 +820,6 @@ class MapCoreState extends State<MapCore> {
       _mapGunResult.inputOffset = gunPostionSelect;
       _mapGunResult.targetOffset = newMarker;
       App.provider.ofMap(context).setCurrentMapGunResult(_mapGunResult);
-
-      // mapGunResult.value = _mapGunResult;
-      // print("角度:${_mapGunResult.outputAngle}");
 
       isLock.value = true;
     });
@@ -1063,6 +1067,7 @@ class MapCoreState extends State<MapCore> {
                   height: widget.mapProvider.currentMapInfo.size.dy,
                   fit: BoxFit.contain,
                   filterQuality: FilterQuality.high,
+                  enableMemoryCache: false,
                   loadStateChanged: (ExtendedImageState state) {
                     switch (state.extendedImageLoadState) {
                       case LoadState.completed:
@@ -1093,12 +1098,24 @@ class MapCoreState extends State<MapCore> {
               }).map((e) {
                 return GestureDetector(
                   onTapUp: (detail) => _onPositionCalcResult(detail),
-                  child: ExtendedImage(
-                    image: e.image,
-                    width: widget.mapProvider.currentMapInfo.size.dx,
-                    height: widget.mapProvider.currentMapInfo.size.dy,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
+                  child: RotatedBox(
+                    quarterTurns: e.type == MapIconType.ArtyRadius
+                        ? {
+                              MapInfoFactionInfoDirection.Left: 0,
+                              MapInfoFactionInfoDirection.Top: 1,
+                              MapInfoFactionInfoDirection.Right: 2,
+                              MapInfoFactionInfoDirection.Bottom: 3,
+                            }[App.provider.ofMap(context).currentMapGun.direction] ??
+                            0
+                        : 0,
+                    child: ExtendedImage(
+                      image: e.image,
+                      width: widget.mapProvider.currentMapInfo.size.dx,
+                      height: widget.mapProvider.currentMapInfo.size.dy,
+                      fit: BoxFit.contain,
+                      enableMemoryCache: false,
+                      filterQuality: FilterQuality.high,
+                    ),
                   ),
                 );
               }).toList(),

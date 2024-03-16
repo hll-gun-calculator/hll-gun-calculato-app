@@ -16,18 +16,26 @@ class Gun {
   @JsonKey(includeFromJson: false, includeToJson: false)
   late String id;
 
+  // 名称
   @StringOrMapConverter()
   dynamic name;
 
+  // 描述
   @StringOrMapConverter()
   dynamic description;
 
+  // 位置
   @JsonKey(toJson: OffsetAsList, fromJson: ListAsOffset)
   Offset offset;
 
+  // 颜色
   @JsonKey(includeFromJson: false, includeToJson: false)
   Color color;
 
+  // 方向
+  MapInfoFactionInfoDirection direction;
+
+  // 阵营
   @JsonKey(includeFromJson: false, includeToJson: false)
   Factions? factions;
 
@@ -37,6 +45,7 @@ class Gun {
     this.name = "none",
     this.offset = const Offset(0, 0),
     this.color = Colors.yellow,
+    this.direction = MapInfoFactionInfoDirection.Left,
     this.factions = Factions.None,
     this.result,
   }) {
