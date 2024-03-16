@@ -12,9 +12,10 @@ class CollectProvider with ChangeNotifier {
 
   List<CollectItemData> get list => _list;
 
-  init() async {
+  Future init() async {
     await _readLocal();
     notifyListeners();
+    return true;
   }
 
   _readLocal() async {
@@ -74,13 +75,13 @@ class CollectProvider with ChangeNotifier {
 
   /// 添加收藏
   void add(dynamic i, String title, {String remark = "", String id = ""}) {
-    if (i is! CalcResult || i is! MapGunResult) return;
+    if (i is! CalcResult && i is! MapGunResult) return;
 
     CollectItemData collectItemData = CollectItemData();
     collectItemData.as(i);
 
     collectItemData.title = title;
-    collectItemData.remark = remark;
+    if (remark.isNotEmpty) collectItemData.remark = remark;
     if (id.isNotEmpty) collectItemData.id = id;
 
     _list.add(collectItemData);

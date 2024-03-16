@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:hll_gun_calculator/data/HomeApp.dart';
@@ -63,7 +62,7 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
                       key: ValueKey(activeList[index].name),
                       index: index,
                       child: ListTile(
-                        leading: activeList[index].icon,
+                        leading: activeList[index].activeIcon,
                         title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
                         trailing: homeAppData.activeList.length > 1
                             ? IconButton.filledTonal(

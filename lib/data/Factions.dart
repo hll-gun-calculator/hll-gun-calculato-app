@@ -21,8 +21,16 @@ enum Factions {
     return _keys;
   }
 
-  static Factions parse(int i) {
-    if (i == -1) return Factions.None;
-    return Factions.values[i];
+  static Factions parse(dynamic i) {
+    if (i is int) {
+      if (i == -1) return Factions.None;
+      return Factions.values[i];
+    }
+
+    if (i is String && Factions.values.where((i) => i.value == i).isNotEmpty) {
+      return Factions.values.where((i) => i.value == i).first;
+    }
+
+    return Factions.None;
   }
 }

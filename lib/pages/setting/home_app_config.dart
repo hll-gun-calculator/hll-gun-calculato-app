@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:hll_gun_calculator/data/HomeApp.dart';
@@ -62,9 +61,7 @@ class _HomeAppConfigPageState extends State<HomeAppConfigPage> {
                         title: Text(FlutterI18n.translate(context, "${e.name}.title")),
                         subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
                         trailing: IconButton.filledTonal(
-                          onPressed: () {
-                            homeAppData.add(e);
-                          },
+                          onPressed: homeAppData.activeList.length <= 2 ? () => homeAppData.add(e) : null,
                           icon: const Icon(Icons.add),
                         ),
                       );
@@ -85,7 +82,19 @@ class _HomeAppConfigPageState extends State<HomeAppConfigPage> {
                       key: ValueKey(const Uuid().v4()),
                       index: index,
                       child: ListTile(
-                        leading: activeList[index].icon,
+                        leading: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            const Icon(Icons.dehaze_sharp),
+                            Container(
+                              width: 1,
+                              height: 35,
+                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                              color: Theme.of(context).dividerTheme.color,
+                            ),
+                            activeList[index].activeIcon,
+                          ],
+                        ),
                         title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
                         subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
                         trailing: activeList.length > 1

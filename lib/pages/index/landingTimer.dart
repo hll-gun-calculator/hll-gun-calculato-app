@@ -16,7 +16,11 @@ class LandingTimerPage extends StatefulWidget {
 class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
 
+  // 总计倒计时
   final TextEditingController _textEditingController = TextEditingController(text: "14");
+
+  // 计时结束后，多少秒隐藏
+  TextEditingController _textEditingControllerTimedRemovalValue = TextEditingController(text: "10");
 
   // 自动滚动底部
   bool isAutoScrollFooter = true;
@@ -35,7 +39,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
       return;
     }
 
-    gunTimerProvider.add(duration: Duration(seconds: int.parse(_textEditingController.text)));
+    gunTimerProvider.add(
+      duration: Duration(seconds: int.parse(_textEditingController.text)),
+    );
     scrollFooter();
   }
 
@@ -50,10 +56,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
 
   /// 打开设置
   void _openSettingModal() {
-    bool timed_removal = true;
-    String timed_removal_value = "5";
-    bool keep_rolling_bottom = isAutoScrollFooter;
-    bool is_sound_value = App.provider.ofGunTimer(context).isPlayAudio;
+    bool timedRemoval = true;
+    bool keepRollingBottom = isAutoScrollFooter;
+    bool isSoundValue = App.provider.ofGunTimer(context).isPlayAudio;
 
     showModalBottomSheet<void>(
       context: context,
@@ -68,58 +73,59 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
               body: ListView(
                 children: [
                   CheckboxListTile(
-                    value: timed_removal,
+                    value: timedRemoval,
                     title: const Text("是否开启自动移除"),
                     onChanged: (v) {
                       modalSetState(() {
-                        timed_removal = v as bool;
+                        timedRemoval = v as bool;
                       });
-                      App.config.updateAttr("landing_timer.timed_removal", timed_removal);
+                      App.config.updateAttr("landing_timer.timed_removal", timedRemoval);
                     },
                   ),
-                  if (timed_removal)
+                  if (timedRemoval)
                     TextFormField(
                       decoration: const InputDecoration(
                         hintText: "0",
-                        helperText: "自动消失秒，范围0-50",
+                        helperText: "自动消失秒，范围0-99",
                         contentPadding: EdgeInsets.symmetric(horizontal: 15),
                         border: InputBorder.none,
                       ),
-                      controller: TextEditingController(text: timed_removal_value),
+                      maxLength: 2,
+                      controller: _textEditingControllerTimedRemovalValue,
                       onChanged: (v) {
                         modalSetState(() {
-                          timed_removal_value = v;
+                          _textEditingControllerTimedRemovalValue.text = v;
                         });
-                        App.config.updateAttr("landing_timer.timed_removal.time_value", timed_removal_value);
+                        App.config.updateAttr("landing_timer.timed_removal.time_value", _textEditingControllerTimedRemovalValue.text);
                       },
                     ),
                   const Divider(),
                   CheckboxListTile(
-                    value: keep_rolling_bottom,
+                    value: keepRollingBottom,
                     title: const Text("是否一直滚动底部"),
                     subtitle: const Text("实时查看最新炮弹"),
                     onChanged: (v) {
                       modalSetState(() {
-                        keep_rolling_bottom = v as bool;
+                        keepRollingBottom = v as bool;
                       });
                       setState(() {
                         isAutoScrollFooter = v as bool;
                       });
-                      App.config.updateAttr("landing_timer.keep_rolling_bottom", keep_rolling_bottom);
+                      App.config.updateAttr("landing_timer.keep_rolling_bottom", keepRollingBottom);
                     },
                   ),
                   CheckboxListTile(
-                    value: is_sound_value,
+                    value: isSoundValue,
                     title: const Text("落地声音"),
                     subtitle: const Text("计时结束播放声音"),
                     onChanged: (v) {
                       modalSetState(() {
-                        is_sound_value = v as bool;
+                        isSoundValue = v as bool;
                       });
                       setState(() {
                         App.provider.ofGunTimer(context).isPlayAudio = !(v as bool);
                       });
-                      App.config.updateAttr("landing_timer.is_sound_value", is_sound_value);
+                      App.config.updateAttr("landing_timer.is_sound_value", isSoundValue);
                     },
                   ),
                 ],
@@ -213,6 +219,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                 Opacity(
                   opacity: data.landings.isEmpty ? .5 : 1,
                   child: IconButton(
+                    tooltip: "清空列表",
                     onPressed: () {
                       data.clearLandings();
                     },
@@ -220,17 +227,19 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                   ),
                 ),
                 IconButton(
+                  tooltip: "自动滚动底部",
                   onPressed: () {
                     setState(() {
                       isAutoScrollFooter = !isAutoScrollFooter;
                     });
                   },
                   icon: Icon(
-                    isAutoScrollFooter ? Icons.file_download_rounded : Icons.file_download_off_sharp,
+                    isAutoScrollFooter ? Icons.swipe_down : Icons.stop_sharp,
                   ),
                 ),
                 const Expanded(child: SizedBox()),
                 IconButton(
+                  tooltip: "设置",
                   onPressed: () {
                     _openSettingModal();
                   },
@@ -252,12 +261,28 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                 children: <Widget>[
                   SizedBox(
                     width: 80,
-                    child: TextFormField(
-                      readOnly: true,
-                      controller: _textEditingController,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        counter: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 3),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: TextFormField(
+                              readOnly: true,
+                              controller: _textEditingController,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 20),
+                              decoration: const InputDecoration.collapsed(hintText: "0"),
+                              validator: (value) {
+                                if (value is num && value as int > 0 && value as int < 30) return "0-30范围";
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton.outlined(
@@ -282,11 +307,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                             ),
                           ],
                         ),
-                      ),
-                      validator: (value) {
-                        if (value is num && value as int > 0 && value as int < 30) return "0-30范围";
-                        return null;
-                      },
+                      ],
                     ),
                   ),
                   const SizedBox(width: 10),

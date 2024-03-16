@@ -34,6 +34,7 @@ class GunTimerProvider with ChangeNotifier {
   /// 添加计时
   void add({
     String? id,
+    Duration autoHiddenDuration = const Duration(seconds: 10),
     Duration duration = const Duration(seconds: 14),
     LandingType type = LandingType.None,
     bool isAutoShow = true,
@@ -61,7 +62,12 @@ class GunTimerProvider with ChangeNotifier {
     );
 
     landings.add(l);
-    startCountdownTimer(l, vanishCallback: vanishCallback, endCallback: endCallback);
+    startCountdownTimer(
+      l,
+      autoHiddenDuration: autoHiddenDuration!,
+      vanishCallback: vanishCallback,
+      endCallback: endCallback,
+    );
     _index++;
 
     notifyListeners();
@@ -76,7 +82,13 @@ class GunTimerProvider with ChangeNotifier {
   }
 
   /// 计时
-  void startCountdownTimer(Landing landing, {Function(Landing l)? vanishCallback, Function(Landing l)? endCallback, bool isAutoShow = true}) {
+  void startCountdownTimer(
+    Landing landing, {
+    Duration autoHiddenDuration = const Duration(seconds: 10),
+    Function(Landing l)? vanishCallback,
+    Function(Landing l)? endCallback,
+    bool isAutoShow = true,
+  }) {
     Duration oneSec = const Duration(seconds: 1);
 
     landing.isTimerActive = true;
@@ -87,7 +99,7 @@ class GunTimerProvider with ChangeNotifier {
         landing.isTimerActive = false;
         if (endCallback != null) endCallback(landing);
 
-        Timer.periodic(const Duration(seconds: 10), (timer) {
+        Timer.periodic(autoHiddenDuration, (timer) {
           if (isAutoShow) landing.show = false;
 
           if (vanishCallback != null) vanishCallback(landing);

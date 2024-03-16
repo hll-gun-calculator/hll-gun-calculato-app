@@ -54,9 +54,10 @@ class HomeAppProvider with ChangeNotifier {
     _allPanelLists[3],
   ]);
 
-  init() async {
+  Future init() async {
     _readLocalStorage();
     notifyListeners();
+    return true;
   }
 
   List<Widget> get widgets => _panelLists.value.map((e) => e.widget).toList();
@@ -85,10 +86,13 @@ class HomeAppProvider with ChangeNotifier {
     StorageData homeAppData = await storage.get(PACKAGENAME);
     if (homeAppData.code == 0) {
       _panelLists.value = [];
+      _unactivatedPandeLists.value = [];
+
       homeAppData.value.forEach((i) {
         _panelLists.value.add(_stringAsHomeAppData(i));
-        _unactivatedPandeLists.value.remove(_stringAsHomeAppData(i));
       });
+
+      _unactivatedPandeLists.value  = _allPanelLists.toSet().difference(_panelLists.value.toSet()).toList();
     }
   }
 

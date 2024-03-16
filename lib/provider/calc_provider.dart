@@ -51,11 +51,12 @@ class CalcProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  init() async {
+  Future init() async {
     await _readLocalInstalledCalc();
     await _readLocalCustomCalc();
 
     notifyListeners();
+    return true;
   }
 
   /// 保存

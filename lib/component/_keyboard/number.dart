@@ -138,7 +138,7 @@ class NumberButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          controller.text += number.toString();
+          controller.text += num.parse(number.toString()).toString();
         },
         child: Center(
           child: Text(

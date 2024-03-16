@@ -470,8 +470,14 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
             /// 键盘
             KeyboardWidget(
               spatialName: "home_calc",
+              initializePackup: true,
               onSubmit: () => historyData.add(_calcSubmit(calcData)),
               controller: _textController,
+            ),
+
+            Container(
+              height: MediaQuery.of(context).viewPadding.bottom,
+              color: Theme.of(context).primaryColor.withOpacity(.2),
             ),
           ],
         );

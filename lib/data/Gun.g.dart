@@ -13,6 +13,9 @@ Gun _$GunFromJson(Map<String, dynamic> json) => Gun(
       offset: json['offset'] == null
           ? const Offset(0, 0)
           : Gun.ListAsOffset(json['offset'] as List),
+      direction: $enumDecodeNullable(
+              _$MapInfoFactionInfoDirectionEnumMap, json['direction']) ??
+          MapInfoFactionInfoDirection.Left,
       result: json['result'] == null
           ? null
           : MapGunResult.fromJson(json['result'] as Map<String, dynamic>),
@@ -23,6 +26,7 @@ Map<String, dynamic> _$GunToJson(Gun instance) => <String, dynamic>{
       'name': const StringOrMapConverter().toJson(instance.name),
       'description': const StringOrMapConverter().toJson(instance.description),
       'offset': Gun.OffsetAsList(instance.offset),
+      'direction': Gun.MapInfoFactionInfoDirectionToJson(instance.direction),
       'result': instance.result,
     };
 
@@ -31,6 +35,13 @@ Value? _$JsonConverterFromJson<Json, Value>(
   Value? Function(Json json) fromJson,
 ) =>
     json == null ? null : fromJson(json as Json);
+
+const _$MapInfoFactionInfoDirectionEnumMap = {
+  MapInfoFactionInfoDirection.Top: 'Top',
+  MapInfoFactionInfoDirection.Left: 'Left',
+  MapInfoFactionInfoDirection.Right: 'Right',
+  MapInfoFactionInfoDirection.Bottom: 'Bottom',
+};
 
 MapGunResult _$MapGunResultFromJson(Map<String, dynamic> json) => MapGunResult(
       outputAngle: (json['outputAngle'] as num?)?.toDouble() ?? 0,

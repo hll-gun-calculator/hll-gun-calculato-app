@@ -25,6 +25,8 @@
       "notContent": "空"
     },
     "keyboards": {
+      "None": "无",
+      "Protogenesis": "原生键盘",
       "IncreaseAndDecrease": "增减键盘",
       "IndependentDigit": "数字单例键盘",
       "Number": "数字键盘",

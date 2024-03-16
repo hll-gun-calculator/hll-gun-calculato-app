@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:hll_gun_calculator/component/_keyboard/index.dart';
 
@@ -10,6 +12,8 @@ class GuideKeyboardManagement extends StatefulWidget {
 }
 
 class _GuideKeyboardManagementState extends State<GuideKeyboardManagement> {
+  TextEditingController controller = TextEditingController(text: "0");
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -25,32 +29,36 @@ class _GuideKeyboardManagementState extends State<GuideKeyboardManagement> {
             ),
             subtitle: Text("对于计算输入，应用提供内置几款输入控制器,能在控制器左下角找到设置按钮切换，同时会记住你在对应位置选择键盘，在下次加载时保持"),
           ),
-          const Divider(),
+          const Divider(height: 1),
           Expanded(
             flex: 1,
-            child: GridView(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 0,
-                mainAxisSpacing: 0,
-              ),
-              children: KeyboardType.values.skipWhile((value) => value == KeyboardType.None).map((i) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Card(
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          child: Image.asset("assets/images/keyboard/${i.name}.png"),
-                          height: (MediaQuery.of(context).size.width / 3) ,
-                        ),
-                        Text(FlutterI18n.translate(context, "basic.keyboards.${i.name}")),
-                      ],
+            child: Container(
+              color: Theme.of(context).colorScheme.primary.withOpacity(.2),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: controller,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 25
+                      ),
+                      decoration: const InputDecoration.collapsed(hintText: "test"),
                     ),
-                  ),
-                );
-              }).toList(),
+                    Text("点击左下方设置图标切换体验")
+                  ],
+                ),
+              ),
             ),
+          ),
+          KeyboardWidget(
+            onSubmit: () => null,
+            controller: controller,
+            initializePackup: true,
+            spatialName: "test",
           ),
         ],
       ),

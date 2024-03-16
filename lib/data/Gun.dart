@@ -33,6 +33,7 @@ class Gun {
   Color color;
 
   // 方向
+  @JsonKey(toJson: MapInfoFactionInfoDirectionToJson)
   MapInfoFactionInfoDirection direction;
 
   // 阵营
@@ -59,6 +60,8 @@ class Gun {
 
   static List OffsetAsList(Offset value) => [value.dx, value.dy];
 
+  static String MapInfoFactionInfoDirectionToJson (MapInfoFactionInfoDirection direction) => direction.value;
+
   factory Gun.fromJson(Map<String, dynamic> json) => _$GunFromJson(json);
 
   Map<String, dynamic> toJson() => _$GunToJson(this);
@@ -68,7 +71,6 @@ class Gun {
 @JsonSerializable()
 class MapGunResult extends CalcResult {
   // 输出角度
-  @JsonKey(defaultValue: 0)
   double outputAngle;
 
   // 输入坐标

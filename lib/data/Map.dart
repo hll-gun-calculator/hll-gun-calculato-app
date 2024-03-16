@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
@@ -27,6 +26,7 @@ class MapInfo {
   final Offset initialPosition;
 
   // 阵营，通常2名
+  @JsonKey(toJson: ValueToJson,fromJson: factionsFromJson)
   late Map<Factions, MapInfoFactionInfo>? factions;
 
   // 地图底图-资源地址
@@ -81,11 +81,21 @@ class MapInfo {
     this.marker,
   });
 
+  static Map ValueToJson(dynamic value) => value.toJson();
+
   static Offset ListAsOffset(List value) => Offset(double.parse(value.first.toString()), double.parse(value.last.toString()));
 
   static List OffsetAsList(Offset value) => [value.dx, value.dy];
 
   static List<Map<String, dynamic>> childsToJson(List<MapInfoAssets> list) => list.map((e) => e.toJson()).toList();
+
+  static Map<Factions, MapInfoFactionInfo> factionsFromJson(Map factions) {
+    Map<Factions, MapInfoFactionInfo> map = {};
+    factions.forEach((key, value) {
+      map.addAll({Factions.parse(key): MapInfoFactionInfo.fromJson(value)});
+    });
+    return map;
+  }
 
   factory MapInfo.fromJson(Map<String, dynamic> json) => _$MapInfoFromJson(json);
 
@@ -117,6 +127,7 @@ class MapInfoFactionInfo {
   List<Offset> points = [];
 
   // 位于地方方向
+  @JsonKey(toJson: MapInfoFactionInfoDirectionToJson)
   MapInfoFactionInfoDirection direction;
 
   MapInfoFactionInfo({
@@ -140,6 +151,8 @@ class MapInfoFactionInfo {
     }
     return list;
   }
+
+  static String MapInfoFactionInfoDirectionToJson(MapInfoFactionInfoDirection direction) => direction.value;
 
   factory MapInfoFactionInfo.fromJson(Map<String, dynamic> json) => _$MapInfoFactionInfoFromJson(json);
 
@@ -214,10 +227,7 @@ class MarkerPointItem {
     this.y = -.0,
     this.id,
   }) {
-    id = const Uuid().v5(
-      Uuid.NAMESPACE_NIL,
-      "MarkerPointItem-$id-$name-$x,$y"
-    );
+    id = const Uuid().v5(Uuid.NAMESPACE_NIL, "MarkerPointItem-$id-$name-$x,$y");
   }
 
   factory MarkerPointItem.fromJson(Map<String, dynamic> json) => _$MarkerPointItemFromJson(json);

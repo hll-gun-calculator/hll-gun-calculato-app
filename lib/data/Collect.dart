@@ -1,9 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'CalcResult.dart';
-import 'CalculatingFunction.dart';
-import 'Factions.dart';
 import 'index.dart';
 
 part 'Collect.g.dart';

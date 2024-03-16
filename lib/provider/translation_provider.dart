@@ -49,6 +49,7 @@ class TranslationProvider with ChangeNotifier {
 
     _currentLang = localLang["currentLang"] ?? defaultLang;
     notifyListeners();
+    return true;
   }
 
   // [Event]

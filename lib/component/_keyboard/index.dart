@@ -7,17 +7,32 @@ import 'package:hll_gun_calculator/component/_keyboard/slider.dart';
 import '../../constants/app.dart';
 import '../../data/Factions.dart';
 import 'Independent_digit.dart';
+import 'protogenesis.dart';
 import 'theme.dart';
 
-enum KeyboardType { None, Number, Slider, IncreaseAndDecrease, IndependentDigit }
+enum KeyboardType { None, Protogenesis, Number, Slider, IncreaseAndDecrease, IndependentDigit }
 
 class KeyboardWidget extends StatefulWidget {
+  // 空间名称
   final String spatialName;
+
+  // 控制器
   final TextEditingController controller;
+
+  // focus
   final FocusNode? focusNode;
+
+  // 确认事件
   final Function onSubmit;
+
+  // 阵营
   final Factions? inputFactions;
+
+  // 初始键盘类型
   final KeyboardType? initializeKeyboardType;
+
+  // 初始是否收起键盘
+  final bool initializePackup;
 
   KeyboardWidget({
     Key? key,
@@ -28,24 +43,31 @@ class KeyboardWidget extends StatefulWidget {
     this.focusNode,
     this.inputFactions = Factions.None,
     this.initializeKeyboardType,
+    this.initializePackup = false,
   });
 
   @override
-  State<KeyboardWidget> createState() => _KeyboardWidgetState();
+  State<KeyboardWidget> createState() => KeyboardWidgetState();
 }
 
-class _KeyboardWidgetState extends State<KeyboardWidget> {
+class KeyboardWidgetState extends State<KeyboardWidget> {
   late KeyboardType selectKeyboards = KeyboardType.None;
   late Map keyboards;
   bool keyboardSwitchValue = true;
 
   @override
   void initState() {
+    keyboardSwitchValue = !widget.initializePackup;
+
     // 初始键盘列表
     keyboards = {
-      KeyboardType.None: Container(
+      KeyboardType.Protogenesis: ProtogenesisKeyboardWidget(
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
+      ),
+      KeyboardType.None: const SizedBox(
         height: 200,
-        child: const Center(
+        child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -122,23 +144,37 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
 
   /// 初始键盘
   void initKeyboard() async {
-    dynamic keyboardStorageValue = await App.config.getAttr("keyboard.${widget.spatialName}");
+    dynamic keyboardStorageSelectValue = await App.config.getAttr("keyboard.${widget.spatialName}.select");
+    dynamic keyboardStorageStatusValue = await App.config.getAttr("keyboard.${widget.spatialName}.status");
 
     if (mounted) {
       setState(() {
-        if (keyboardStorageValue is bool && !keyboardStorageValue || keyboardStorageValue == null) {
+        // 初始键盘类型
+        if (keyboardStorageSelectValue is bool && !keyboardStorageSelectValue || keyboardStorageSelectValue == null) {
           selectKeyboards = widget.initializeKeyboardType ?? KeyboardType.Number;
         } else {
-          Iterable<KeyboardType> _keyboard = KeyboardType.values.where((i) => i.name == keyboardStorageValue);
+          Iterable<KeyboardType> _keyboard = KeyboardType.values.where((i) => i.name == keyboardStorageSelectValue);
           selectKeyboards = _keyboard.isEmpty ? widget.initializeKeyboardType ?? KeyboardType.Number : _keyboard.first;
+        }
+
+        // 初始键盘是否开启状态
+        if (keyboardStorageStatusValue is bool) {
+          keyboardSwitchValue = keyboardStorageStatusValue;
         }
       });
     }
   }
 
+  /// 展开键盘
+  void openKeyboard() {
+    setState(() {
+      keyboardSwitchValue = true;
+    });
+  }
+
   /// 键盘改变事件
   void _changeKeyboardEvent() {
-    App.config.updateAttr("keyboard.${widget.spatialName}", selectKeyboards.name);
+    App.config.updateAttr("keyboard.${widget.spatialName}.select", selectKeyboards.name);
   }
 
   /// 选择键盘
@@ -151,7 +187,9 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
       builder: (context) {
         return StatefulBuilder(builder: (modalContext, modalSetState) {
           return Scaffold(
-            appBar: AppBar(),
+            appBar: AppBar(
+              title: Text("选择键盘"),
+            ),
             body: GridView(
               padding: const EdgeInsets.all(15),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -174,14 +212,16 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
                           });
                         },
                         child: Card(
+                          color: selectKeyboards.name == e.name ? Theme.of(context).colorScheme.primary.withOpacity(.5) : Theme.of(context).cardTheme.color,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                "assets/images/keyboard/${e.name}.png",
-                                height: 100,
-                              ),
+                              if (e != KeyboardType.Protogenesis)
+                                Image.asset(
+                                  "assets/images/keyboard/${e.name}.png",
+                                  height: 100,
+                                ),
                               const SizedBox(height: 5),
                               Text(FlutterI18n.translate(context, "basic.keyboards.${e.name}")),
                             ],
@@ -207,6 +247,8 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
     setState(() {
       keyboardSwitchValue = !keyboardSwitchValue;
     });
+
+    App.config.updateAttr("keyboard.${widget.spatialName}.status", keyboardSwitchValue);
   }
 
   @override
@@ -228,7 +270,7 @@ class _KeyboardWidgetState extends State<KeyboardWidget> {
           Row(
             children: [
               IconButton(
-                onPressed: () => _openModal(context),
+                onPressed: keyboardSwitchValue ? () => _openModal(context) : null,
                 icon: const Icon(Icons.settings),
               ),
               const Expanded(flex: 1, child: SizedBox()),

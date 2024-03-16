@@ -7,7 +7,6 @@ void main() async {
     api: {
       "web_github": BaseUrl(protocol: BaseUrlProtocol.HTTPS, host: "github.com"),
       "app_web_site": BaseUrl(protocol: BaseUrlProtocol.HTTPS, host: "document-amber-gamma.vercel.app"),
-      "web_site": BaseUrl(protocol: BaseUrlProtocol.HTTPS, host: "bfban.com"),
     },
   );
 

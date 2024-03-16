@@ -181,7 +181,6 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
         return AppBar(
           forceMaterialTransparency: true,
-          title: Text(FlutterI18n.translate(context, "${['gunCalc', 'map', 'landingTimer', 'gunComparisonTable'][widget.tabIndex]}.title")),
           flexibleSpace: FlexibleSpaceBar(
             collapseMode: CollapseMode.parallax,
             background: BackdropFilter(

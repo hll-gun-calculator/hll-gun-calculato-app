@@ -56,7 +56,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
     List requestList = [];
 
     setState(() {
-      guideRecommendedBaseItem.load = true;
+      // guideRecommendedBaseItem.load = true;
     });
 
     for (var i in guideRecommendedBaseItem.updataFunction) {

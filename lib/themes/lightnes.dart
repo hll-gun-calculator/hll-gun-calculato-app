@@ -12,7 +12,7 @@ class LightnesTheme extends AppBaseThemeItem {
     SystemUiOverlayStyle systemUiOverlayStyle =  SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       systemNavigationBarColor: const Color(0xff625648).withOpacity(.2),
-      statusBarBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
     );
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
@@ -31,7 +31,7 @@ class LightnesTheme extends AppBaseThemeItem {
         onPrimary: Color(0xffffffff),
         primaryContainer: Color(0xfffff7ee),
         onPrimaryContainer: Color(0xff001d31),
-        secondary: Color(0xff575e71),
+        secondary: Color(0xff625648),
         onSecondary: Color(0xffffffff),
         secondaryContainer: Color(0xfffff7ee),
         onSecondaryContainer: Color(0xff141b2c),

@@ -84,10 +84,11 @@ class MapProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  init() {
+  Future init() async {
     _readLocalFiles();
     _readLocalStorage();
     notifyListeners();
+    return true;
   }
 
   /// 从本地读取保存数据
@@ -117,8 +118,8 @@ class MapProvider with ChangeNotifier {
   }
 
   /// 添加自定义配置
-  void addCustomConfig({required String title, required Map data}) {
-    MapCompilation mapCompilation = MapCompilation.fromJson(data as Map<String, dynamic>);
+  void addCustomConfig({required String title, required Map<String, dynamic> data}) {
+    MapCompilation mapCompilation = MapCompilation.fromJson(data);
     mapCompilation.type = MapCompilationType.Custom;
     _customPath.add(mapCompilation);
     _saveLocalStorage();

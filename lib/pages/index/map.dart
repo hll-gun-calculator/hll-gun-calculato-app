@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hll_gun_calculator/component/_empty/index.dart';
@@ -625,7 +624,12 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   ),
                 ],
               ),
-            )
+            ),
+
+            Container(
+              height: MediaQuery.of(context).viewPadding.bottom,
+              color: Theme.of(context).primaryColor.withOpacity(.2),
+            ),
           ],
         );
       },

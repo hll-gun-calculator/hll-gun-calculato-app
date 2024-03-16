@@ -28,6 +28,6 @@ class StringOrMapConverter implements JsonConverter<dynamic, Object> {
 
   @override
   Object toJson(dynamic object) {
-    return object ?? Object();
+    return object ?? object.toString();
   }
 }

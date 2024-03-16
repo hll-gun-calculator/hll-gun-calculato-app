@@ -4,8 +4,6 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import '/utils/index.dart';
 
-
-
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -40,12 +38,12 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     Future.delayed(const Duration(seconds: 1)).then((value) => {
           if (mounted)
             setState(() {
-              _size = 1.5;
+              _size = (MediaQuery.of(context).size.width / 2) * .01;
             })
         });
 
-    await providerUtil.ofApp(context).init();
-    await providerUtil.ofCalc(context).init();
+    // await providerUtil.ofApp(context).init();
+    // await providerUtil.ofCalc(context).init();
     await providerUtil.ofTheme(context).init();
     await providerUtil.ofCollect(context).init();
     await providerUtil.ofLang(context).init();
@@ -54,7 +52,21 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     if (!await _onGuide()) return;
 
-    onMain();
+    Future.wait([
+      providerUtil.ofApp(context).init(),
+      providerUtil.ofCalc(context).init(),
+      providerUtil.ofTheme(context).init(),
+      providerUtil.ofCollect(context).init(),
+      providerUtil.ofLang(context).init(),
+      providerUtil.ofMap(context).init(),
+      providerUtil.ofHomeApp(context).init(),
+      forcedAnimation(),
+    ]).then((value) => onMain());
+  }
+
+  Future forcedAnimation () async {
+    await Future.delayed(const Duration(seconds: 2));
+    return true;
   }
 
   /// [Event]
@@ -108,20 +120,16 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       scale: _size,
                       curve: Curves.easeOutBack,
                       duration: const Duration(milliseconds: 300),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 30,
-                        child: Icon(Icons.calculate),
+                        child: Image.asset("assets/splash/startup-icon.png"),
                       ),
                     ),
+                    SizedBox(height: _size * 35),
+                    const CircularProgressIndicator(),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              minHeight: 1,
-              color: Theme.of(context).colorScheme.primary,
-              backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
             ),
           ],
         ),

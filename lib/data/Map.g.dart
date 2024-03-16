@@ -17,10 +17,7 @@ MapInfo _$MapInfoFromJson(Map<String, dynamic> json) => MapInfo(
       initialPosition: json['initialPosition'] == null
           ? const Offset(0, 0)
           : MapInfo.ListAsOffset(json['initialPosition'] as List),
-      factions: (json['factions'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry($enumDecode(_$FactionsEnumMap, k),
-            MapInfoFactionInfo.fromJson(e as Map<String, dynamic>)),
-      ),
+      factions: MapInfo.factionsFromJson(json['factions'] as Map),
       assets: json['assets'] == null
           ? null
           : MapInfoAssets.fromJson(json['assets'] as Map<String, dynamic>),
@@ -38,8 +35,7 @@ Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
       'description': const StringOrMapConverter().toJson(instance.description),
       'size': MapInfo.OffsetAsList(instance.size),
       'initialPosition': MapInfo.OffsetAsList(instance.initialPosition),
-      'factions':
-          instance.factions?.map((k, e) => MapEntry(_$FactionsEnumMap[k]!, e)),
+      'factions': MapInfo.ValueToJson(instance.factions),
       'assets': instance.assets,
       'childs': MapInfo.childsToJson(instance.childs),
       'marker': instance.marker,
@@ -50,14 +46,6 @@ Value? _$JsonConverterFromJson<Json, Value>(
   Value? Function(Json json) fromJson,
 ) =>
     json == null ? null : fromJson(json as Json);
-
-const _$FactionsEnumMap = {
-  Factions.None: 'None',
-  Factions.America: 'America',
-  Factions.Germany: 'Germany',
-  Factions.TheSovietUnion: 'TheSovietUnion',
-  Factions.GreatBritain: 'GreatBritain',
-};
 
 MapInfoFactionInfo _$MapInfoFactionInfoFromJson(Map<String, dynamic> json) =>
     MapInfoFactionInfo(
@@ -77,7 +65,8 @@ Map<String, dynamic> _$MapInfoFactionInfoToJson(MapInfoFactionInfo instance) =>
     <String, dynamic>{
       'gunPosition': instance.gunPosition,
       'points': MapInfoFactionInfo.pointsToJson(instance.points),
-      'direction': _$MapInfoFactionInfoDirectionEnumMap[instance.direction]!,
+      'direction': MapInfoFactionInfo.MapInfoFactionInfoDirectionToJson(
+          instance.direction),
     };
 
 const _$MapInfoFactionInfoDirectionEnumMap = {
