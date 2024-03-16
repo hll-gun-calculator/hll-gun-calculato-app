@@ -13,6 +13,7 @@ import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:hll_gun_calculator/utils/map.dart';
 import 'package:provider/provider.dart';
 
+import '../../component/_color/index.dart';
 import '../../constants/app.dart';
 import '../../data/index.dart';
 import '../../provider/calc_provider.dart';
@@ -111,6 +112,12 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         },
       );
     });
+  }
+
+  /// 收藏
+  void _collect(Gun gun) {
+    App.provider.ofCollect(context).add(gun.result, gun.name);
+    Fluttertoast.showToast(msg: "收藏添加");
   }
 
   /// 选择阵营
@@ -378,7 +385,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   /// 火炮列表
                   Flexible(
                     child: Consumer<GunTimerProvider>(
-                      builder: (context, gunTimerData, widget) {
+                      builder: (context, GunTimerProvider gunTimerData, widget) {
                         return MediaQuery.removePadding(
                           context: context,
                           removeTop: true,
@@ -520,21 +527,30 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                           children: [Icon(Icons.timer_outlined), Text("定时器")],
                                                         ),
                                                       ),
-                                                      const PopupMenuItem(
-                                                        value: "timer",
-                                                        child: Row(
-                                                          children: [Icon(Icons.star_border), Text("收藏")],
-                                                        ),
-                                                      )
+                                                      if (e.value.result != null)
+                                                        const PopupMenuItem(
+                                                          value: "collect",
+                                                          child: Row(
+                                                            children: [Icon(Icons.star_border), Text("收藏")],
+                                                          ),
+                                                        )
                                                     ];
                                                   },
                                                   onSelected: (v) {
                                                     switch (v) {
                                                       case "gunDescription":
-                                                        _mapCoreKey.currentState!._openGunDetailModal(e.value);
+                                                        _mapCoreKey.currentState!._openGunDetailModal(
+                                                          e.value,
+                                                          onEvent: (value) => setState(() {
+                                                            e.value.color = value;
+                                                          }),
+                                                        );
                                                         break;
                                                       case "timer":
                                                         _putGunTimer(gunTimerData, querId, e, id);
+                                                        break;
+                                                      case "collect":
+                                                        _collect(e.value);
                                                         break;
                                                     }
                                                   },
@@ -878,8 +894,8 @@ class MapCoreState extends State<MapCore> {
   }
 
   /// 打开火炮信息
-  void _openGunDetailModal(Gun gunInfo) {
-    showModalBottomSheet<void>(
+  void _openGunDetailModal(Gun gunInfo, {Function(Color color)? onEvent}) async {
+    Future<void> gunDeailModal = showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
       builder: (context) {
@@ -892,6 +908,7 @@ class MapCoreState extends State<MapCore> {
               children: [
                 ListTile(
                   leading: Card(
+                    color: gunInfo.color,
                     child: Container(
                       width: 50,
                       height: 50,
@@ -916,9 +933,11 @@ class MapCoreState extends State<MapCore> {
                 ),
                 ListTile(
                   title: const Text("颜色"),
-                  trailing: Card(
-                    color: gunInfo.color,
-                    child: const SizedBox(height: 50, width: 50),
+                  trailing: ColorWidget(
+                    initializeColor: gunInfo.color,
+                    onEvent: (value) => modalSetState(() {
+                      gunInfo.color = value;
+                    }),
                   ),
                 ),
                 ListTile(
@@ -931,6 +950,10 @@ class MapCoreState extends State<MapCore> {
         });
       },
     );
+
+    gunDeailModal.then((void value) {
+      onEvent != null ? onEvent(gunInfo.color) : null;
+    });
   }
 
   /// 打开新坐标详情
@@ -992,7 +1015,12 @@ class MapCoreState extends State<MapCore> {
                   title: const Text("发射源"),
                   subtitle: const Text("发射火炮信息"),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _openGunDetailModal(App.provider.ofMap(context).currentMapGun),
+                  onTap: () => _openGunDetailModal(
+                    App.provider.ofMap(context).currentMapGun,
+                    onEvent: (value) {
+                      modalSetState(() {});
+                    },
+                  ),
                 ),
               ],
             ),
@@ -1156,7 +1184,7 @@ class MapCoreState extends State<MapCore> {
                                   widget.mapProvider.currentMapGun = i;
                                 });
 
-                                _openGunDetailModal(i);
+                                _openGunDetailModal(i, onEvent: (value) => setState(() {}));
                               },
                               child: Container(
                                 width: 5,

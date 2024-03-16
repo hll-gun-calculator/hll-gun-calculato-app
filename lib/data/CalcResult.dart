@@ -20,11 +20,11 @@ class CalcResult {
   DateTime? creationTime;
 
   // 函数信息
-  @JsonKey(toJson: ValueToJson)
+  @JsonKey(toJson: ValueToJson, fromJson: ValueCalculatingFunctionFromJson)
   late CalculatingFunction calculatingFunctionInfo;
 
   // 返回消息
-  @JsonKey(toJson: ValueToJson)
+  @JsonKey(toJson: ValueToJson, fromJson: ValueCalcResultStatusFromJson)
   CalcResultStatus? result = CalcResultStatus();
 
   CalcResult({
@@ -40,6 +40,10 @@ class CalcResult {
   }
 
   static Map ValueToJson(dynamic value) => value.toJson();
+
+  static CalculatingFunction ValueCalculatingFunctionFromJson(calculatingFunction) => CalculatingFunction.fromJson(calculatingFunction);
+
+  static CalcResultStatus ValueCalcResultStatusFromJson(calcResultStatus) => CalcResultStatus.fromJson(calcResultStatus);
 
   factory CalcResult.fromJson(Map<String, dynamic> json) => _$CalcResultFromJson(json);
 

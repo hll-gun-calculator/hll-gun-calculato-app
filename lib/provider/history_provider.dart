@@ -35,4 +35,10 @@ class HistoryProvider with ChangeNotifier {
     list.add(calcHistoryItemData);
     notifyListeners();
   }
+
+  /// 删除
+  void delete (CalcResult result) {
+    list.remove(result);
+    notifyListeners();
+  }
 }

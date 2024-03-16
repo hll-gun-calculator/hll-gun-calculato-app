@@ -1,11 +1,13 @@
-import 'dart:math';
+import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hll_gun_calculator/provider/calc_provider.dart';
+import 'package:hll_gun_calculator/utils/storage.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app.dart';
+import '../../data/index.dart';
+import '../../utils/index.dart';
 
 class GuideCalculatingFunctionManagement extends StatefulWidget {
   const GuideCalculatingFunctionManagement({super.key});
@@ -15,6 +17,73 @@ class GuideCalculatingFunctionManagement extends StatefulWidget {
 }
 
 class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFunctionManagement> {
+  Storage storage = Storage();
+
+  bool load = false;
+
+  late GuideRecommendedCalcFunction guideRecommendedCalcFunction = GuideRecommendedCalcFunction();
+
+  @override
+  void initState() {
+    _getRecommendedList();
+    super.initState();
+  }
+
+  /// 获取推荐列表
+  void _getRecommendedList() async {
+    GuideRecommendedCalcFunction;
+
+    setState(() {
+      load = true;
+    });
+
+    Response result = await Http.request(
+      "config/calcFunction/recommendeds.json",
+      httpDioValue: "app_web_site",
+      method: Http.GET,
+    );
+
+    if (result.data is Map && result.data.toString().isNotEmpty) {
+      setState(() {
+        guideRecommendedCalcFunction = GuideRecommendedCalcFunction.fromJson(result.data);
+      });
+    }
+
+    setState(() {
+      load = false;
+    });
+  }
+
+  /// 下载配置
+  Future<CalculatingFunction> _downloadConfig(GuideRecommendedBaseItem guideRecommendedBaseItem) async {
+    List requestList = [];
+
+    setState(() {
+      guideRecommendedBaseItem.load = true;
+    });
+
+    for (var i in guideRecommendedBaseItem.updataFunction) {
+      Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
+      requestList.add(jsonDecode(result.data));
+    }
+
+    CalculatingFunction newCalculatingFunction = CalculatingFunction.fromJson(requestList.first);
+    newCalculatingFunction.type = CalculatingFunctionType.Custom;
+    App.provider.ofCalc(context).addCustomConfig(title: newCalculatingFunction.name, data: jsonEncode(newCalculatingFunction));
+
+    setState(() {
+      guideRecommendedBaseItem.load = false;
+    });
+
+    return newCalculatingFunction;
+  }
+
+  /// 下载并使用
+  void _downloadAndUse(GuideRecommendedBaseItem guideRecommendedBaseItem) async {
+    CalculatingFunction newCalculatingFunction = await _downloadConfig(guideRecommendedBaseItem);
+    App.provider.ofCalc(context).currentCalculatingFunctionName = newCalculatingFunction.name;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CalcProvider>(builder: (context, calcData, widget) {
@@ -40,12 +109,12 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
           ),
           const Divider(),
           Container(
-            padding: EdgeInsets.only(left: 15),
+            padding: const EdgeInsets.only(left: 15),
             child: Row(
               children: [
                 RawChip(
-                  visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                  label: Text("推荐"),
+                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+                  label: const Text("推荐"),
                   color: MaterialStatePropertyAll(Colors.blue.shade100),
                 ),
               ],
@@ -55,21 +124,45 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             title: Text("来自第三方"),
             subtitle: Text("我们陈列出一些社区提供’计算函数‘选择"),
           ),
-          ...[1, 2, 3].map((e) {
+          if (load)
+            Center(
+              child: Container(
+                width: 50,
+                height: 50,
+                margin: const EdgeInsets.symmetric(vertical: 50),
+                child: const CircularProgressIndicator(),
+              ),
+            ),
+          ...guideRecommendedCalcFunction.child.map((e) {
             return ListTile(
-              title: Text("名称"),
-              subtitle: Text("作者"),
+              title: Text(e.name),
               trailing: Wrap(
                 children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.downloading),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.add_circle_outline),
-                    label: Text("添加并作为默认"),
-                  )
+                  if (e.load)
+                     Container(
+                      width: 18,
+                      height: 18,
+                      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    )
+                  else if (!e.load && calcData.calcList.where((i) => i.name == e.name).isEmpty)
+                    IconButton(
+                      onPressed: () => _downloadConfig(e),
+                      icon: const Icon(Icons.downloading),
+                    )
+                  else if (!e.load && calcData.calcList.where((i) => i.name == e.name).isNotEmpty)
+                    const IconButton(
+                      onPressed: null,
+                      icon: Icon(Icons.done),
+                    ),
+                  if (!e.load && calcData.calcList.where((i) => i.name == e.name).isEmpty)
+                    TextButton.icon(
+                      onPressed: () => _downloadAndUse(e),
+                      icon: const Icon(Icons.add_circle_outline),
+                      label: const Text("添加并作为默认"),
+                    )
                 ],
               ),
             );

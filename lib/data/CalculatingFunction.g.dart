@@ -6,20 +6,6 @@ part of 'CalculatingFunction.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CalculatingFunctionUpData _$CalculatingFunctionUpDataFromJson(
-        Map<String, dynamic> json) =>
-    CalculatingFunctionUpData(
-      name: json['name'] as String? ?? "none",
-      path: json['path'] as String? ?? "",
-    );
-
-Map<String, dynamic> _$CalculatingFunctionUpDataToJson(
-        CalculatingFunctionUpData instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'path': instance.path,
-    };
-
 CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
     CalculatingFunction(
       name: json['name'] as String? ?? "none",
@@ -32,8 +18,7 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
       author: json['author'] as String? ?? "none",
       website: json['website'] as String? ?? "",
       updataFunction: (json['updataFunction'] as List<dynamic>?)
-              ?.map((e) =>
-                  CalculatingFunctionUpData.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => UpdataFunction.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       type:
@@ -43,12 +28,14 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
-    );
+    )..description = _$JsonConverterFromJson<Object, dynamic>(
+        json['description'], const StringOrMapConverter().fromJson);
 
 Map<String, dynamic> _$CalculatingFunctionToJson(
         CalculatingFunction instance) =>
     <String, dynamic>{
       'name': instance.name,
+      'description': const StringOrMapConverter().toJson(instance.description),
       'version': instance.version,
       'child': CalculatingFunction.ChildToJson(instance.child),
       'author': instance.author,
@@ -72,13 +59,19 @@ const _$CalculatingFunctionTypeEnumMap = {
   CalculatingFunctionType.Custom: 'Custom',
 };
 
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
+
 CalculatingFunctionChild _$CalculatingFunctionChildFromJson(
         Map<String, dynamic> json) =>
     CalculatingFunctionChild(
       maximumRange:
-          CalculatingFunctionChild.readValue(json, 'maximumRange'),
+          CalculatingFunctionChild.readValue(json, 'maximumRange') ?? 1600,
       minimumRange:
-          CalculatingFunctionChild.readValue(json, 'minimumRange'),
+          CalculatingFunctionChild.readValue(json, 'minimumRange') ?? 100,
       envs: json['envs'] as Map<String, dynamic>? ?? {},
       fun: json['fun'] as String? ?? '',
     );

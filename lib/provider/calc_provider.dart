@@ -13,7 +13,7 @@ class CalcProvider with ChangeNotifier {
 
   final List<Map> _localCalcPath = [
     {"name": "internal-calc", "path": "assets/json/fun-internal-calc.json"},
-    {"name": "easyarty", "path": "assets/json/fun-easyarty.json"}
+    // {"name": "easyarty", "path": "assets/json/fun-easyarty.json"}
   ];
 
   // 内置配置列表
@@ -122,6 +122,7 @@ class CalcProvider with ChangeNotifier {
     if (id.isEmpty) return;
     int index = _customCalcList.indexWhere((i) => i.id == id);
     _customCalcList[index] = data;
+    _save();
     notifyListeners();
   }
 

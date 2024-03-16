@@ -12,13 +12,9 @@ CalcResult _$CalcResultFromJson(Map<String, dynamic> json) => CalcResult(
               Factions.None,
       inputValue: json['inputValue'] as String? ?? "0",
       outputValue: json['outputValue'] as String? ?? "0",
-      calculatingFunctionInfo: json['calculatingFunctionInfo'] == null
-          ? null
-          : CalculatingFunction.fromJson(
-              json['calculatingFunctionInfo'] as Map<String, dynamic>),
-      result: json['result'] == null
-          ? null
-          : CalcResultStatus.fromJson(json['result'] as Map<String, dynamic>),
+      calculatingFunctionInfo: CalcResult.ValueCalculatingFunctionFromJson(
+          json['calculatingFunctionInfo']),
+      result: CalcResult.ValueCalcResultStatusFromJson(json['result']),
     )..creationTime = json['creationTime'] == null
         ? null
         : DateTime.parse(json['creationTime'] as String);

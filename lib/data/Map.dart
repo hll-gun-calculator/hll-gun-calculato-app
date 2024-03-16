@@ -14,6 +14,7 @@ class MapInfo {
   @StringOrMapConverter()
   final String name;
 
+  // 描述
   @StringOrMapConverter()
   dynamic description;
 
@@ -68,6 +69,7 @@ class MapInfo {
 
   MapInfo({
     this.name = "none",
+    this.description = "",
     this.size = const Offset(1000, 1000),
     this.initialPosition = const Offset(0, 0),
     this.factions,

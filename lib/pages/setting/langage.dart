@@ -20,17 +20,17 @@ class _LanguagePageState extends State<LanguagePage> {
   List languages = [
     {
       "name": "zh_CN",
-      "fileName": "zh",
+      "fileName": "zh_CN",
       "label": "中文",
     },
-    // {
-    //   "name": "en_US",
-    //   "fileName": "en",
-    //   "label": "English",
-    // }
+    {
+      "name": "en_US",
+      "fileName": "en_US",
+      "label": "English",
+    }
   ];
 
-  String currentPageSelectLang = "";
+  late String currentPageSelectLang;
 
   @override
   void initState() {
@@ -57,6 +57,7 @@ class _LanguagePageState extends State<LanguagePage> {
   /// 未保存
   void setCurrentPageSelectLang(String value) {
     if (value.isEmpty) return;
+
     setState(() {
       currentPageSelectLang = value;
     });
@@ -76,29 +77,29 @@ class _LanguagePageState extends State<LanguagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(FlutterI18n.translate(context, "setting.language.title")),
-        actions: [
-          if (currentPageSelectLang != langProvider!.currentLang)
-            IconButton(
-              onPressed: () => saveLocalLanguage(context),
-              icon: const Icon(Icons.done),
-            )
-        ],
-        leading: Builder(
-          builder: (BuildContext context) {
-            return BackButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+    return Consumer<TranslationProvider>(
+      builder: (BuildContext context, data, Widget? child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(FlutterI18n.translate(context, "setting.language.title")),
+            actions: [
+              if (currentPageSelectLang != langProvider!.currentLang)
+                IconButton(
+                  onPressed: () => saveLocalLanguage(context),
+                  icon: const Icon(Icons.done),
+                )
+            ],
+            leading: Builder(
+              builder: (BuildContext context) {
+                return BackButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                );
               },
-            );
-          },
-        ),
-      ),
-      body: Consumer<TranslationProvider>(
-        builder: (BuildContext context, data, Widget? child) {
-          return ListView(
+            ),
+          ),
+          body: ListView(
             children: languages.map((lang) {
               return RadioListTile<String>(
                 value: lang["fileName"].toString(),
@@ -121,9 +122,9 @@ class _LanguagePageState extends State<LanguagePage> {
                 selected: true,
               );
             }).toList(),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

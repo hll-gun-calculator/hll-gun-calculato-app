@@ -9,14 +9,18 @@ part of 'MapCompilation.dart';
 MapCompilation _$MapCompilationFromJson(Map<String, dynamic> json) =>
     MapCompilation(
       name: json['name'] as String? ?? "none",
+      description: _$JsonConverterFromJson<Object, dynamic>(
+              json['description'], const StringOrMapConverter().fromJson) ??
+          "",
       author: json['author'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
       data: (json['data'] as List<dynamic>?)
               ?.map((e) => MapInfo.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-    )..description = _$JsonConverterFromJson<Object, dynamic>(
-        json['description'], const StringOrMapConverter().fromJson);
+      type: $enumDecodeNullable(_$MapCompilationTypeEnumMap, json['type']) ??
+          MapCompilationType.None,
+    );
 
 Map<String, dynamic> _$MapCompilationToJson(MapCompilation instance) =>
     <String, dynamic>{
@@ -24,7 +28,8 @@ Map<String, dynamic> _$MapCompilationToJson(MapCompilation instance) =>
       'description': const StringOrMapConverter().toJson(instance.description),
       'author': instance.author,
       'version': instance.version,
-      'data': instance.data,
+      'data': MapCompilation.dataToJson(instance.data),
+      'type': _$MapCompilationTypeEnumMap[instance.type]!,
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(
@@ -32,3 +37,8 @@ Value? _$JsonConverterFromJson<Json, Value>(
   Value? Function(Json json) fromJson,
 ) =>
     json == null ? null : fromJson(json as Json);
+
+const _$MapCompilationTypeEnumMap = {
+  MapCompilationType.None: 'None',
+  MapCompilationType.Custom: 'Custom',
+};

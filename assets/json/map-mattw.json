@@ -1,0 +1,225 @@
+{
+  "name": "mattw",
+  "description": {
+    "zh_CN": "位置"
+  },
+  "author": "mattwright324",
+  "version": "0.0.1",
+  "website": "mattw.io",
+  "data": [
+    {
+      "name": "Carentan",
+      "size": [
+        4096,
+        4096
+      ],
+      "initialPosition": [
+        128,
+        1905
+      ],
+      "factions": {
+        "America": {
+          "gunPosition": [
+            {
+              "name": "America Gun 1",
+              "description": {
+                "zh_CN": "位置"
+              },
+              "offset": [
+                114.876,
+                1890
+              ]
+            },
+            {
+              "name": "America Gun 2",
+              "offset": [
+                114.876,
+                1905
+              ]
+            },
+            {
+              "name": "America Gun 3",
+              "offset": [
+                114.876,
+                1925
+              ]
+            }
+          ],
+          "points": [
+            [
+              40,
+              300
+            ],
+            [
+              40,
+              4096
+            ],
+            [
+              40,
+              600
+            ]
+          ],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "1",
+              "offset": [
+                3982,
+                1890
+              ]
+            },
+            {
+              "name": "2",
+              "offset": [
+                3982,
+                1905
+              ]
+            },
+            {
+              "name": "3",
+              "offset": [
+                3982,
+                1925
+              ]
+            }
+          ],
+          "points": [
+            [
+              900,
+              300
+            ],
+            [
+              900,
+              500
+            ],
+            [
+              900,
+              600
+            ]
+          ],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Carentan_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Carentan_SP_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Arty Rand",
+          "index": 1,
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Carentan_Arty1.png"
+        },
+        {
+          "name": "plain grid",
+          "index": 2,
+          "type": "PlainGrid",
+          "network": "https://mattw.io/maps-let-loose/assets/plain-grid.png"
+        }
+      ],
+      "marker": [
+        {
+          "name": "PrimaryArty",
+          "iconType": "PresupposeArty",
+          "points": [
+            {
+              "name": "A1 Point",
+              "x": 714.392,
+              "y": 1210.546
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Driel",
+      "size": [
+        4340,
+        4340
+      ],
+      "initialPosition": [
+        2000,
+        2000
+      ],
+      "factions": {
+        "America": {
+          "gunPosition": [
+            {
+              "name": "1",
+              "offset": [
+                38.0,
+                490.9
+              ]
+            },
+            {
+              "name": "2",
+              "offset": [
+                41.0,
+                490.9
+              ]
+            },
+            {
+              "name": "3",
+              "offset": [
+                43.0,
+                490.9
+              ]
+            }
+          ],
+          "points": [
+            [
+              40,
+              300
+            ],
+            [
+              40,
+              500
+            ],
+            [
+              40,
+              600
+            ]
+          ],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [],
+          "points": [
+            [
+              900,
+              300
+            ],
+            [
+              900,
+              500
+            ],
+            [
+              900,
+              600
+            ]
+          ],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Driel_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "marker": [
+        {
+          "name": "PrimaryArty",
+          "iconType": "Arty",
+          "points": []
+        }
+      ]
+    }
+  ]
+}

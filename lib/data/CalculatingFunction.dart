@@ -3,28 +3,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'Factions.dart';
+import 'MapToI18n.dart';
+import 'index.dart';
 
 part 'CalculatingFunction.g.dart';
-
-enum CalculatingFunctionUpDataType { None, Network }
-
-@JsonSerializable()
-class CalculatingFunctionUpData {
-  String name;
-  String path;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  CalculatingFunctionUpDataType type = CalculatingFunctionUpDataType.Network;
-
-  CalculatingFunctionUpData({
-    this.name = "none",
-    this.path = "",
-  });
-
-  factory CalculatingFunctionUpData.fromJson(Map<String, dynamic> json) => _$CalculatingFunctionUpDataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$CalculatingFunctionUpDataToJson(this);
-}
 
 enum CalculatingFunctionType { Internal, Custom }
 
@@ -32,7 +14,12 @@ enum CalculatingFunctionType { Internal, Custom }
 @JsonSerializable()
 class CalculatingFunction {
   // 名称
+  @StringOrMapConverter()
   late String name;
+
+  // 描述
+  @StringOrMapConverter()
+  dynamic description;
 
   // 版本
   late String version;
@@ -48,7 +35,7 @@ class CalculatingFunction {
   late String website;
 
   // 更新地址
-  late List<CalculatingFunctionUpData> updataFunction;
+  late List<UpdataFunction> updataFunction;
 
   // 创建时间
   late DateTime creationTime;

@@ -5,16 +5,19 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/app.dart';
 import '/data/index.dart';
 import '/provider/collect_provider.dart';
 import '/component/_time/index.dart';
 
 class HistoryCalcCard extends StatefulWidget {
   final CalcHistoryItemData i;
+  final Function()? onEventUpdata;
 
   const HistoryCalcCard({
     super.key,
     required this.i,
+    this.onEventUpdata,
   });
 
   @override
@@ -54,7 +57,13 @@ class _historyCalcCardState extends State<HistoryCalcCard> {
                         return;
                       }
 
-                      collectData.add(widget.i, titleController.text, remark: remarkController.text);
+                      collectData.add(
+                        widget.i,
+                        titleController.text,
+                        remark: remarkController.text,
+                        id: widget.i.id,
+                      );
+                      
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
@@ -99,6 +108,7 @@ class _historyCalcCardState extends State<HistoryCalcCard> {
       backgroundColor: Colors.transparent,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      scrollControlDisabledMaxHeightRatio: .8,
       builder: (context) {
         return Consumer<CollectProvider>(
           builder: (BuildContext collectContext, collectData, collectWidget) {
@@ -106,31 +116,35 @@ class _historyCalcCardState extends State<HistoryCalcCard> {
               appBar: AppBar(
                 leading: const CloseButton(),
                 actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(collectData.hasAsId(calcResult.id) ? Icons.star : Icons.star_border),
-                  ),
+                  Text(collectData.hasAsId(calcResult.id).toString()),
                   DropdownButtonHideUnderline(
                     child: DropdownButton(
                       padding: const EdgeInsets.all(5),
                       icon: const Icon(Icons.more_horiz),
                       isDense: true,
-                      items: const [
-                        DropdownMenuItem(
+                      items: [
+                        const DropdownMenuItem(
                           value: 1,
                           child: Text("删除"),
                         ),
                         DropdownMenuItem(
                           value: 2,
-                          child: Text("收藏"),
+                          child: collectData.hasAsId(calcResult.id) ? const Text("删除收藏") : const Text("收藏"),
                         ),
                       ],
                       onChanged: (value) {
                         switch (value as int) {
+                          case 1:
+                            App.provider.ofHistory(context).delete(widget.i);
+                            Navigator.pop(context);
+                            break;
                           case 2:
                             _addCollectModel(widget.i);
                             break;
                         }
+
+                        // 更新事件，通知modal状态
+                        widget.onEventUpdata!();
                       },
                     ),
                   ),

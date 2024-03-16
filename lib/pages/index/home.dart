@@ -114,10 +114,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             ),
                             const Divider(),
                             ListTile(
-                              title: const Text('设置'),
-                              onTap: () {
-                                _openSetting();
-                              },
+                              title: Text(FlutterI18n.translate(context, "setting.title")),
+                              onTap: () => _openSetting(),
                             ),
                           ],
                         ),

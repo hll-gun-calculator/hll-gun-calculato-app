@@ -33,6 +33,7 @@ class _historyCalcCardState extends State<CollectCalcCard> {
       backgroundColor: Colors.transparent,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      scrollControlDisabledMaxHeightRatio: .8,
       builder: (context) {
         return Consumer<CollectProvider>(
           builder: (BuildContext collectContext, collectData, collectWidget) {
@@ -40,27 +41,21 @@ class _historyCalcCardState extends State<CollectCalcCard> {
               appBar: AppBar(
                 leading: const CloseButton(),
                 actions: [
-                  DropdownButton(
-                    padding: EdgeInsets.zero,
+                  PopupMenuButton(
                     icon: const Icon(Icons.more_horiz),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 1,
-                        child: Text("删除"),
-                      ),
-                      // DropdownMenuItem(
-                      //   value: 2,
-                      //   child: Text(collectData.hasAsId(collectItemData.id) ? "删除收藏" : "收藏"),
-                      // ),
-                    ],
-                    onChanged: (value) {
-                      switch (value as int) {
-                        case 1:
-                          collectData.deleteAsId(collectItemData.id);
-                          break;
-                        case 2:
-                          break;
-                      }
+                    itemBuilder: (itemBuilder) {
+                      return [
+                        PopupMenuItem(
+                          child: const Wrap(
+                            spacing: 5,
+                            children: [
+                              Icon(Icons.delete),
+                              Text("删除"),
+                            ],
+                          ),
+                          onTap: () => collectData.deleteAsId(collectItemData.id),
+                        )
+                      ];
                     },
                   ),
                 ],
@@ -70,7 +65,7 @@ class _historyCalcCardState extends State<CollectCalcCard> {
                   ListTile(
                     title: const Text("结果"),
                     subtitle: Card(
-                      margin: EdgeInsets.zero,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                         child: Row(
@@ -95,11 +90,9 @@ class _historyCalcCardState extends State<CollectCalcCard> {
                       ),
                     ),
                   ),
-                  const ListTile(
-                    title: Text("标题"),
-                  ),
                   TextField(
                     decoration: const InputDecoration(
+                      labelText: "标题",
                       hintText: "标题内容",
                       contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     ),
@@ -107,11 +100,9 @@ class _historyCalcCardState extends State<CollectCalcCard> {
                     maxLines: 1,
                     controller: title,
                   ),
-                  const ListTile(
-                    title: Text("描述"),
-                  ),
                   TextField(
                     decoration: const InputDecoration(
+                      labelText: "描述",
                       hintText: "描述内容",
                       contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                     ),
@@ -176,6 +167,7 @@ class _historyCalcCardState extends State<CollectCalcCard> {
       leading: widget.leading,
       title: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             flex: 1,
@@ -186,16 +178,18 @@ class _historyCalcCardState extends State<CollectCalcCard> {
                   widget.i.title.isNotEmpty ? widget.i.title : widget.i.id,
                   style: const TextStyle(fontWeight: FontWeight.normal),
                 ),
-                Text(
-                  widget.i.remark.isNotEmpty ? widget.i.remark : widget.i.updateTime.toString(),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+                if (widget.i.remark.isNotEmpty)
+                  Text(
+                    widget.i.remark,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  )
+                else
+                  TimeWidget(data: widget.i.updateTime.toString(), type: TimeWidgetType.full),
               ],
             ),
           ),
           Card(
-            margin: EdgeInsets.zero,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
               child: Row(

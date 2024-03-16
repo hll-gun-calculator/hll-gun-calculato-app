@@ -14,7 +14,7 @@ class MapProvider with ChangeNotifier {
 
   final List _localPath = [
     {"name": "internal", "path": "assets/json/map-internal.json"},
-    {"name": "mattw", "path": "assets/json/map-mattw.json"}
+    // {"name": "mattw", "path": "assets/json/map-mattw.json"}
   ];
 
   // 内置
@@ -36,7 +36,7 @@ class MapProvider with ChangeNotifier {
   MapCompilation get currentMapCompilation => list.where((i) => i.name == currentMapCompilationName).first;
 
   // 设置当前地图集合实例
-  set currentMapCompilation (MapCompilation mapCompilation) {
+  set currentMapCompilation(MapCompilation mapCompilation) {
     _currentMapCompilationName = mapCompilation.name;
     _saveLocalStorage();
     notifyListeners();
@@ -78,7 +78,7 @@ class MapProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // 给当前选择的火炮添加计算结果
+  /// 给当前选择的火炮添加计算结果
   void setCurrentMapGunResult(MapGunResult mapGunResult) {
     _currentMapGun.result = mapGunResult;
     notifyListeners();
@@ -90,8 +90,8 @@ class MapProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // 从本地读取保存数据
-  Future _readLocalStorage () async {
+  /// 从本地读取保存数据
+  Future _readLocalStorage() async {
     StorageData mapData = await storage.get(PACKAGENAME);
 
     if (mapData.code == 0) {
@@ -99,8 +99,8 @@ class MapProvider with ChangeNotifier {
     }
   }
 
-  // 保存地图数据
-  void _saveLocalStorage () {
+  /// 保存地图数据
+  void _saveLocalStorage() {
     Map value = {
       "currentMapCompilationName": _currentMapCompilationName,
     };
@@ -108,15 +108,24 @@ class MapProvider with ChangeNotifier {
     storage.set(PACKAGENAME, value: value);
   }
 
-  // 删除合集
-  void deleteMapCompilation (MapCompilation mapCompilation) {
+  /// 删除合集
+  void deleteMapCompilation(MapCompilation mapCompilation) {
     list.removeAt(list.indexWhere((element) => element.name == mapCompilation.name));
     _currentMapCompilationName = list.first.name;
     _saveLocalStorage();
     notifyListeners();
   }
 
-  // 从本地读取自定义
+  /// 添加自定义配置
+  void addCustomConfig({required String title, required Map data}) {
+    MapCompilation mapCompilation = MapCompilation.fromJson(data as Map<String, dynamic>);
+    mapCompilation.type = MapCompilationType.Custom;
+    _customPath.add(mapCompilation);
+    _saveLocalStorage();
+    notifyListeners();
+  }
+
+  /// 从本地读取自定义
   Future _readLocalFiles() async {
     for (var i in _localPath) {
       dynamic d = await rootBundle.loadString(i["path"]);

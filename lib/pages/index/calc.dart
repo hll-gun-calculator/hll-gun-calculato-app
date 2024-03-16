@@ -108,22 +108,29 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
       context: context,
       clipBehavior: Clip.hardEdge,
       builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: const CloseButton(),
-          ),
-          body: historyData.list.isNotEmpty
-              ? Scrollbar(
-                  child: ListView(
-                    dragStartBehavior: DragStartBehavior.down,
-                    children: historyData.sort().list.map((i) {
-                      return HistoryCalcCard(i: i);
-                    }).toList(),
-                  ),
-                )
-              : const Center(
-                  child: EmptyWidget(),
-                ),
+        return StatefulBuilder(
+          builder: (modalContext, modalSetStatus) {
+            return Scaffold(
+              appBar: AppBar(
+                leading: const CloseButton(),
+              ),
+              body: historyData.list.isNotEmpty
+                  ? Scrollbar(
+                      child: ListView(
+                        dragStartBehavior: DragStartBehavior.down,
+                        children: historyData.sort().list.map((i) {
+                          return HistoryCalcCard(
+                            i: i,
+                            onEventUpdata: () => modalSetStatus(() {}),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : const Center(
+                      child: EmptyWidget(),
+                    ),
+            );
+          },
         );
       },
     );

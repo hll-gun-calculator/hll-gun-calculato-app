@@ -32,8 +32,8 @@ class _GuidePageState extends State<GuidePage> {
     const GuideCalculatingFunctionManagement(),
     const GuideMapPackageManagement(),
     const GuideKeyboardManagement(),
-    GuideHomeAppSore(),
-    GuideEnd(),
+    const GuideHomeAppSore(),
+    const GuideEnd(),
   ];
 
   /// 是否允许上一步
@@ -97,15 +97,7 @@ class _GuidePageState extends State<GuidePage> {
           extendBodyBehindAppBar: true,
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomRight,
-                  colors: ProviderUtil().ofTheme(context).currentThemeName == "default" ? [Colors.transparent, Colors.black54] : [Colors.transparent, Colors.black12],
-                ),
-              ),
-            ),
-            backgroundColor: Colors.transparent,
+            forceMaterialTransparency: true,
           ),
           body: PageTransitionSwitcher(
             duration: const Duration(milliseconds: 150),

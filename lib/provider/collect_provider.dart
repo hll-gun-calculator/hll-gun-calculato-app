@@ -36,6 +36,7 @@ class CollectProvider with ChangeNotifier {
 
   bool hasAsId(String id) {
     if (id.isEmpty) return false;
+    print(_list);
     return _list.where((element) => element.id == id).isNotEmpty;
   }
 
@@ -72,12 +73,15 @@ class CollectProvider with ChangeNotifier {
   }
 
   /// 添加收藏
-  add(CalcResult i, String title, {String remark = ""}) {
+  void add(dynamic i, String title, {String remark = "", String id = ""}) {
+    if (i is! CalcResult || i is! MapGunResult) return;
+
     CollectItemData collectItemData = CollectItemData();
     collectItemData.as(i);
 
     collectItemData.title = title;
     collectItemData.remark = remark;
+    if (id.isNotEmpty) collectItemData.id = id;
 
     _list.add(collectItemData);
     _save();
@@ -99,7 +103,7 @@ class CollectProvider with ChangeNotifier {
   }
 
   /// 排序
-  CollectProvider sort () {
+  CollectProvider sort() {
     _list.sort((a, b) => a.creationTime!.millisecondsSinceEpoch - b.creationTime!.millisecondsSinceEpoch);
     return this;
   }

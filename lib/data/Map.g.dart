@@ -8,6 +8,9 @@ part of 'Map.dart';
 
 MapInfo _$MapInfoFromJson(Map<String, dynamic> json) => MapInfo(
       name: json['name'] as String? ?? "none",
+      description: _$JsonConverterFromJson<Object, dynamic>(
+              json['description'], const StringOrMapConverter().fromJson) ??
+          "",
       size: json['size'] == null
           ? const Offset(1000, 1000)
           : MapInfo.ListAsOffset(json['size'] as List),
@@ -28,8 +31,7 @@ MapInfo _$MapInfoFromJson(Map<String, dynamic> json) => MapInfo(
       marker: (json['marker'] as List<dynamic>?)
           ?.map((e) => MapInfoMarkerItem.fromJson(e as Map<String, dynamic>))
           .toList(),
-    )..description = _$JsonConverterFromJson<Object, dynamic>(
-        json['description'], const StringOrMapConverter().fromJson);
+    );
 
 Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
       'name': instance.name,
@@ -43,6 +45,12 @@ Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
       'marker': instance.marker,
     };
 
+Value? _$JsonConverterFromJson<Json, Value>(
+  Object? json,
+  Value? Function(Json json) fromJson,
+) =>
+    json == null ? null : fromJson(json as Json);
+
 const _$FactionsEnumMap = {
   Factions.None: 'None',
   Factions.America: 'America',
@@ -50,12 +58,6 @@ const _$FactionsEnumMap = {
   Factions.TheSovietUnion: 'TheSovietUnion',
   Factions.GreatBritain: 'GreatBritain',
 };
-
-Value? _$JsonConverterFromJson<Json, Value>(
-  Object? json,
-  Value? Function(Json json) fromJson,
-) =>
-    json == null ? null : fromJson(json as Json);
 
 MapInfoFactionInfo _$MapInfoFactionInfoFromJson(Map<String, dynamic> json) =>
     MapInfoFactionInfo(

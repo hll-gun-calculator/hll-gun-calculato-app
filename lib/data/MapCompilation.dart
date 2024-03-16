@@ -18,6 +18,7 @@ class MapCompilation {
 
   String version;
 
+  @JsonKey(toJson: dataToJson)
   List<MapInfo> data;
 
   MapCompilationType type;
@@ -30,6 +31,8 @@ class MapCompilation {
     this.data = const [],
     this.type = MapCompilationType.None,
   });
+
+  static List dataToJson (List<MapInfo> list) => list.map((e) => e.toJson()).toList();
 
   factory MapCompilation.fromJson(Map<String, dynamic> json) => _$MapCompilationFromJson(json);
 

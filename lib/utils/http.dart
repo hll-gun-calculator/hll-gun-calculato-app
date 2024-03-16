@@ -23,7 +23,7 @@ class Http {
   static Dio dio = createInstance();
 
   /// default options
-  static const Duration CONNECT_TIEMOUT = Duration(seconds: 10);
+  static const Duration CONNECT_TIEMOUT = Duration(seconds: 20);
   static const Duration RECEIVE_TIMEOUT = Duration(seconds: 10);
 
   /// http request methods

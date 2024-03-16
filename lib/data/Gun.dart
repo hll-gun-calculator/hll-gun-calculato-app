@@ -58,12 +58,15 @@ class Gun {
 /// 地图火炮结果
 @JsonSerializable()
 class MapGunResult extends CalcResult {
+  // 输出角度
   @JsonKey(defaultValue: 0)
   double outputAngle;
 
+  // 输入坐标
   @JsonKey(toJson: OffsetAsList, fromJson: ListAsOffset)
   Offset inputOffset;
 
+  // 目标坐标
   @JsonKey(toJson: OffsetAsList, fromJson: ListAsOffset)
   Offset targetOffset;
 

@@ -10,3 +10,7 @@ export 'MapIconType.dart';
 export 'MapCompilation.dart';
 export 'Gun.dart';
 export 'Landing.dart';
+export 'GuideRecommendedBase.dart';
+export 'HomeApp.dart';
+export 'UpdataFunction.dart';
+export 'Version.dart';

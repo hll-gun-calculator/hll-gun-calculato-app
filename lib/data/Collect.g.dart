@@ -24,11 +24,9 @@ CollectItemData _$CollectItemDataFromJson(Map<String, dynamic> json) =>
       ..creationTime = json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String)
-      ..calculatingFunctionInfo = CalculatingFunction.fromJson(
-          json['calculatingFunctionInfo'] as Map<String, dynamic>)
-      ..result = json['result'] == null
-          ? null
-          : CalcResultStatus.fromJson(json['result'] as Map<String, dynamic>);
+      ..calculatingFunctionInfo = CalcResult.ValueCalculatingFunctionFromJson(
+          json['calculatingFunctionInfo'])
+      ..result = CalcResult.ValueCalcResultStatusFromJson(json['result']);
 
 Map<String, dynamic> _$CollectItemDataToJson(CollectItemData instance) =>
     <String, dynamic>{

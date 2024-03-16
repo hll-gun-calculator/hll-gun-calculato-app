@@ -70,8 +70,9 @@ class App extends StatelessWidget {
               FlutterI18nDelegate(
                 translationLoader: FileTranslationLoader(
                   useCountryCode: true,
+                  useScriptCode: true,
                   basePath: "assets/lang",
-                  fallbackFile: "zh",
+                  fallbackFile: "zh_CN",
                 ),
               ),
               GlobalMaterialLocalizations.delegate,

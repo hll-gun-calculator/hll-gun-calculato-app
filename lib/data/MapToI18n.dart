@@ -15,16 +15,19 @@ class StringOrMapConverter implements JsonConverter<dynamic, Object> {
 
   @override
   dynamic fromJson(Object json) {
+    if (json is String && json.isEmpty) return json ?? "";
+
     if (json is Map<String, dynamic>) {
       return json;
     } else if (json is String) {
       return json;
     }
-    throw ArgumentError('StringOrMapConverter cannot parse $json');
+
+    return json;
   }
 
   @override
   Object toJson(dynamic object) {
-    return object;
+    return object ?? Object();
   }
 }

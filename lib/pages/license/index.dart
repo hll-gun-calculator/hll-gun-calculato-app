@@ -17,7 +17,7 @@ class _LicensePageState extends State<LicensePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(FlutterI18n.translate(context, "license.title")),
+        title: Text(FlutterI18n.translate(context, "setting.cell.license.title")),
       ),
       body: CustomLicensePage(
         (context, AsyncSnapshot<LicenseData> licenseDataFuture) {
