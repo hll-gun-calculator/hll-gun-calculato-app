@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 
 import '/utils/index.dart';
 
@@ -55,6 +56,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       providerUtil.ofLang(context).init(),
       providerUtil.ofMap(context).init(),
       providerUtil.ofHomeApp(context).init(),
+      providerUtil.ofGunTimer(context).init(),
       forcedAnimation(),
     ]).then((value) async {
       if (!await _onGuide()) return;
@@ -89,12 +91,11 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     StorageData guideData = await storage.get(guideName);
     dynamic guide = guideData.value;
 
-    await _urlUtil.opEnPage(context, "/guide", transition: TransitionType.fadeIn).then((value) async {
-      onMain();
-      await storage.set(guideName, value: 1);
-    });
-
     if (guideData.code != 0 && guide == null) {
+      await _urlUtil.opEnPage(context, "/guide", transition: TransitionType.fadeIn).then((value) async {
+        onMain();
+        await storage.set(guideName, value: 1);
+      });
       return false;
     }
 
@@ -105,35 +106,39 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Container(
-                color: Theme
-                    .of(context)
-                    .scaffoldBackgroundColor,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AnimatedScale(
-                      scale: _size,
-                      curve: Curves.easeOutBack,
-                      duration: const Duration(milliseconds: 300),
-                      child: CircleAvatar(
-                        radius: 30,
-                        child: Image.asset("assets/splash/startup-icon.png"),
+      child: Title(
+        title: FlutterI18n.translate(context, "splash.title"),
+        color: Colors.black,
+        child: Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Container(
+                  color: Theme
+                      .of(context)
+                      .scaffoldBackgroundColor,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedScale(
+                        scale: _size,
+                        curve: Curves.easeOutBack,
+                        duration: const Duration(milliseconds: 300),
+                        child: CircleAvatar(
+                          radius: 30,
+                          child: Image.asset("assets/splash/startup-icon.png"),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: _size * 35),
-                    const CircularProgressIndicator(),
-                  ],
+                      SizedBox(height: _size * 35),
+                      const CircularProgressIndicator(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

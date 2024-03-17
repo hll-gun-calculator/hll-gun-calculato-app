@@ -11,11 +11,16 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  # icon
   cupertino_icons: ^1.0.2
-  dio: ^5.0.0
+
+  # dio
+  dio: ^5.4.1
   dio_cache_interceptor: ^3.5.0
   dio_smart_retry: ^6.0.0
   dio_cookie_manager: ^2.0.0
+
+  # publics
   file_picker: ^6.2.0
   dartfx: ^1.0.14
   provider: ^6.0.2
@@ -70,3 +75,10 @@ flutter:
     - assets/json/
     - assets/lang/
     - assets/audio/
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/splash/startup-icon.png
+  color_dark: "#121212"
+
+  web: true

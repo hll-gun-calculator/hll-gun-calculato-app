@@ -1,4 +1,4 @@
-package com.cabbagelol.hll.emplacementcalculator.hll_emplacement_calculator
+package com.cabbagelol.hll_gun_calculator
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -22,6 +22,7 @@ class _MapPackagePageState extends State<MapPackagePage> {
       context: context,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(

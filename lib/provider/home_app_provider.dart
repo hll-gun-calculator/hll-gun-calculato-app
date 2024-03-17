@@ -13,8 +13,8 @@ class HomeAppProvider with ChangeNotifier {
   Storage storage = Storage();
 
   // 应用上限以及下限
-  final int appMaxLength = 2;
-  final int appMinLength = 1;
+  final int appMaxLength = 4;
+  final int appMinLength = 3;
 
   // 默认
   final List<HomeAppData> _allPanelLists = [
@@ -49,12 +49,15 @@ class HomeAppProvider with ChangeNotifier {
   ];
 
   // 已选择
-  late final ValueNotifier<List<HomeAppData>> _panelLists = ValueNotifier([_allPanelLists.first]);
+  // 至少 [appMinLength].length
+  late final ValueNotifier<List<HomeAppData>> _panelLists = ValueNotifier([
+    _allPanelLists[0],
+    _allPanelLists[2],
+  ]);
 
   // 未激活
   late final ValueNotifier<List<HomeAppData>> _unactivatedPandeLists = ValueNotifier([
     _allPanelLists[1],
-    _allPanelLists[2],
     _allPanelLists[3],
   ]);
 
@@ -81,7 +84,7 @@ class HomeAppProvider with ChangeNotifier {
     return activeList.where((element) => element.name == name).isNotEmpty;
   }
 
-  HomeAppData _stringAsHomeAppData (String name) {
+  HomeAppData _stringAsHomeAppData(String name) {
     return _allPanelLists.where((homeApp) => homeApp.name == name).first;
   }
 
@@ -96,7 +99,7 @@ class HomeAppProvider with ChangeNotifier {
         _panelLists.value.add(_stringAsHomeAppData(i));
       });
 
-      _unactivatedPandeLists.value  = _allPanelLists.toSet().difference(_panelLists.value.toSet()).toList();
+      _unactivatedPandeLists.value = _allPanelLists.toSet().difference(_panelLists.value.toSet()).toList();
     }
   }
 

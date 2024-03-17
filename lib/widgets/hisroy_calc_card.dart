@@ -108,6 +108,7 @@ class _historyCalcCardState extends State<HistoryCalcCard> {
       backgroundColor: Colors.transparent,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      useSafeArea: true,
       scrollControlDisabledMaxHeightRatio: .8,
       builder: (context) {
         return Consumer<CollectProvider>(

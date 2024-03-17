@@ -34,6 +34,7 @@ class _historyCalcCardState extends State<CollectCalcCard> {
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
       scrollControlDisabledMaxHeightRatio: .8,
+      useSafeArea: true,
       builder: (context) {
         return Consumer<CollectProvider>(
           builder: (BuildContext collectContext, collectData, collectWidget) {

@@ -156,6 +156,7 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
 
     showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(

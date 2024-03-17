@@ -107,6 +107,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (modalContext, modalSetStatus) {
@@ -472,6 +473,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
             KeyboardWidget(
               spatialName: "home_calc",
               initializePackup: true,
+              initializeKeyboardType: KeyboardType.Number,
               onSubmit: () => historyData.add(_calcSubmit(calcData)),
               controller: _textController,
             ),

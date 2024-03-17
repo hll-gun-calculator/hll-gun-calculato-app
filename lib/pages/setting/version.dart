@@ -18,7 +18,9 @@ class VersionPage extends StatefulWidget {
 class _VersionPageState extends State<VersionPage> {
   NewVersion? newVersion = NewVersion();
 
-  Versions? versions = Versions();
+  Versions? versions = Versions(
+    list: [],
+  );
 
   @override
   void initState() {
@@ -29,6 +31,10 @@ class _VersionPageState extends State<VersionPage> {
 
   /// 获取最新版本
   void _getNewVersion() async {
+    setState(() {
+      newVersion!.load = true;
+    });
+
     Response result = await Http.request(
       "config/newVersion.json",
       method: Http.GET,
@@ -40,10 +46,18 @@ class _VersionPageState extends State<VersionPage> {
         newVersion = NewVersion.fromJson(result.data);
       });
     }
+
+    setState(() {
+      newVersion!.load = false;
+    });
   }
 
   /// 获取历史版本列表
   void _getHistoryVersion() async {
+    setState(() {
+      versions!.load = true;
+    });
+
     Response result = await Http.request(
       "config/versions.json",
       method: Http.GET,
@@ -51,10 +65,12 @@ class _VersionPageState extends State<VersionPage> {
     );
 
     if (result.data != null) {
-      setState(() {
-        versions = Versions.fromJson(result.data);
-      });
+      versions = Versions.fromJson(result.data);
     }
+
+    setState(() {
+      versions!.load = false;
+    });
   }
 
   @override
@@ -70,6 +86,15 @@ class _VersionPageState extends State<VersionPage> {
                 trailing: Text("${data.currentVersion}(${data.buildNumber})"),
               ),
               ListTile(
+                leading: newVersion!.load
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : null,
                 title: const Text("最新版本"),
                 subtitle: Text(newVersion!.android.version),
                 trailing: const Icon(Icons.open_in_new),
@@ -78,14 +103,22 @@ class _VersionPageState extends State<VersionPage> {
                 },
               ),
               const Divider(),
-              if (versions!.list.isEmpty) const EmptyWidget(),
+              if (versions!.load && versions!.list.isNotEmpty)
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    margin: const EdgeInsets.symmetric(vertical: 50),
+                    child: const CircularProgressIndicator(),
+                  ),
+                )
+              else if (!versions!.load && versions!.list.isEmpty)
+                const EmptyWidget(),
               ...versions!.list
-                  .map(
-                    (e) => ListTile(
-                      title: Text(e.version),
-                      subtitle: Text(e.platform.keys.toList().join("\t").toString()),
-                    ),
-                  )
+                  .map((e) => ListTile(
+                        title: Text(e.version),
+                        subtitle: Text(e.platform.keys.toList().join("\t").toString()),
+                      ))
                   .toList(),
             ],
           ),

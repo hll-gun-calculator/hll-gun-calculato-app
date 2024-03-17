@@ -3,8 +3,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dio/io.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 export 'package:dio/dio.dart';
@@ -146,6 +148,15 @@ class Http {
       receiveTimeout: RECEIVE_TIMEOUT,
     );
     dio = Dio(options);
+
+    // 请求代理
+    // 对于web存在跨域资源处理
+    if (kIsWeb) {
+      dio.httpClientAdapter = IOHttpClientAdapter()..onHttpClientCreate = (client) {
+        client.findProxy = (uri) => 'PROXY localhost';
+        return client;
+      };
+    }
 
     // 缓存实例
     // by https://pub.dev/packages/dio_cache_interceptor

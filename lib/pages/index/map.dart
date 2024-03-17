@@ -124,6 +124,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Consumer<CalcProvider>(
@@ -175,6 +176,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       context: context,
       clipBehavior: Clip.hardEdge,
       scrollControlDisabledMaxHeightRatio: .8,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -259,6 +261,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -853,6 +856,7 @@ class MapCoreState extends State<MapCore> {
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -865,8 +869,9 @@ class MapCoreState extends State<MapCore> {
                       newMarker = Offset(iconInfo.x, iconInfo.y);
                       isLock.value = true;
                     });
+                    Navigator.of(context).pop();
                   },
-                  child: const Text("Use"),
+                  child: const Text("使用"),
                 ),
               ],
             ),
@@ -903,9 +908,10 @@ class MapCoreState extends State<MapCore> {
 
   /// 打开火炮信息
   void _openGunDetailModal(Gun gunInfo, {Function(Color color)? onEvent}) async {
-    Future<void> gunDeailModal = showModalBottomSheet<void>(
+    Future<void> gunDetailModal = showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -959,7 +965,7 @@ class MapCoreState extends State<MapCore> {
       },
     );
 
-    gunDeailModal.then((void value) {
+    gunDetailModal.then((void value) {
       onEvent != null ? onEvent(gunInfo.color) : null;
     });
   }
@@ -970,6 +976,7 @@ class MapCoreState extends State<MapCore> {
       context: context,
       clipBehavior: Clip.hardEdge,
       scrollControlDisabledMaxHeightRatio: .8,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -1332,16 +1339,15 @@ class LineWidget extends StatelessWidget {
 class ArtyIconWidget extends StatelessWidget {
   final VoidCallback? onPressed;
   final String resultNumber;
+  final Color headerColor = const Color(0xffffd27c);
+  final Color color = const Color(0xffe5b452);
+  final double opacity = .9;
 
-  ArtyIconWidget({
+  const ArtyIconWidget({
     super.key,
     this.onPressed,
     this.resultNumber = "0",
   });
-
-  Color headerColor = const Color(0xffffd27c);
-  Color color = const Color(0xffe5b452);
-  double opacity = .9;
 
   @override
   Widget build(BuildContext context) {

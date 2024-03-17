@@ -20,10 +20,26 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
   final TextEditingController _textEditingController = TextEditingController(text: "14");
 
   // 计时结束后，多少秒隐藏
-  TextEditingController _textEditingControllerTimedRemovalValue = TextEditingController(text: "10");
+  final TextEditingController _textEditingControllerTimedRemovalValue = TextEditingController(text: "10");
+
+  // 声音高度
+  late double _volumeValue = .5;
 
   // 自动滚动底部
   bool isAutoScrollFooter = true;
+
+  @override
+  void initState() {
+    ready();
+    super.initState();
+  }
+
+  ready() async {
+    var volume = await App.config.getAttr("landingTimer.volume");
+    if (volume is double && volume != null) {
+      _volumeValue = volume;
+    }
+  }
 
   /// 炮弹
   void _putLanding() async {
@@ -39,14 +55,15 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
       return;
     }
 
-    gunTimerProvider.add(
-      duration: Duration(seconds: int.parse(_textEditingController.text)),
-    );
-    scrollFooter();
+    gunTimerProvider
+      ..setVolume(_volumeValue)
+      ..add(duration: Duration(seconds: int.parse(_textEditingController.text)));
+
+    _scrollFooter();
   }
 
   /// 滚动底部
-  void scrollFooter() {
+  void _scrollFooter() {
     GunTimerProvider gunTimerProvider = App.provider.ofGunTimer(context);
 
     if (_scrollController.positions.isNotEmpty && gunTimerProvider.landings.isNotEmpty && isAutoScrollFooter) {
@@ -63,6 +80,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(
           builder: (modalContext, modalSetState) {
@@ -128,6 +146,23 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                       App.config.updateAttr("landing_timer.is_sound_value", isSoundValue);
                     },
                   ),
+                  const ListTile(
+                    title: Text("声音大小"),
+                    subtitle: Text("结束时播放声音音量"),
+                  ),
+                  Slider(
+                    label: (_volumeValue * 100).toStringAsFixed(0),
+                    max: 1,
+                    min: 0,
+                    divisions: 50,
+                    value: _volumeValue,
+                    onChanged: (value) {
+                      modalSetState(() {
+                        _volumeValue = value;
+                      });
+                      App.config.updateAttr("landingTimer.volume", _volumeValue);
+                    },
+                  )
                 ],
               ),
             );
@@ -138,7 +173,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
   }
 
   /// 炮弹状态widget
-  Widget landingsSubtitleWidget(Landing landing) {
+  Widget _landingsSubtitleWidget(Landing landing) {
     if (landing.countdownTimeSeconds > 1 && landing.countdownTimeSeconds < 5) {
       return const Text("注意炮弹即将落地");
     } else if (landing.countdownTimeSeconds <= 1) return const Text("已落地");
@@ -155,7 +190,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
             /// 炮弹推
             Expanded(
               child: data.landings.isNotEmpty || data.landings.where((i) => i.show).isNotEmpty
-                  ? Scrollbar(
+                  ? MediaQuery.removePadding(
+                      context: context,
+                      removeBottom: true,
                       child: ListView(
                         controller: _scrollController,
                         children: data.landings.where((element) => element.show).map((e) {
@@ -172,7 +209,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                               ListTile(
                                 leading: Text("${e.countdownTimeSeconds}s"),
                                 title: Text(e.id),
-                                subtitle: landingsSubtitleWidget(e),
+                                subtitle: _landingsSubtitleWidget(e),
                                 trailing: Wrap(
                                   children: [
                                     IconButton.filled(
@@ -185,7 +222,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                                         }
 
                                         data.startCountdownTimer(e, vanishCallback: (l) {
-                                          scrollFooter();
+                                          _scrollFooter();
                                         });
                                       },
                                     ),
@@ -214,6 +251,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                     ),
             ),
 
+            /// tool
             Row(
               children: [
                 Opacity(
@@ -248,7 +286,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
               ],
             ),
 
-            /// 计算
+            /// 计时面板
             const Divider(height: 1, thickness: 1),
             Container(
               color: Theme.of(context).primaryColor.withOpacity(.2),
@@ -332,7 +370,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                             Icons.audiotrack,
                             size: 40,
                           ),
-                          if (data.isPlayAudio)
+                          if (!data.isPlayAudio)
                             Positioned(
                               top: 10,
                               left: 6,

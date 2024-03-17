@@ -36,88 +36,82 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Consumer<HomeAppProvider>(builder: (context, homeAppData, widget) {
-        return Column(
+    return Consumer<HomeAppProvider>(builder: (context, homeAppData, widget) {
+      return ReorderableListView(
+        itemExtent: 70,
+        onReorder: _onReorder,
+        buildDefaultDragHandles: false,
+        proxyDecorator: (Widget child, int index, Animation<double> animation) {
+          return Material(
+            child: Container(
+              color: Theme.of(context).colorScheme.primary.withOpacity(.5),
+              child: child,
+            ),
+          );
+        },
+        header: const SafeArea(
+          child: Column(
+            children: [
+              ListTile(
+                title: Text(
+                  "面板应用",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+                subtitle: Text("勾选你需要的面板或排行，它们会在应用首页等着你"),
+              ),
+              Divider(),
+            ],
+          ),
+        ),
+        footer: Column(
           children: [
-            const ListTile(
-              title: Text(
-                "面板应用",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
+            const Divider(),
+            ...homeAppData.unactivatedList.map((e) {
+              return ListTile(
+                leading: e.icon,
+                title: Text(FlutterI18n.translate(context, "${e.name}.title")),
+                subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
+                trailing: IconButton.filledTonal(
+                  onPressed: homeAppData.activeList.length <= homeAppData.appMaxLength ? () => homeAppData.add(e) : null,
+                  icon: const Icon(Icons.add),
+                ),
+              );
+            }).toList()
+          ],
+        ),
+        children: [
+          for (int index = 0; index < activeList.length; index++)
+            ReorderableDragStartListener(
+              key: ValueKey(activeList[index].name),
+              index: index,
+              child: ListTile(
+                leading: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    const Icon(Icons.dehaze_sharp),
+                    Container(
+                      width: 1,
+                      height: 35,
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                      color: Theme.of(context).dividerTheme.color,
+                    ),
+                    activeList[index].activeIcon,
+                  ],
+                ),
+                title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
+                subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
+                trailing: IconButton.filledTonal(
+                  onPressed: homeAppData.activeList.length > homeAppData.appMinLength ? () => homeAppData.remove(activeList[index]) : null,
+                  icon: const Icon(Icons.delete_outline),
                 ),
               ),
-              subtitle: Text("勾选你需要的面板或排行，它们会在应用首页等着你"),
             ),
-            const Divider(),
-            Container(
-              constraints: const BoxConstraints(minHeight: 2 * 70, maxHeight: 4 * 70),
-              child: ReorderableListView(
-                itemExtent: 70,
-                onReorder: _onReorder,
-                buildDefaultDragHandles: false,
-                children: [
-                  for (int index = 0; index < activeList.length; index++)
-                    ReorderableDragStartListener(
-                      key: ValueKey(activeList[index].name),
-                      index: index,
-                      child: ListTile(
-                        leading: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            const Icon(Icons.dehaze_sharp),
-                            Container(
-                              width: 1,
-                              height: 35,
-                              margin: const EdgeInsets.symmetric(horizontal: 15),
-                              color: Theme.of(context).dividerTheme.color,
-                            ),
-                            activeList[index].activeIcon,
-                          ],
-                        ),
-                        title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
-                        subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
-                        trailing: IconButton.filledTonal(
-                          onPressed: homeAppData.activeList.length > homeAppData.appMinLength ? () => homeAppData.remove(activeList[index]) : null,
-                          icon: const Icon(Icons.delete_outline),
-                        ),
-                      ),
-                    ),
-                ],
-                proxyDecorator: (Widget child, int index, Animation<double> animation) {
-                  return Material(
-                    child: Container(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(.5),
-                      child: child,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const Divider(),
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  ...homeAppData.unactivatedList.map((e) {
-                    return ListTile(
-                      leading: e.icon,
-                      title: Text(FlutterI18n.translate(context, "${e.name}.title")),
-                      subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
-                      trailing: IconButton.filledTonal(
-                        onPressed: homeAppData.activeList.length <= homeAppData.appMaxLength ? () => homeAppData.add(e) : null,
-                        icon: const Icon(Icons.add),
-                      ),
-                    );
-                  }).toList()
-                ],
-              ),
-            ),
-          ],
-        );
-      }),
-    );
+        ],
+      );
+    });
   }
 }
 

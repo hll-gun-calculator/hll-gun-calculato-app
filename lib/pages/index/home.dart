@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     tabLength = activeList.length;
     _pageController = PageController(
       initialPage: tabIndex,
+      keepPage: true,
     );
     super.initState();
   }
@@ -73,82 +74,85 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       canPop: false,
       child: Consumer3<PackageProvider, HistoryProvider, HomeAppProvider>(
         builder: (consumerContext, packageData, historyData, homeAppData, widget) {
-          return DefaultTabController(
-            length: homeAppData.activeList.length,
-            child: Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: HomeAppBar(
-                contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : .0,
-                tabIndex: tabIndex,
-              ),
-              drawer: Drawer(
-                backgroundColor: Theme.of(context).canvasColor,
-                child: SafeArea(
-                  maintainBottomViewPadding: true,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            DrawerHeader(
-                              curve: Curves.bounceIn,
-                              child: Title(
-                                color: Colors.black,
-                                child: Text(
-                                  packageData.package!.appName.toString(),
-                                  style: TextStyle(
-                                    fontSize: Theme.of(context).appBarTheme.titleTextStyle?.fontSize ?? 20,
+          return Title(
+            title: packageData.package!.appName.toString(),
+            color: Colors.black,
+            child: DefaultTabController(
+              length: homeAppData.activeList.length,
+              child: Scaffold(
+                extendBodyBehindAppBar: true,
+                appBar: HomeAppBar(
+                  contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : .0,
+                  tabIndex: tabIndex,
+                ),
+                drawer: Drawer(
+                  backgroundColor: Theme.of(context).canvasColor,
+                  child: SafeArea(
+                    maintainBottomViewPadding: true,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: [
+                              DrawerHeader(
+                                curve: Curves.bounceIn,
+                                child: Title(
+                                  color: Colors.black,
+                                  child: Text(
+                                    packageData.package!.appName.toString(),
+                                    style: TextStyle(
+                                      fontSize: Theme.of(context).appBarTheme.titleTextStyle?.fontSize ?? 20,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            ListTile(
-                              title: Text(FlutterI18n.translate(context, "setting.cell.history.title")),
-                              trailing: Icon(Icons.chevron_right),
-                              onTap: () => _openComputingHistory(),
-                            ),
-                            ListTile(
-                              title: Text(FlutterI18n.translate(context, "collect.title")),
-                              trailing: Icon(Icons.chevron_right),
-                              onTap: () => _openCollect(),
-                            ),
-                            const Divider(),
-                            ListTile(
-                              title: Text(FlutterI18n.translate(context, "setting.title")),
-                              trailing: Icon(Icons.chevron_right),
-                              onTap: () => _openSetting(),
-                            ),
-                          ],
+                              ListTile(
+                                title: Text(FlutterI18n.translate(context, "setting.cell.history.title")),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => _openComputingHistory(),
+                              ),
+                              ListTile(
+                                title: Text(FlutterI18n.translate(context, "collect.title")),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => _openCollect(),
+                              ),
+                              const Divider(),
+                              ListTile(
+                                title: Text(FlutterI18n.translate(context, "setting.title")),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => _openSetting(),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      ListTile(
-                        title: const Text('版本'),
-                        subtitle: Text(packageData.currentVersion),
-                        trailing: Icon(Icons.chevron_right),
-                        onTap: () {
-                          _openVersion();
-                        },
-                      ),
-                    ],
+                        ListTile(
+                          title: const Text('版本'),
+                          subtitle: Text(packageData.currentVersion),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            _openVersion();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              body: HomeBody(
-                tabIndex: tabIndex,
-                pageController: _pageController,
-                navs: homeAppData.activeList,
-              ),
-              bottomSheet: Container(
-                margin: EdgeInsets.only(bottom: 28 + MediaQuery.of(context).viewPadding.bottom),
-                child: SimplePageIndicator(
-                  itemCount: homeAppData.activeList.length,
-                  indicatorColor: Theme.of(context).colorScheme.primary,
-                  controller: _pageController,
-                  space: 20,
-                  maxSize: 4,
-                  minSize: 3,
+                body: HomeBody(
+                  pageController: _pageController,
+                  navs: homeAppData.activeList,
+                ),
+                bottomSheet: Container(
+                  margin: EdgeInsets.only(bottom: 28 + MediaQuery.of(context).viewPadding.bottom),
+                  child: SimplePageIndicator(
+                    itemCount: homeAppData.activeList.length,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    controller: _pageController,
+                    space: 20,
+                    maxSize: 4,
+                    minSize: 3,
+                  ),
                 ),
               ),
             ),
@@ -224,13 +228,11 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
 class HomeBody extends StatefulWidget {
   final List<HomeAppData> navs;
-  final int tabIndex;
   final PageController pageController;
 
-  HomeBody({
+  const HomeBody({
     super.key,
     required this.navs,
-    required this.tabIndex,
     required this.pageController,
   });
 
@@ -239,6 +241,8 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
+  int tabIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -257,7 +261,8 @@ class _HomeBodyState extends State<HomeBody> {
                   NavigationRail(
                     onDestinationSelected: (value) {
                       setState(() {
-                        // widget.pageController.initialPage = value;
+                        tabIndex = value;
+                        widget.pageController.jumpToPage(value);
                       });
                     },
                     leading: const DrawerButton(),
@@ -270,11 +275,8 @@ class _HomeBodyState extends State<HomeBody> {
                         label: Text(FlutterI18n.translate(context, "${nav.name}.title")),
                       );
                     }).toList(),
-                    selectedIndex: widget.tabIndex,
+                    selectedIndex: tabIndex,
                   ),
-                // PageView(
-                //   children: homeAppData.widgets,
-                // ),
                 Expanded(
                   flex: 1,
                   child: PageView(

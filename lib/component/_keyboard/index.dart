@@ -184,6 +184,7 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
       backgroundColor: Colors.transparent,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (modalContext, modalSetState) {
           return Scaffold(

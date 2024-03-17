@@ -98,6 +98,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       context: context,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -302,6 +303,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       context: context,
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(

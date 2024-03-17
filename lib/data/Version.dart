@@ -25,8 +25,12 @@ enum VersionSystemType {
       return VersionSystemType.values[i];
     }
 
-    if (i is String && VersionSystemType.values.where((i) => i.value == i).isNotEmpty) {
-      return VersionSystemType.values.where((i) => i.value == i).first;
+    if (i is String && VersionSystemType.values
+        .where((i) => i.value == i)
+        .isNotEmpty) {
+      return VersionSystemType.values
+          .where((i) => i.value == i)
+          .first;
     }
 
     return VersionSystemType.None;
@@ -49,13 +53,15 @@ class NewVersion extends LoadingStatus {
     VersionBuildValue? android,
     VersionBuildValue? ios,
     VersionBuildValue? web,
-  }) {
+    bool? load,
+  }) : super() {
+    this.load = load ?? false;
     this.android = android ?? VersionBuildValue();
     this.ios = ios ?? VersionBuildValue();
     this.web = web ?? VersionBuildValue();
   }
 
-  static Map ValueToJson (VersionBuildValue value) => value.toJson();
+  static Map ValueToJson(VersionBuildValue value) => value.toJson();
 
   factory NewVersion.fromJson(Map<String, dynamic> json) => _$NewVersionFromJson(json);
 
@@ -94,7 +100,7 @@ class VersionsItem {
     this.version = version ?? defultVersion;
   }
 
-  static Map systemToJson (Map<VersionSystemType, VersionBuildValue> value) => value.map((key, value) => MapEntry(key.value, value.toJson()));
+  static Map systemToJson(Map<VersionSystemType, VersionBuildValue> value) => value.map((key, value) => MapEntry(key.value, value.toJson()));
 
   static Map<VersionSystemType, VersionBuildValue> systemFromJson(Map factions) {
     Map<VersionSystemType, VersionBuildValue> map = {};

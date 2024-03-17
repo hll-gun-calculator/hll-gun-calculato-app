@@ -53,6 +53,7 @@ class _ColorWidgetState extends State<ColorWidget> {
           context: context,
           backgroundColor: Colors.transparent,
           clipBehavior: Clip.hardEdge,
+          useSafeArea: true,
           builder: (buildContext) {
             return StatefulBuilder(
               builder: (modalBuildContext, modalSetStatus) {

@@ -25,19 +25,33 @@ class GunTimerProvider with ChangeNotifier {
     return landings.where((element) => element.show).length > _maxLength;
   }
 
-  init() {}
+  // 声音高低
+  double? volumeValue;
+
+  Future init() async {
+    audioPlayer.audioCache = AudioCache(prefix: "assets/audio/");
+    audioPlayer.audioCache.loadAll(['coins.wav']);
+    return true;
+  }
 
   bool hasItemId(String id) {
     return landings.where((i) => i.id == id).isNotEmpty;
   }
 
+  /// 设置播放声音高度
+  GunTimerProvider setVolume (double volume) {
+    volumeValue = volume;
+    return this;
+  }
+
   /// 添加计时
-  void add({
+  GunTimerProvider add({
     String? id,
     Duration autoHiddenDuration = const Duration(seconds: 10),
     Duration duration = const Duration(seconds: 14),
     LandingType type = LandingType.None,
     bool isAutoShow = true,
+    double? volume,
     Function(Landing l)? vanishCallback,
     Function(Landing l)? endCallback,
   }) {
@@ -71,6 +85,7 @@ class GunTimerProvider with ChangeNotifier {
     _index++;
 
     notifyListeners();
+    return this;
   }
 
   /// 查询
@@ -135,9 +150,9 @@ class GunTimerProvider with ChangeNotifier {
   }
 
   /// 播放声音
-  void _playAudio() async {
+  void _playAudio({double? volume}) async {
     if (landings.isNotEmpty && isPlayAudio) {
-      await audioPlayer.play(AssetSource("audio/coins.wav"));
+      await audioPlayer.play(AssetSource("coins.wav"), volume: volume ?? this.volumeValue);
     }
   }
 }

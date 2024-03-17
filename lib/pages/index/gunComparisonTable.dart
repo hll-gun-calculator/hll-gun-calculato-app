@@ -160,6 +160,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (context) {
         return Scaffold(
           appBar: AppBar(
@@ -189,6 +190,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     showModalBottomSheet<void>(
       context: context,
       clipBehavior: Clip.hardEdge,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Consumer<CalcProvider>(
