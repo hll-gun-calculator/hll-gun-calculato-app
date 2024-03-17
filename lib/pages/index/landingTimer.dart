@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/provider/gun_timer_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
-import '../../data/index.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
+import '/provider/gun_timer_provider.dart';
 
 class LandingTimerPage extends StatefulWidget {
   const LandingTimerPage({super.key});

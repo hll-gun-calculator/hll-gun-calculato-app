@@ -26,10 +26,11 @@ class MapInfo {
   final Offset initialPosition;
 
   // 阵营，通常2名
-  @JsonKey(toJson: ValueToJson,fromJson: factionsFromJson)
+  @JsonKey(toJson: factionsToJson, fromJson: factionsFromJson, defaultValue: {})
   late Map<Factions, MapInfoFactionInfo>? factions;
 
   // 地图底图-资源地址
+  @JsonKey(toJson: assetsToJson, fromJson: assetsFromJson)
   final MapInfoAssets? assets;
 
   // 地图孩子-其他图层
@@ -37,6 +38,7 @@ class MapInfo {
   final List<MapInfoAssets> childs;
 
   // 标记
+  @JsonKey(toJson: markerToJson, fromJson: markerFromJson, defaultValue: [])
   final List<MapInfoMarkerItem>? marker;
 
   // 所有火炮列表
@@ -81,7 +83,13 @@ class MapInfo {
     this.marker,
   });
 
-  static Map ValueToJson(dynamic value) => value.toJson();
+  static Map factionsToJson(Map<Factions, MapInfoFactionInfo>? value) {
+    return value!.map((key, value) => MapEntry(key.value, value.toJson()));
+  }
+
+  static Map assetsToJson(MapInfoAssets? value) => value!.toJson();
+
+  static MapInfoAssets assetsFromJson(value) => MapInfoAssets.fromJson(value);
 
   static Offset ListAsOffset(List value) => Offset(double.parse(value.first.toString()), double.parse(value.last.toString()));
 
@@ -96,6 +104,10 @@ class MapInfo {
     });
     return map;
   }
+
+  static List markerToJson(List<MapInfoMarkerItem>? value) => value!.map((e) => e.toJson()).toList();
+
+  static List<MapInfoMarkerItem>? markerFromJson(List value) => value.map((e) => MapInfoMarkerItem.fromJson(e)).toList();
 
   factory MapInfo.fromJson(Map<String, dynamic> json) => _$MapInfoFromJson(json);
 
@@ -120,6 +132,7 @@ enum MapInfoFactionInfoDirection {
 @JsonSerializable()
 class MapInfoFactionInfo {
   // 火炮位置
+  @JsonKey(toJson: gunToJson)
   List<Gun> gunPosition = [];
 
   // HQ点
@@ -135,6 +148,8 @@ class MapInfoFactionInfo {
     this.points = const [],
     this.direction = MapInfoFactionInfoDirection.Left,
   });
+
+  static List gunToJson(List<Gun> value) => value.map((e) => e.toJson()).toList();
 
   static List<dynamic> pointsToJson(List<Offset> value) {
     List list = [];
@@ -172,6 +187,7 @@ class MapInfoMarkerItem {
   late String? iconPath;
 
   // 坐标
+  @JsonKey(toJson: pointsToJson, fromJson: pointsFromJson)
   late List<MarkerPointItem> points = [];
 
   MapInfoMarkerItem({
@@ -180,6 +196,10 @@ class MapInfoMarkerItem {
     this.iconPath = "",
     this.points = const [],
   });
+
+  static List pointsToJson(List<MarkerPointItem> value) => value.map((e) => e.toJson()).toList();
+
+  static List<MarkerPointItem> pointsFromJson(List value) => value.map((e) => MarkerPointItem.fromJson(e)).toList();
 
   factory MapInfoMarkerItem.fromJson(Map<String, dynamic> json) => _$MapInfoMarkerItemFromJson(json);
 
@@ -216,9 +236,17 @@ class MapInfoMarkerItem_Fll {
 
 @JsonSerializable()
 class MarkerPointItem {
+  // id
+  @JsonKey(includeToJson: false, includeFromJson: false)
   late String? id;
+
+  // 名称
   late String name;
+
+  // x轴-坐标
   double x;
+
+  // y轴-坐标
   double y;
 
   MarkerPointItem({
@@ -239,11 +267,19 @@ class MarkerPointItem {
 @JsonSerializable()
 class MapInfoAssets {
   // 下标排序
+  @JsonKey(includeToJson: false, includeFromJson: false)
   int index;
 
   // 类型
+  @JsonKey(includeToJson: false, includeFromJson: false)
   MapIconType type;
+
+  // 网络
+  @JsonKey(defaultValue: "")
   String? network;
+
+  // 本地
+  @JsonKey(defaultValue: "")
   String? local;
 
   MapInfoAssets({

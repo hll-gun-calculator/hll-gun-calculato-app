@@ -6,19 +6,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/component/_empty/index.dart';
-import 'package:hll_gun_calculator/provider/gun_timer_provider.dart';
-import 'package:hll_gun_calculator/provider/map_provider.dart';
-import 'package:hll_gun_calculator/utils/map.dart';
+import '/component/_empty/index.dart';
+import '/provider/gun_timer_provider.dart';
+import '/provider/map_provider.dart';
+import '/utils/map.dart';
 import 'package:provider/provider.dart';
 
-import '../../component/_color/index.dart';
-import '../../constants/app.dart';
-import '../../data/index.dart';
-import '../../provider/calc_provider.dart';
-import '../../utils/index.dart';
-import '../../widgets/map_card.dart';
-import '../../widgets/wave_border.dart';
+import '/component/_color/index.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
+import '/provider/calc_provider.dart';
+import '/utils/index.dart';
+import '/widgets/map_card.dart';
+import '/widgets/wave_border.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});

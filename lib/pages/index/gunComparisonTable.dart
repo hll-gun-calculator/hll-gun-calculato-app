@@ -1,16 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/provider/collect_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../component/_keyboard/index.dart';
-import '../../constants/app.dart';
-import '../../data/index.dart';
-import '../../provider/calc_provider.dart';
+import '/component/_keyboard/index.dart';
+import '/provider/collect_provider.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
+import '/provider/calc_provider.dart';
 
 class GunComparisonTablePage extends StatefulWidget {
   const GunComparisonTablePage({

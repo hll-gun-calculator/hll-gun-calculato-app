@@ -4,11 +4,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/data/HomeApp.dart';
-import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_page_indicator/simple_page_indicator.dart';
 
+import '/data/HomeApp.dart';
+import '/provider/home_app_provider.dart';
 import '/constants/app.dart';
 import '/utils/index.dart';
 import '/provider/history_provider.dart';
@@ -69,8 +69,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Consumer3<PackageProvider, HistoryProvider, HomeAppProvider>(
         builder: (consumerContext, packageData, historyData, homeAppData, widget) {
           return DefaultTabController(
@@ -106,15 +106,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             ),
                             ListTile(
                               title: Text(FlutterI18n.translate(context, "setting.cell.history.title")),
+                              trailing: Icon(Icons.chevron_right),
                               onTap: () => _openComputingHistory(),
                             ),
                             ListTile(
                               title: Text(FlutterI18n.translate(context, "collect.title")),
+                              trailing: Icon(Icons.chevron_right),
                               onTap: () => _openCollect(),
                             ),
                             const Divider(),
                             ListTile(
                               title: Text(FlutterI18n.translate(context, "setting.title")),
+                              trailing: Icon(Icons.chevron_right),
                               onTap: () => _openSetting(),
                             ),
                           ],
@@ -122,7 +125,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       ),
                       ListTile(
                         title: const Text('版本'),
-                        trailing: Text(packageData.currentVersion),
+                        subtitle: Text(packageData.currentVersion),
+                        trailing: Icon(Icons.chevron_right),
                         onTap: () {
                           _openVersion();
                         },
@@ -137,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 navs: homeAppData.activeList,
               ),
               bottomSheet: Container(
-                margin: const EdgeInsets.only(bottom: 28),
+                margin: EdgeInsets.only(bottom: 28 + MediaQuery.of(context).viewPadding.bottom),
                 child: SimplePageIndicator(
                   itemCount: homeAppData.activeList.length,
                   indicatorColor: Theme.of(context).colorScheme.primary,

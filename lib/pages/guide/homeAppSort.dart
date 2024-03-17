@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/data/HomeApp.dart';
-import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
+import '/constants/app.dart';
+import '/data/HomeApp.dart';
+import '/provider/home_app_provider.dart';
 
 class GuideHomeAppSore extends StatefulWidget {
   const GuideHomeAppSore({super.key});
@@ -62,16 +63,25 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
                       key: ValueKey(activeList[index].name),
                       index: index,
                       child: ListTile(
-                        leading: activeList[index].activeIcon,
+                        leading: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            const Icon(Icons.dehaze_sharp),
+                            Container(
+                              width: 1,
+                              height: 35,
+                              margin: const EdgeInsets.symmetric(horizontal: 15),
+                              color: Theme.of(context).dividerTheme.color,
+                            ),
+                            activeList[index].activeIcon,
+                          ],
+                        ),
                         title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
-                        trailing: homeAppData.activeList.length > 1
-                            ? IconButton.filledTonal(
-                                onPressed: () {
-                                  homeAppData.remove(activeList[index]);
-                                },
-                                icon: const Icon(Icons.delete_outline),
-                              )
-                            : null,
+                        subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
+                        trailing: IconButton.filledTonal(
+                          onPressed: homeAppData.activeList.length > homeAppData.appMinLength ? () => homeAppData.remove(activeList[index]) : null,
+                          icon: const Icon(Icons.delete_outline),
+                        ),
                       ),
                     ),
                 ],
@@ -94,10 +104,9 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
                     return ListTile(
                       leading: e.icon,
                       title: Text(FlutterI18n.translate(context, "${e.name}.title")),
+                      subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
                       trailing: IconButton.filledTonal(
-                        onPressed: () {
-                          homeAppData.add(e);
-                        },
+                        onPressed: homeAppData.activeList.length <= homeAppData.appMaxLength ? () => homeAppData.add(e) : null,
                         icon: const Icon(Icons.add),
                       ),
                     );

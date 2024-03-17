@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/provider/calc_provider.dart';
-import 'package:hll_gun_calculator/utils/storage.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
-import '../../data/index.dart';
-import '../../utils/index.dart';
+import '/constants/api.dart';
+import '/provider/calc_provider.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
+import '/utils/index.dart';
 
 class GuideCalculatingFunctionManagement extends StatefulWidget {
   const GuideCalculatingFunctionManagement({super.key});
@@ -108,21 +108,25 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             },
           ),
           const Divider(),
-          Container(
-            padding: const EdgeInsets.only(left: 15),
-            child: Row(
+           ListTile(
+            title: Wrap(
+              spacing: 10,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
+                Text("来自第三方"),
                 RawChip(
-                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+                  padding: EdgeInsets.zero,
+                  visualDensity:  VisualDensity.compact,
                   label: const Text("推荐"),
-                  color: MaterialStatePropertyAll(Colors.blue.shade100),
+                  color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
                 ),
               ],
             ),
-          ),
-          const ListTile(
-            title: Text("来自第三方"),
             subtitle: Text("我们陈列出一些社区提供’计算函数‘选择"),
+            trailing: Icon(Icons.open_in_new),
+            onTap: () {
+              App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/calc/calcRecommendedList.html");
+            },
           ),
           if (load)
             Center(
@@ -139,7 +143,7 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
               trailing: Wrap(
                 children: [
                   if (e.load)
-                     Container(
+                    Container(
                       width: 18,
                       height: 18,
                       margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 15),

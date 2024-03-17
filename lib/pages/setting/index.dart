@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/constants/api.dart';
+
+import '/constants/api.dart';
 import '/utils/index.dart';
 
 class SettingPage extends StatefulWidget {
@@ -31,6 +33,11 @@ class _SettingPageState extends State<SettingPage> {
   /// 重置引导
   void _openGuide() {
     urlUtil.opEnPage(context, "/guide");
+  }
+
+  /// 网络
+  void _openAppNetwork() {
+    urlUtil.opEnPage(context, "/setting/appNetwork");
   }
 
   @override
@@ -65,6 +72,12 @@ class _SettingPageState extends State<SettingPage> {
             subtitle: Text(FlutterI18n.translate(context, "setting.cell.guide.describe")),
             trailing: const Icon(Icons.open_in_new),
             onTap: () => _openGuide(),
+          ),
+          ListTile(
+            title: Text(FlutterI18n.translate(context, "setting.cell.appNetwork.title")),
+            subtitle: Text(FlutterI18n.translate(context, "setting.cell.appNetwork.describe")),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _openAppNetwork(),
           ),
           ListTile(
             title: const Text("语言"),

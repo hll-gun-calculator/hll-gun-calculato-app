@@ -15,7 +15,7 @@ class StringOrMapConverter implements JsonConverter<dynamic, Object> {
 
   @override
   dynamic fromJson(Object json) {
-    if (json is String && json.isEmpty) return json ?? "";
+    if (json is String && json.isEmpty) return json;
 
     if (json is Map<String, dynamic>) {
       return json;

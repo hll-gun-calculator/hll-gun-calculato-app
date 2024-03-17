@@ -1,7 +1,7 @@
 /// 状态管理 工具包
-import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
 
+import '/provider/home_app_provider.dart';
 import '/provider/history_provider.dart';
 import '/provider/gun_timer_provider.dart';
 import '/provider/map_provider.dart';

@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
-import '../../data/index.dart';
-import '../../utils/index.dart';
+import '/constants/api.dart';
+import '/constants/app.dart';
+import '/provider/map_provider.dart';
+import '/data/index.dart';
+import '/utils/index.dart';
 
 class GuideMapPackageManagement extends StatefulWidget {
   const GuideMapPackageManagement({super.key});
@@ -41,9 +42,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
     );
 
     if (result.data is Map && result.data.toString().isNotEmpty) {
-      setState(() {
-        guideRecommendedMap = GuideRecommendedMap.fromJson(result.data);
-      });
+      guideRecommendedMap = GuideRecommendedMap.fromJson(result.data);
     }
 
     setState(() {
@@ -56,7 +55,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
     List requestList = [];
 
     setState(() {
-      // guideRecommendedBaseItem.load = true;
+      guideRecommendedBaseItem.load = true;
     });
 
     for (var i in guideRecommendedBaseItem.updataFunction) {
@@ -106,21 +105,25 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
               },
             ),
             const Divider(),
-            Container(
-              padding: const EdgeInsets.only(left: 15),
-              child: Row(
+            ListTile(
+              title: Wrap(
+                spacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
+                  Text("来自第三方"),
                   RawChip(
-                    visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
                     label: const Text("推荐"),
-                    color: MaterialStatePropertyAll(Colors.blue.shade100),
+                    color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
                   ),
                 ],
               ),
-            ),
-            const ListTile(
-              title: Text("来自第三方"),
               subtitle: Text("我们陈列出一些社区提供’地图包‘选择"),
+              trailing: Icon(Icons.open_in_new),
+              onTap: () {
+                App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/map/mapRecommendedList.html");
+              },
             ),
             if (load)
               Center(
@@ -145,12 +148,12 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
                           strokeWidth: 2,
                         ),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isEmpty)
+                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isNotEmpty)
                       IconButton(
                         onPressed: () => _downloadConfig(e),
                         icon: const Icon(Icons.downloading),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isNotEmpty)
+                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isEmpty)
                       const IconButton(
                         onPressed: null,
                         icon: Icon(Icons.done),

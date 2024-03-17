@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../data/index.dart';
+import '/data/index.dart';
 import 'theme.dart';
 
 class IndependentDigitKeyboard extends StatefulWidget {

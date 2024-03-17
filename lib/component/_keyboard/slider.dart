@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import '../../constants/app.dart';
-import '../../data/index.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
 import 'theme.dart';
 
 class SliderKeyboard extends StatefulWidget {

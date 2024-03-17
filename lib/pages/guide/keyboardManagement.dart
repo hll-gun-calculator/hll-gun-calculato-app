@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/component/_keyboard/index.dart';
+
+import '/component/_keyboard/index.dart';
 
 class GuideKeyboardManagement extends StatefulWidget {
   const GuideKeyboardManagement({super.key});
@@ -41,14 +39,14 @@ class _GuideKeyboardManagementState extends State<GuideKeyboardManagement> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
+                      readOnly: true,
+                      showCursor: true,
                       controller: controller,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 25
-                      ),
+                      style: const TextStyle(fontSize: 25),
                       decoration: const InputDecoration.collapsed(hintText: "test"),
                     ),
-                    Text("点击左下方设置图标切换体验")
+                    const Text("点击左下方设置图标切换体验")
                   ],
                 ),
               ),

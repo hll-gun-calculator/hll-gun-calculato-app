@@ -33,7 +33,7 @@ class MapProvider with ChangeNotifier {
 
   // 获取当前地图集合实例
   // 也可以使用[currentMapCompilationName]，效果一致
-  MapCompilation get currentMapCompilation => list.where((i) => i.name == currentMapCompilationName).first;
+  MapCompilation get currentMapCompilation => list.singleWhere((i) => i.name == currentMapCompilationName, orElse: () => list.first);
 
   // 设置当前地图集合实例
   set currentMapCompilation(MapCompilation mapCompilation) {

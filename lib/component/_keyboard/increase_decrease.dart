@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../constants/app.dart';
-import '../../data/index.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
 import 'theme.dart';
 
 class IncreaseAndDecreaseKeyboard extends StatefulWidget {

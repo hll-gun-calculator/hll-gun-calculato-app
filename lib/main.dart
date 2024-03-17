@@ -1,5 +1,6 @@
-import 'provider/home_app_provider.dart';
 import 'router/router.dart';
+
+import 'provider/home_app_provider.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +31,7 @@ void runMain() {
   Routes.configureRoutes(FluroRouter());
 
   // 设置系统状态栏
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   runApp(const App());
 
@@ -85,7 +85,9 @@ class App extends StatelessWidget {
               };
 
               return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: themeData.theme.textScaleFactor),
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(themeData.theme.textScaleFactor!),
+                ),
                 child: widget!,
               );
             },
@@ -103,8 +105,7 @@ class WidgetError extends StatelessWidget {
   const WidgetError({
     Key? key,
     required this.errorDetails,
-  })
-      : assert(errorDetails != null),
+  })  : assert(errorDetails != null),
         super(key: key);
 
   @override

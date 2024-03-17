@@ -1,10 +1,7 @@
 import 'package:fluro/fluro.dart';
-import 'package:hll_gun_calculator/pages/calculating_function_create/index.dart';
-import 'package:hll_gun_calculator/pages/guide/index.dart';
-import 'package:hll_gun_calculator/pages/setting/home_app_config.dart';
 
 // S Pages
-import '../pages/map/index.dart';
+import '/pages/map/index.dart';
 import '/pages/setting/langage.dart';
 import '/pages/license/index.dart';
 import '/pages/collect/collect.dart';
@@ -15,6 +12,10 @@ import '/pages/setting/version.dart';
 import '/pages/splash.dart';
 import '/pages/index/home.dart';
 import '/pages/setting/calculating_function_config.dart';
+import '/pages/calculating_function_create/index.dart';
+import '/pages/guide/index.dart';
+import '/pages/setting/app_network.dart';
+import '/pages/setting/home_app_config.dart';
 // E Pages
 
 class Routes {
@@ -36,6 +37,12 @@ class Routes {
       "url": '/splash',
       "item": (context, params) {
         return const SplashPage();
+      }
+    },
+    {
+      "url":"/setting/appNetwork",
+      "item": (context, params) {
+        return const AppNetworkPage();
       }
     },
     {

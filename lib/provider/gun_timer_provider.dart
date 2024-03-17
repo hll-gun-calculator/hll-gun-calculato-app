@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/data/Landing.dart';
 
-import '../data/index.dart';
+import '/data/Landing.dart';
+import '/data/index.dart';
 
 class GunTimerProvider with ChangeNotifier {
   AudioPlayer audioPlayer = AudioPlayer();
@@ -64,7 +64,7 @@ class GunTimerProvider with ChangeNotifier {
     landings.add(l);
     startCountdownTimer(
       l,
-      autoHiddenDuration: autoHiddenDuration!,
+      autoHiddenDuration: autoHiddenDuration,
       vanishCallback: vanishCallback,
       endCallback: endCallback,
     );

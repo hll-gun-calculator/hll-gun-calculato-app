@@ -3,15 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/pages/guide/calculatingFunctionManagement.dart';
-import 'package:hll_gun_calculator/pages/guide/keyboardManagement.dart';
-import 'package:hll_gun_calculator/pages/guide/mapPackageManagement.dart';
-import 'package:hll_gun_calculator/pages/guide/start.dart';
 
-import '../../utils/index.dart';
+import '/utils/index.dart';
+import '/pages/guide/calculatingFunctionManagement.dart';
+import '/pages/guide/keyboardManagement.dart';
+import '/pages/guide/mapPackageManagement.dart';
+import '/pages/guide/start.dart';
 import 'end.dart';
 import 'homeAppSort.dart';
-
 
 class GuidePage extends StatefulWidget {
   const GuidePage({Key? key}) : super(key: key);
@@ -22,6 +21,8 @@ class GuidePage extends StatefulWidget {
 
 class _GuidePageState extends State<GuidePage> {
   final UrlUtil _urlUtil = UrlUtil();
+
+  final Storage _storage = Storage();
 
   /// 引导下标
   int guideListPageIndex = 0;
@@ -77,7 +78,7 @@ class _GuidePageState extends State<GuidePage> {
   _onNext() async {
     // 完成离开
     if (guideListPageIndex == guideListPage.length - 1) {
-      await Storage().set("guide", value: "1");
+      await _storage.set("guide", value: "1");
 
       _urlUtil.popPage(context);
       return;
@@ -90,7 +91,8 @@ class _GuidePageState extends State<GuidePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
+    return PopScope(
+      canPop: false,
       child: SafeArea(
         top: false,
         child: Scaffold(
@@ -103,7 +105,6 @@ class _GuidePageState extends State<GuidePage> {
             duration: const Duration(milliseconds: 150),
             transitionBuilder: (Widget child, Animation<double> primaryAnimation, Animation<double> secondaryAnimation) {
               return SharedAxisTransition(
-                fillColor: Theme.of(context).scaffoldBackgroundColor,
                 animation: primaryAnimation,
                 secondaryAnimation: secondaryAnimation,
                 transitionType: SharedAxisTransitionType.horizontal,
@@ -145,9 +146,6 @@ class _GuidePageState extends State<GuidePage> {
           ),
         ),
       ),
-      onWillPop: () async {
-        return false;
-      },
     );
   }
 }

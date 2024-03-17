@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/component/_empty/index.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/api.dart';
-import '../../constants/app.dart';
-import '../../data/index.dart';
-import '../../provider/package_provider.dart';
-import '../../utils/index.dart';
+import '/component/_empty/index.dart';
+import '/constants/api.dart';
+import '/constants/app.dart';
+import '/data/index.dart';
+import '/provider/package_provider.dart';
+import '/utils/index.dart';
 
 class VersionPage extends StatefulWidget {
   const VersionPage({super.key});
@@ -83,8 +83,7 @@ class _VersionPageState extends State<VersionPage> {
                   .map(
                     (e) => ListTile(
                       title: Text(e.version),
-                      trailing: const Icon(Icons.more_horiz),
-                      onTap: () {},
+                      subtitle: Text(e.platform.keys.toList().join("\t").toString()),
                     ),
                   )
                   .toList(),

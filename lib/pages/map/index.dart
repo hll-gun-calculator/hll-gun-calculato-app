@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/data/index.dart';
-import 'package:hll_gun_calculator/provider/map_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
-import '../../widgets/map_card.dart';
+import '/constants/app.dart';
+import '/widgets/map_card.dart';
+import '/data/index.dart';
+import '/provider/map_provider.dart';
 
 class MapPackagePage extends StatefulWidget {
   const MapPackagePage({super.key});

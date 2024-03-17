@@ -22,7 +22,7 @@
       "dayAgo": "{s}天前"
     },
     "tip": {
-      "notContent": "空"
+      "notContent": "空空如也"
     },
     "keyboards": {
       "None": "无",
@@ -83,12 +83,25 @@
     "title": "收藏",
     "describe": "坐标收藏"
   },
+  "networkDetection": {
+    "title": "网络监测",
+    "status": {
+      "0": "检查中",
+      "1": "服务正常",
+      "2": "服务异常",
+      "3": "服务未知"
+    }
+  },
   "setting": {
     "title": "设置中心",
     "cell": {
       "calculatingFunctionConfig": {
         "title": "计算函数配置",
         "describe": "管理应用计算函数"
+      },
+      "appNetwork": {
+        "title": "网络清单",
+        "describe": "程序网络地址列表"
       },
       "mapConfig": {
         "title": "地图配置",

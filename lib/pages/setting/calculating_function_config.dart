@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/component/_empty/index.dart';
-import 'package:hll_gun_calculator/component/_time/index.dart';
-import 'package:hll_gun_calculator/constants/api.dart';
 import 'package:provider/provider.dart';
 
-import '../../constants/app.dart';
+import '/component/_empty/index.dart';
+import '/component/_time/index.dart';
+import '/constants/api.dart';
+import '/constants/app.dart';
 import '/provider/calc_provider.dart';
 import '/utils/index.dart';
 import '/data/index.dart';

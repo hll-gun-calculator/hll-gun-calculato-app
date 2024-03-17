@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:hll_gun_calculator/data/HomeApp.dart';
-import 'package:hll_gun_calculator/utils/index.dart';
 
-import '../pages/index/calc.dart';
-import '../pages/index/gunComparisonTable.dart';
-import '../pages/index/landingTimer.dart';
-import '../pages/index/map.dart';
+import '/data/HomeApp.dart';
+import '/utils/index.dart';
+import '/pages/index/calc.dart';
+import '/pages/index/gunComparisonTable.dart';
+import '/pages/index/landingTimer.dart';
+import '/pages/index/map.dart';
 
 class HomeAppProvider with ChangeNotifier {
   String PACKAGENAME = "home_app";
 
   Storage storage = Storage();
+
+  // 应用上限以及下限
+  final int appMaxLength = 2;
+  final int appMinLength = 1;
 
   // 默认
   final List<HomeAppData> _allPanelLists = [
@@ -104,6 +108,8 @@ class HomeAppProvider with ChangeNotifier {
 
   /// 添加
   void add(HomeAppData homeAppData) {
+    if (activeList.length > appMaxLength) return;
+
     _unactivatedPandeLists.value.remove(homeAppData);
     _panelLists.value.add(homeAppData);
     _saveLocalStorage();
@@ -112,6 +118,8 @@ class HomeAppProvider with ChangeNotifier {
 
   /// 移除
   void remove(HomeAppData homeAppData) {
+    if (activeList.length < appMinLength) return;
+
     _panelLists.value.remove(homeAppData);
     _unactivatedPandeLists.value.add(homeAppData);
     _saveLocalStorage();

@@ -1,4 +1,4 @@
-import 'package:hll_gun_calculator/utils/index.dart';
+import '/utils/index.dart';
 
 import '../utils/storage_config.dart';
 

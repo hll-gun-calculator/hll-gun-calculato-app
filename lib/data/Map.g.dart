@@ -17,17 +17,17 @@ MapInfo _$MapInfoFromJson(Map<String, dynamic> json) => MapInfo(
       initialPosition: json['initialPosition'] == null
           ? const Offset(0, 0)
           : MapInfo.ListAsOffset(json['initialPosition'] as List),
-      factions: MapInfo.factionsFromJson(json['factions'] as Map),
-      assets: json['assets'] == null
-          ? null
-          : MapInfoAssets.fromJson(json['assets'] as Map<String, dynamic>),
+      factions: json['factions'] == null
+          ? {}
+          : MapInfo.factionsFromJson(json['factions'] as Map),
+      assets: MapInfo.assetsFromJson(json['assets']),
       childs: (json['childs'] as List<dynamic>?)
               ?.map((e) => MapInfoAssets.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      marker: (json['marker'] as List<dynamic>?)
-          ?.map((e) => MapInfoMarkerItem.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      marker: json['marker'] == null
+          ? []
+          : MapInfo.markerFromJson(json['marker'] as List),
     );
 
 Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
@@ -35,10 +35,10 @@ Map<String, dynamic> _$MapInfoToJson(MapInfo instance) => <String, dynamic>{
       'description': const StringOrMapConverter().toJson(instance.description),
       'size': MapInfo.OffsetAsList(instance.size),
       'initialPosition': MapInfo.OffsetAsList(instance.initialPosition),
-      'factions': MapInfo.ValueToJson(instance.factions),
-      'assets': instance.assets,
+      'factions': MapInfo.factionsToJson(instance.factions),
+      'assets': MapInfo.assetsToJson(instance.assets),
       'childs': MapInfo.childsToJson(instance.childs),
-      'marker': instance.marker,
+      'marker': MapInfo.markerToJson(instance.marker),
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(
@@ -63,7 +63,7 @@ MapInfoFactionInfo _$MapInfoFactionInfoFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$MapInfoFactionInfoToJson(MapInfoFactionInfo instance) =>
     <String, dynamic>{
-      'gunPosition': instance.gunPosition,
+      'gunPosition': MapInfoFactionInfo.gunToJson(instance.gunPosition),
       'points': MapInfoFactionInfo.pointsToJson(instance.points),
       'direction': MapInfoFactionInfo.MapInfoFactionInfoDirectionToJson(
           instance.direction),
@@ -81,10 +81,9 @@ MapInfoMarkerItem _$MapInfoMarkerItemFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? "none",
       iconType: $enumDecode(_$MapIconTypeEnumMap, json['iconType']),
       iconPath: json['iconPath'] as String? ?? "",
-      points: (json['points'] as List<dynamic>?)
-              ?.map((e) => MarkerPointItem.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
+      points: json['points'] == null
+          ? const []
+          : MapInfoMarkerItem.pointsFromJson(json['points'] as List),
     );
 
 Map<String, dynamic> _$MapInfoMarkerItemToJson(MapInfoMarkerItem instance) =>
@@ -92,7 +91,7 @@ Map<String, dynamic> _$MapInfoMarkerItemToJson(MapInfoMarkerItem instance) =>
       'name': instance.name,
       'iconType': _$MapIconTypeEnumMap[instance.iconType]!,
       'iconPath': instance.iconPath,
-      'points': instance.points,
+      'points': MapInfoMarkerItem.pointsToJson(instance.points),
     };
 
 const _$MapIconTypeEnumMap = {
@@ -112,12 +111,10 @@ MarkerPointItem _$MarkerPointItemFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? "none",
       x: (json['x'] as num?)?.toDouble() ?? .0,
       y: (json['y'] as num?)?.toDouble() ?? -.0,
-      id: json['id'] as String?,
     );
 
 Map<String, dynamic> _$MarkerPointItemToJson(MarkerPointItem instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'name': instance.name,
       'x': instance.x,
       'y': instance.y,
@@ -125,17 +122,12 @@ Map<String, dynamic> _$MarkerPointItemToJson(MarkerPointItem instance) =>
 
 MapInfoAssets _$MapInfoAssetsFromJson(Map<String, dynamic> json) =>
     MapInfoAssets(
-      index: json['index'] as int? ?? 0,
-      type: $enumDecodeNullable(_$MapIconTypeEnumMap, json['type']) ??
-          MapIconType.None,
-      network: json['network'] as String?,
-      local: json['local'] as String?,
+      network: json['network'] as String? ?? '',
+      local: json['local'] as String? ?? '',
     );
 
 Map<String, dynamic> _$MapInfoAssetsToJson(MapInfoAssets instance) =>
     <String, dynamic>{
-      'index': instance.index,
-      'type': _$MapIconTypeEnumMap[instance.type]!,
       'network': instance.network,
       'local': instance.local,
     };

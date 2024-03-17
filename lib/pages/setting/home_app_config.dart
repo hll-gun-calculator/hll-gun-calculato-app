@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/data/HomeApp.dart';
-import 'package:hll_gun_calculator/provider/home_app_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../constants/app.dart';
+import '/constants/app.dart';
+import '/data/HomeApp.dart';
+import '/provider/home_app_provider.dart';
 
 class HomeAppConfigPage extends StatefulWidget {
   const HomeAppConfigPage({super.key});
@@ -61,7 +62,7 @@ class _HomeAppConfigPageState extends State<HomeAppConfigPage> {
                         title: Text(FlutterI18n.translate(context, "${e.name}.title")),
                         subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
                         trailing: IconButton.filledTonal(
-                          onPressed: homeAppData.activeList.length <= 2 ? () => homeAppData.add(e) : null,
+                          onPressed: homeAppData.activeList.length <= homeAppData.appMaxLength ? () => homeAppData.add(e) : null,
                           icon: const Icon(Icons.add),
                         ),
                       );
@@ -97,7 +98,7 @@ class _HomeAppConfigPageState extends State<HomeAppConfigPage> {
                         ),
                         title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
                         subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
-                        trailing: activeList.length > 1
+                        trailing: activeList.length >  homeAppData.appMinLength
                             ? IconButton.filledTonal(
                                 onPressed: () {
                                   homeAppData.remove(activeList[index]);

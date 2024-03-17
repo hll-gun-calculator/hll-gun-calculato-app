@@ -4,7 +4,7 @@ import '/component/_empty/index.dart';
 import '/provider/history_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../widgets/hisroy_calc_card.dart';
+import '/widgets/hisroy_calc_card.dart';
 
 /// [计算历史]
 /// 从状态机取出

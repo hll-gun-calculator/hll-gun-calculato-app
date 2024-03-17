@@ -10,14 +10,14 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  cupertino_icons: ^1.0.2
 
+  cupertino_icons: ^1.0.2
   dio: ^5.0.0
   dio_cache_interceptor: ^3.5.0
   dio_smart_retry: ^6.0.0
   dio_cookie_manager: ^2.0.0
   file_picker: ^6.2.0
-  dartfx: ^1.0.13
+  dartfx: ^1.0.14
   provider: ^6.0.2
   shared_preferences: ^2.0.6
   animations: ^2.0.7
@@ -55,7 +55,7 @@ dev_dependencies:
   # REQUIRED!
   json_serializable: ^6.6.0
 
-  analyzer: ^5.13.0
+  analyzer: ^5.2.0
 
 flutter:
   uses-material-design: true

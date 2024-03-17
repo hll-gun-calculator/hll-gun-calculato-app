@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:hll_gun_calculator/component/_keyboard/increase_decrease.dart';
-import 'package:hll_gun_calculator/component/_keyboard/number.dart';
-import 'package:hll_gun_calculator/component/_keyboard/slider.dart';
+import '/component/_keyboard/increase_decrease.dart';
+import '/component/_keyboard/number.dart';
+import '/component/_keyboard/slider.dart';
 
-import '../../constants/app.dart';
-import '../../data/Factions.dart';
+import '/constants/app.dart';
+import '/data/Factions.dart';
 import 'Independent_digit.dart';
 import 'protogenesis.dart';
 import 'theme.dart';

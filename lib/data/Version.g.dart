@@ -20,9 +20,9 @@ NewVersion _$NewVersionFromJson(Map<String, dynamic> json) => NewVersion(
 
 Map<String, dynamic> _$NewVersionToJson(NewVersion instance) =>
     <String, dynamic>{
-      'android': instance.android,
-      'ios': instance.ios,
-      'web': instance.web,
+      'android': NewVersion.ValueToJson(instance.android),
+      'ios': NewVersion.ValueToJson(instance.ios),
+      'web': NewVersion.ValueToJson(instance.web),
     };
 
 Versions _$VersionsFromJson(Map<String, dynamic> json) => Versions(
@@ -38,11 +38,9 @@ Map<String, dynamic> _$VersionsToJson(Versions instance) => <String, dynamic>{
 
 VersionsItem _$VersionsItemFromJson(Map<String, dynamic> json) => VersionsItem(
       version: json['version'] as String?,
-      system: (json['system'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry($enumDecode(_$VersionSystemTypeEnumMap, k),
-                VersionBuildValue.fromJson(e as Map<String, dynamic>)),
-          ) ??
-          const {},
+      system: json['system'] == null
+          ? const {}
+          : VersionsItem.systemFromJson(json['system'] as Map),
       platform: json['platform'] as Map<String, dynamic>? ?? const {},
       content: json['content'] as String?,
     );
@@ -50,18 +48,10 @@ VersionsItem _$VersionsItemFromJson(Map<String, dynamic> json) => VersionsItem(
 Map<String, dynamic> _$VersionsItemToJson(VersionsItem instance) =>
     <String, dynamic>{
       'version': instance.version,
-      'system': instance.system
-          .map((k, e) => MapEntry(_$VersionSystemTypeEnumMap[k]!, e)),
+      'system': VersionsItem.systemToJson(instance.system),
       'platform': instance.platform,
       'content': instance.content,
     };
-
-const _$VersionSystemTypeEnumMap = {
-  VersionSystemType.None: 'None',
-  VersionSystemType.Android: 'Android',
-  VersionSystemType.Ios: 'Ios',
-  VersionSystemType.Web: 'Web',
-};
 
 VersionBuildValue _$VersionBuildValueFromJson(Map<String, dynamic> json) =>
     VersionBuildValue(

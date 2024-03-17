@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hll_gun_calculator/utils/index.dart';
+import '/utils/index.dart';
 
-import '../../component/_time/index.dart';
-import '../../data/index.dart';
+import '/component/_time/index.dart';
+import '/data/index.dart';
 
 class CalculatingFunctionChildTextController extends CalculatingFunction {
   late TextEditingController maximumRangeController = TextEditingController(text: "");

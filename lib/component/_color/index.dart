@@ -30,7 +30,7 @@ class _ColorWidgetState extends State<ColorWidget> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setState(() {
-        if (widget.initializeColor != null) selectColor.value = widget.initializeColor! ?? colors.first;
+        if (widget.initializeColor != null) selectColor.value = widget.initializeColor!;
       });
     });
 

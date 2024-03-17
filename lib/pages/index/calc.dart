@@ -221,10 +221,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                 readOnly: true,
                                 showCursor: true,
                                 style: const TextStyle(fontSize: 50),
-                                decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.zero,
-                                  hintText: "0",
-                                ),
+                                decoration: const InputDecoration.collapsed(hintText: "0"),
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
                                 maxLines: 3,
@@ -249,6 +246,8 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                   IconButton.filledTonal(
                                     enableFeedback: true,
                                     icon: const Icon(Icons.remove),
+                                    padding: EdgeInsets.zero,
+                                    visualDensity: VisualDensity.compact,
                                     onPressed: () {
                                       num minimumRange = calcData.currentCalculatingFunction.child[inputFactions]!.minimumRange;
                                       if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) > minimumRange) {
@@ -265,6 +264,8 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                   ),
                                   IconButton.filledTonal(
                                     icon: const Icon(Icons.add),
+                                    padding: EdgeInsets.zero,
+                                    visualDensity: VisualDensity.compact,
                                     onPressed: () {
                                       num maximumRange = calcData.currentCalculatingFunction.child[inputFactions]!.maximumRange;
                                       if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) < maximumRange) {
