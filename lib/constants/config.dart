@@ -25,4 +25,6 @@ class AppConfig extends InheritedWidget {
 
 class AppSize {
   static num kRang = 645;
+
+  static double kMinRang = 100;
 }

@@ -1,15 +1,17 @@
-import 'router/router.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
-import 'provider/home_app_provider.dart';
+import 'constants/config.dart';
+import 'router/router.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart' show FlutterNativeSplash;
+import 'package:flutter_i18n/loaders/decoders/json_decode_strategy.dart';
 
 import 'constants/api.dart';
 import 'provider/calc_provider.dart';
@@ -20,6 +22,7 @@ import 'provider/package_provider.dart';
 import 'provider/translation_provider.dart';
 import 'provider/gun_timer_provider.dart';
 import 'provider/map_provider.dart';
+import 'provider/home_app_provider.dart';
 
 void runMain() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -72,7 +75,8 @@ class App extends StatelessWidget {
                   useCountryCode: true,
                   useScriptCode: true,
                   basePath: "assets/lang",
-                  fallbackFile: "zh_CN",
+                  fallbackFile: "zh_CH",
+                  decodeStrategies: [JsonDecodeStrategy()],
                 ),
               ),
               GlobalMaterialLocalizations.delegate,
@@ -84,12 +88,23 @@ class App extends StatelessWidget {
                 return WidgetError(errorDetails: errorDetails);
               };
 
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(themeData.theme.textScaleFactor!),
-                ),
-                child: widget!,
-              );
+              return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(themeData.theme.textScaleFactor!),
+                  ),
+                  child: OverflowBox(
+                    maxWidth: constraints.maxWidth > AppSize.kRang ? double.parse(AppSize.kRang.toString()) : MediaQuery.of(context).size.width,
+                    minWidth: AppSize.kMinRang,
+                    fit: OverflowBoxFit.deferToChild,
+                    alignment: Alignment.center,
+                    child: ClipRRect(
+                      clipBehavior: kIsWeb ? Clip.hardEdge : Clip.none,
+                      child: widget!,
+                    ),
+                  ),
+                );
+              });
             },
             onGenerateRoute: Routes.router.generator,
           );

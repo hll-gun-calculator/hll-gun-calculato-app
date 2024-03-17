@@ -63,6 +63,9 @@ class Http {
       ),
     );
     headers = headers ?? {};
+    headers.addAll({
+      'Access-Control-Allow-Origin': '*'
+    });
 
     if (headers.isNotEmpty && Http.USERAGENT.isNotEmpty) {
       headers.addAll({HttpHeaders.userAgentHeader: Http.USERAGENT});
@@ -151,12 +154,12 @@ class Http {
 
     // 请求代理
     // 对于web存在跨域资源处理
-    if (kIsWeb) {
-      dio.httpClientAdapter = IOHttpClientAdapter()..onHttpClientCreate = (client) {
-        client.findProxy = (uri) => 'PROXY localhost';
-        return client;
-      };
-    }
+    // if (kIsWeb) {
+    //   dio.httpClientAdapter = IOHttpClientAdapter()..onHttpClientCreate = (client) {
+    //     client.findProxy = (uri) => 'PROXY localhost:60930';
+    //     return client;
+    //   };
+    // }
 
     // 缓存实例
     // by https://pub.dev/packages/dio_cache_interceptor

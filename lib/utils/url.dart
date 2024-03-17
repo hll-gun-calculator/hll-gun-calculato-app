@@ -27,13 +27,14 @@ class UrlUtil {
     WebViewConfiguration? webViewConfiguration,
   }) async {
     try {
-      Uri uri = Uri.parse(url);
-      mode ??= defaultMode;
+      Uri urlParse = Uri.parse(url);
 
       if (url.isEmpty) throw "Url empty";
+      await launchUrl(urlParse);
 
-      if (!await launchUrl(uri, mode: mode)) {
-        throw 'Could not launch $url';
+      if (await canLaunchUrl(urlParse)) {
+        await launchUrl(urlParse, mode: mode ?? defaultMode);
+        throw 'Could not launch $urlParse';
       }
 
       return {"code": 0};

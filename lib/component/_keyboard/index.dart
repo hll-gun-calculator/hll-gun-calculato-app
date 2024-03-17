@@ -57,7 +57,7 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
 
   @override
   void initState() {
-    keyboardSwitchValue = !widget.initializePackup;
+    keyboardSwitchValue = widget.initializePackup;
 
     // 初始键盘列表
     keyboards = {

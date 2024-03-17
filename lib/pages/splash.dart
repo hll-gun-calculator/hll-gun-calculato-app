@@ -16,10 +16,10 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
   final UrlUtil _urlUtil = UrlUtil();
 
-  final Storage storage = Storage();
+  final Storage _storage = Storage();
 
   // 状态机
-  ProviderUtil providerUtil = ProviderUtil();
+  ProviderUtil _providerUtil = ProviderUtil();
 
   // 载入提示
   late String? loadTip = "";
@@ -37,26 +37,29 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   /// [Event]
   /// 初始页面数据
   void _onReady() async {
-    Future.delayed(const Duration(seconds: 1)).then((value) =>
-    {
-      if (mounted)
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
         setState(() {
-          _size = (MediaQuery
-              .of(context)
-              .size
-              .width / 2) * .01;
-        })
+          double boxWidth = MediaQuery.of(context).size.width;
+          if (boxWidth > 800) {
+            _size = 2.5;
+            return;
+          }
+
+          _size = (boxWidth / 2) * .01;
+        });
+      }
     });
 
     Future.wait([
-      providerUtil.ofApp(context).init(),
-      providerUtil.ofCalc(context).init(),
-      providerUtil.ofTheme(context).init(),
-      providerUtil.ofCollect(context).init(),
-      providerUtil.ofLang(context).init(),
-      providerUtil.ofMap(context).init(),
-      providerUtil.ofHomeApp(context).init(),
-      providerUtil.ofGunTimer(context).init(),
+      _providerUtil.ofApp(context).init(),
+      _providerUtil.ofCalc(context).init(),
+      _providerUtil.ofTheme(context).init(),
+      _providerUtil.ofCollect(context).init(),
+      _providerUtil.ofLang(context).init(),
+      _providerUtil.ofMap(context).init(),
+      _providerUtil.ofHomeApp(context).init(),
+      _providerUtil.ofGunTimer(context).init(),
       forcedAnimation(),
     ]).then((value) async {
       if (!await _onGuide()) return;
@@ -73,13 +76,12 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   /// [Event]
   /// 进入主程序
   void onMain() async {
-    // ignore: use_build_context_synchronously
     _urlUtil.opEnPage(
       context,
       "/",
       transition: TransitionType.none,
       // clearStack: false,
-      rootNavigator: true,
+      // rootNavigator: true,
     );
   }
 
@@ -88,13 +90,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   Future<bool> _onGuide() async {
     String guideName = "guide";
 
-    StorageData guideData = await storage.get(guideName);
+    StorageData guideData = await _storage.get(guideName);
     dynamic guide = guideData.value;
 
     if (guideData.code != 0 && guide == null) {
       await _urlUtil.opEnPage(context, "/guide", transition: TransitionType.fadeIn).then((value) async {
         onMain();
-        await storage.set(guideName, value: 1);
+        await _storage.set(guideName, value: 1);
       });
       return false;
     }
@@ -115,9 +117,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             children: [
               Expanded(
                 child: Container(
-                  color: Theme
-                      .of(context)
-                      .scaffoldBackgroundColor,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,

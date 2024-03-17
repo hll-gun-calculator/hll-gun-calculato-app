@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/constants/api.dart';
 import '/provider/calc_provider.dart';
@@ -124,7 +125,7 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             ),
             subtitle: Text("我们陈列出一些社区提供’计算函数‘选择"),
             trailing: Icon(Icons.open_in_new),
-            onTap: () {
+            onTap: () async {
               App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/calc/calcRecommendedList.html");
             },
           ),

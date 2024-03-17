@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hll_gun_calculator/widgets/map_image.dart';
+import 'package:provider/provider.dart';
+
+import '/component/_color/index.dart';
 import '/component/_empty/index.dart';
 import '/provider/gun_timer_provider.dart';
 import '/provider/map_provider.dart';
 import '/utils/map.dart';
-import 'package:provider/provider.dart';
-
-import '/component/_color/index.dart';
 import '/constants/app.dart';
 import '/data/index.dart';
 import '/provider/calc_provider.dart';
@@ -32,8 +32,6 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   I18nUtil i18nUtil = I18nUtil();
 
-  Factions inputFactions = Factions.None;
-
   bool _lock = false;
 
   Map<MapIconType, bool> _markerManagementSwitch = {};
@@ -43,16 +41,6 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   @override
   void initState() {
-    CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
-    Factions firstName = Factions.None;
-
-    firstName = currentCalculatingFunction.child.keys.first;
-
-    setState(() {
-      // 初始所支持的阵营
-      if (Factions.values.where((e) => e == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e == firstName).first;
-    });
-
     // 依照地图火炮创建下标列表
     // 更新id
     listTimerIndex = List.generate(App.provider.ofMap(context).currentMapInfo.gunPositions.length, (index) {
@@ -117,52 +105,6 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   void _collect(Gun gun) {
     App.provider.ofCollect(context).add(gun.result, gun.name);
     Fluttertoast.showToast(msg: "收藏添加");
-  }
-
-  /// 选择阵营
-  void _openSelectFactions() {
-    showModalBottomSheet<void>(
-      context: context,
-      clipBehavior: Clip.hardEdge,
-      useSafeArea: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, modalSetState) {
-          return Consumer<CalcProvider>(
-            builder: (context, calcData, widget) {
-              return Scaffold(
-                appBar: AppBar(
-                  leading: const CloseButton(),
-                ),
-                body: ListView(
-                  children: Factions.values.where((i) => i != Factions.None).map((i) {
-                    return ListTile(
-                      selected: inputFactions.value == i.value,
-                      enabled: calcData.currentCalculatingFunction.hasChildValue(i),
-                      title: Text(FlutterI18n.translate(context, "basic.factions.${i.value}")),
-                      trailing: Text(calcData.currentCalculatingFunction.hasChildValue(i) ? "" : "不支持"),
-                      onTap: () {
-                        if (!calcData.currentCalculatingFunction.hasChildValue(i)) {
-                          return;
-                        }
-
-                        setState(() {
-                          inputFactions = i;
-                        });
-                        modalSetState(() {});
-
-                        Future.delayed(const Duration(milliseconds: 500)).then((value) {
-                          Navigator.pop(context);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          );
-        });
-      },
-    );
   }
 
   /// 打开地图选择
@@ -327,7 +269,11 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     )
                   : Container(
                       color: Theme.of(context).colorScheme.primary.withOpacity(.1),
-                      child: MapCore(key: _mapCoreKey, mapProvider: mapData, inputFactions: inputFactions),
+                      child: MapCore(
+                        key: _mapCoreKey,
+                        mapProvider: mapData,
+                        inputFactions: App.provider.ofMap(context).currentMapGun.factions!,
+                      ),
                     ),
             ),
 
@@ -398,7 +344,6 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                     String querId = "$id-${LandingType.MapGun.name}"; // 查询id，与生成的id缺少类型
                                     return Stack(
                                       children: [
-                                        // Text(id),
                                         if (gunTimerData.hasItemId(querId))
                                           Positioned.fill(
                                             child: Opacity(
@@ -423,6 +368,28 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                 ],
                                               ),
                                             ),
+
+                                            /// tip 阵营不支持
+                                            if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!))
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
+                                                margin: const EdgeInsets.only(top: 5, bottom: 6),
+                                                color: Theme.of(context).colorScheme.error.withOpacity(.2),
+                                                width: MediaQuery.of(context).size.width,
+                                                child: Text.rich(
+                                                  TextSpan(
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).colorScheme.error,
+                                                    ),
+                                                    children: [
+                                                      WidgetSpan(child: Icon(Icons.error, color: Theme.of(context).colorScheme.error, size: 16)),
+                                                      TextSpan(text: "此${FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")}阵营所支持的${App.provider.ofCalc(context).currentCalculatingFunction.name}计算函数不支持，你可以更换其他函数"),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+
+                                            /// 火炮row
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               children: [
@@ -432,13 +399,16 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                     children: [
                                                       Radio(
                                                         value: e.value,
-                                                        toggleable: true,
+                                                        toggleable: calcData.currentCalculatingFunction.hasChildValue(e.value.factions!),
                                                         groupValue: mapData.currentMapGun,
                                                         onChanged: (value) {
+                                                          // 检查计算函数内对应阵营函数是否可用
+                                                          if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!)) return;
+
                                                           setState(() {
                                                             mapData.currentMapGun = e.value;
+                                                            _calcResult();
                                                           });
-                                                          _calcResult();
                                                         },
                                                       ),
                                                       Expanded(
@@ -582,24 +552,9 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
                   /// 附件选项
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                     child: Row(
                       children: [
-                        GestureDetector(
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              child: Wrap(
-                                runAlignment: WrapAlignment.center,
-                                children: [
-                                  Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
-                                  const Icon(Icons.arrow_drop_down),
-                                ],
-                              ),
-                            ),
-                          ),
-                          onTap: () => _openSelectFactions(),
-                        ),
                         const Expanded(flex: 1, child: SizedBox(width: 5)),
                         GestureDetector(
                           child: Card(
@@ -615,11 +570,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                             ),
                           ),
                           onTap: () => {
-                            App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
-                              setState(() {
-                                inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
-                              });
-                            }),
+                            App.url.opEnPage(context, "/calculatingFunctionConfig"),
                           },
                         ),
                       ],
@@ -804,15 +755,17 @@ class MapCoreState extends State<MapCore> {
     if (newMarker.dx < 0 || newMarker.dy < 0) return; // 未选择标记
 
     // 选中的火炮
-    Offset gunPostionSelect = App.provider.ofMap(context).currentMapGun.offset;
+    Gun gunInfo = App.provider.ofMap(context).currentMapGun;
+    Offset gunOffsetSelect = gunInfo.offset;
+    Factions? gunFactions = gunInfo.factions;
 
     setState(() {
-      double distance = (gunPostionSelect - newMarker).distance;
+      double distance = (gunOffsetSelect - newMarker).distance;
       double gridOnePx = (200 * 10) / App.provider.ofMap(context).currentMapInfo.size.dy;
 
       // 计算mil
       CalcResult result = _calcUtil.on(
-        inputFactions: Factions.America,
+        inputFactions: gunFactions!,
         inputValue: (distance * gridOnePx).ceil(),
         calculatingFunctionInfo: App.provider.ofCalc(context).currentCalculatingFunction,
       );
@@ -822,9 +775,9 @@ class MapCoreState extends State<MapCore> {
 
       // 计算角度
       MapGunResult _mapGunResult = MapGunResult.fromJson(result.toJson());
-      _mapGunResult.outputAngle = _calcUtil.onAngle(gunPostionSelect, newMarker).outputAngle;
+      _mapGunResult.outputAngle = _calcUtil.onAngle(gunOffsetSelect, newMarker).outputAngle;
       _mapGunResult.outputValue = result.outputValue;
-      _mapGunResult.inputOffset = gunPostionSelect;
+      _mapGunResult.inputOffset = gunOffsetSelect;
       _mapGunResult.targetOffset = newMarker;
       App.provider.ofMap(context).setCurrentMapGunResult(_mapGunResult);
 
@@ -1072,33 +1025,10 @@ class MapCoreState extends State<MapCore> {
               GestureDetector(
                 onTapUp: (detail) => _onPositionCalcResult(detail),
                 // onLongPressDown: (LongPressDownDetails detail) => _onPositionCalcResult(detail),
-                child: ExtendedImage(
-                  image: widget.mapProvider.currentMapInfo.assets!.image!,
+                child: MapImageWidget(
+                  assets: widget.mapProvider.currentMapInfo.assets!,
                   width: widget.mapProvider.currentMapInfo.size.dx,
                   height: widget.mapProvider.currentMapInfo.size.dy,
-                  fit: BoxFit.contain,
-                  filterQuality: FilterQuality.high,
-                  enableMemoryCache: false,
-                  loadStateChanged: (ExtendedImageState state) {
-                    switch (state.extendedImageLoadState) {
-                      case LoadState.completed:
-                        return ExtendedRawImage(
-                          image: state.extendedImageInfo?.image,
-                        );
-                      case LoadState.loading:
-                        return const SizedBox();
-                      case LoadState.failed:
-                      default:
-                        return Center(
-                          child: Column(
-                            children: [
-                              const Text("未能加载地图"),
-                              Text(state.extendedImageLoadState.name),
-                            ],
-                          ),
-                        );
-                    }
-                  },
                 ),
               ),
 
@@ -1119,13 +1049,10 @@ class MapCoreState extends State<MapCore> {
                             }[App.provider.ofMap(context).currentMapGun.direction] ??
                             0
                         : 0,
-                    child: ExtendedImage(
-                      image: e.image,
+                    child: MapImageWidget(
+                      assets: widget.mapProvider.currentMapInfo.assets!,
                       width: widget.mapProvider.currentMapInfo.size.dx,
                       height: widget.mapProvider.currentMapInfo.size.dy,
-                      fit: BoxFit.contain,
-                      enableMemoryCache: false,
-                      filterQuality: FilterQuality.high,
                     ),
                   ),
                 );

@@ -249,43 +249,36 @@ class _HomeBodyState extends State<HomeBody> {
       return Center(
         child: OverflowBox(
           maxWidth: constraints.maxWidth > AppSize.kRang ? double.parse(AppSize.kRang.toString()) : null,
-          child: Container(
-            transformAlignment: Alignment.center,
-            constraints: BoxConstraints(
-              maxWidth: double.parse(AppSize.kRang.toString()),
-              minWidth: 100,
-            ),
-            child: Row(
-              children: [
-                if (constraints.maxWidth >= AppSize.kRang)
-                  NavigationRail(
-                    onDestinationSelected: (value) {
-                      setState(() {
-                        tabIndex = value;
-                        widget.pageController.jumpToPage(value);
-                      });
-                    },
-                    leading: const DrawerButton(),
-                    labelType: NavigationRailLabelType.all,
-                    backgroundColor: Theme.of(context).bottomAppBarTheme.color,
-                    destinations: widget.navs.map((nav) {
-                      return NavigationRailDestination(
-                        icon: nav.icon,
-                        selectedIcon: nav.activeIcon,
-                        label: Text(FlutterI18n.translate(context, "${nav.name}.title")),
-                      );
-                    }).toList(),
-                    selectedIndex: tabIndex,
-                  ),
-                Expanded(
-                  flex: 1,
-                  child: PageView(
-                    controller: widget.pageController,
-                    children: App.provider.ofHomeApp(context).widgets,
-                  ),
+          child: Row(
+            children: [
+              if (constraints.maxWidth >= AppSize.kRang)
+                NavigationRail(
+                  onDestinationSelected: (value) {
+                    setState(() {
+                      tabIndex = value;
+                      widget.pageController.jumpToPage(value);
+                    });
+                  },
+                  leading: const DrawerButton(),
+                  labelType: NavigationRailLabelType.all,
+                  backgroundColor: Theme.of(context).bottomAppBarTheme.color,
+                  destinations: widget.navs.map((nav) {
+                    return NavigationRailDestination(
+                      icon: nav.icon,
+                      selectedIcon: nav.activeIcon,
+                      label: Text(FlutterI18n.translate(context, "${nav.name}.title")),
+                    );
+                  }).toList(),
+                  selectedIndex: tabIndex,
                 ),
-              ],
-            ),
+              Expanded(
+                flex: 1,
+                child: PageView(
+                  controller: widget.pageController,
+                  children: App.provider.ofHomeApp(context).widgets,
+                ),
+              ),
+            ],
           ),
         ),
       );

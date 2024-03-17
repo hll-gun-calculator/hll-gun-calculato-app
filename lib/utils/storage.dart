@@ -9,8 +9,6 @@ import '../constants/api.dart';
 enum StorageType { none, string, int, double, bool }
 
 class Storage {
-  PackageInfo? _packageInfo;
-
   SharedPreferences? _prefs;
 
   SharedPreferences? get prefs => _prefs;
@@ -20,9 +18,8 @@ class Storage {
   /// [Event]
   /// 初始化
   init() async {
-    _packageInfo = await PackageInfo.fromPlatform();
     _prefs = await SharedPreferences.getInstance();
-    _preName = "${_packageInfo!.appName.toLowerCase()}.${Config.envCurrentName}:";
+    _preName = "${Config.envCurrentName}:";
   }
 
   /// 是否初始化
