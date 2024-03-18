@@ -3,7 +3,7 @@ git:
     - filter_type: file
       file_format: KEYVALUEJSON
       source_language: zh_CN
-      source_file: 'assets/lang/zh_CN.json'
+      source_file: 'assets/lang/zh_CH.json'
       translation_files_expression: 'assets/lang/<lang>.json'
 
   settings:
