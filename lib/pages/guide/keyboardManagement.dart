@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '/component/_keyboard/index.dart';
@@ -10,7 +11,7 @@ class GuideKeyboardManagement extends StatefulWidget {
 }
 
 class _GuideKeyboardManagementState extends State<GuideKeyboardManagement> {
-  TextEditingController controller = TextEditingController(text: "0");
+  ValueNotifier<TextEditingController> controller = ValueNotifier(TextEditingController(text: "0"));
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class _GuideKeyboardManagementState extends State<GuideKeyboardManagement> {
                     TextField(
                       readOnly: true,
                       showCursor: true,
-                      controller: controller,
+                      controller: controller.value,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 25),
                       decoration: const InputDecoration.collapsed(hintText: "test"),

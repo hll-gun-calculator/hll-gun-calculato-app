@@ -45,9 +45,7 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
     );
 
     if (result.data is Map && result.data.toString().isNotEmpty) {
-      setState(() {
-        guideRecommendedCalcFunction = GuideRecommendedCalcFunction.fromJson(result.data);
-      });
+      guideRecommendedCalcFunction = GuideRecommendedCalcFunction.fromJson(result.data);
     }
 
     setState(() {

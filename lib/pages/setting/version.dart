@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,23 +86,52 @@ class _VersionPageState extends State<VersionPage> {
                 title: const Text("当前版本"),
                 trailing: Text("${data.currentVersion}(${data.buildNumber})"),
               ),
-              ListTile(
-                leading: newVersion!.load
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : null,
-                title: const Text("最新版本"),
-                subtitle: Text(newVersion!.android.version),
-                trailing: const Icon(Icons.open_in_new),
-                onTap: () {
-                  App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
-                },
-              ),
+              if (newVersion!.load)
+                ListTile(
+                  leading: newVersion!.load
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : null,
+                  title: const Text("最新版本"),
+                  trailing: const Icon(Icons.open_in_new),
+                  onTap: () {
+                    App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                  },
+                )
+              else
+                Column(
+                  children: [
+                    ListTile(
+                      title: const Text("web"),
+                      subtitle: Text(newVersion!.web.version),
+                      trailing: const Icon(Icons.open_in_new),
+                      onTap: () {
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                      },
+                    ),
+                    ListTile(
+                      title: const Text("android"),
+                      subtitle: Text(newVersion!.android.version),
+                      trailing: const Icon(Icons.open_in_new),
+                      onTap: () {
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                      },
+                    ),
+                    ListTile(
+                      title: const Text("ios"),
+                      subtitle: Text(newVersion!.ios.version),
+                      trailing: const Icon(Icons.open_in_new),
+                      onTap: () {
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                      },
+                    )
+                  ],
+                ),
               const Divider(),
               if (versions!.load && versions!.list.isNotEmpty)
                 Center(

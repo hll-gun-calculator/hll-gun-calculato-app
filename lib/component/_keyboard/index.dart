@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:hll_gun_calculator/component/_keyboard/speech.dart';
 import '/component/_keyboard/increase_decrease.dart';
 import '/component/_keyboard/number.dart';
 import '/component/_keyboard/slider.dart';
@@ -10,14 +13,14 @@ import 'Independent_digit.dart';
 import 'protogenesis.dart';
 import 'theme.dart';
 
-enum KeyboardType { None, Protogenesis, Number, Slider, IncreaseAndDecrease, IndependentDigit }
+enum KeyboardType { None, Protogenesis, Number, Slider, Speech, IncreaseAndDecrease, IndependentDigit }
 
 class KeyboardWidget extends StatefulWidget {
   // 空间名称
   final String spatialName;
 
   // 控制器
-  final TextEditingController controller;
+  final ValueNotifier<TextEditingController> controller;
 
   // focus
   final FocusNode? focusNode;
@@ -57,8 +60,6 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
 
   @override
   void initState() {
-    keyboardSwitchValue = widget.initializePackup;
-
     // 初始键盘列表
     keyboards = {
       KeyboardType.Protogenesis: ProtogenesisKeyboardWidget(
@@ -87,8 +88,6 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
         ),
       ),
       KeyboardType.Number: NumberKeyboardWidget(
-        onSubmit: widget.onSubmit,
-        controller: widget.controller,
         theme: KeyboardTheme(
           padding: const EdgeInsets.only(
             top: 5,
@@ -97,6 +96,9 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
             bottom: 10,
           ),
         ),
+        inputFactions: widget.inputFactions,
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
       ),
       KeyboardType.Slider: SliderKeyboard(
         theme: KeyboardTheme(
@@ -107,6 +109,11 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
             bottom: kBottomNavigationBarHeight + 5,
           ),
         ),
+        inputFactions: widget.inputFactions,
+        onSubmit: widget.onSubmit,
+        controller: widget.controller,
+      ),
+      KeyboardType.Speech: SpeechKeyboard(
         inputFactions: widget.inputFactions,
         onSubmit: widget.onSubmit,
         controller: widget.controller,
@@ -133,6 +140,7 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
             bottom: 5,
           ),
         ),
+        inputFactions: widget.inputFactions,
         onSubmit: widget.onSubmit,
         controller: widget.controller,
       ),
@@ -149,6 +157,8 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
 
     if (mounted) {
       setState(() {
+        keyboardSwitchValue = widget.initializePackup;
+
         // 初始键盘类型
         if (keyboardStorageSelectValue is bool && !keyboardStorageSelectValue || keyboardStorageSelectValue == null) {
           selectKeyboards = widget.initializeKeyboardType ?? KeyboardType.Number;

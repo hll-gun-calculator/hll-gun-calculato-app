@@ -37,6 +37,7 @@ Value? _$JsonConverterFromJson<Json, Value>(
     json == null ? null : fromJson(json as Json);
 
 const _$MapInfoFactionInfoDirectionEnumMap = {
+  MapInfoFactionInfoDirection.Nont: 'Nont',
   MapInfoFactionInfoDirection.Top: 'Top',
   MapInfoFactionInfoDirection.Left: 'Left',
   MapInfoFactionInfoDirection.Right: 'Right',

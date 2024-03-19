@@ -10,18 +10,18 @@ import '../utils/index.dart';
 class MapProvider with ChangeNotifier {
   String PACKAGENAME = "map";
 
-  final Storage storage = Storage();
+  final Storage _storage = Storage();
 
   final List _localPath = [
     {"name": "internal", "path": "assets/json/map-internal.json"},
-    // {"name": "mattw", "path": "assets/json/map-mattw.json"}
+    {"name": "test-mattw", "path": "assets/json/map-mattw.json"}
   ];
 
   // 内置
   final List<MapCompilation> _internalPath = [];
 
   // 自定义
-  final List<MapCompilation> _customPath = [];
+  late List<MapCompilation> _customPath = [];
 
   List<MapCompilation> get list => [..._internalPath, ..._customPath];
 
@@ -33,7 +33,7 @@ class MapProvider with ChangeNotifier {
 
   // 获取当前地图集合实例
   // 也可以使用[currentMapCompilationName]，效果一致
-  MapCompilation get currentMapCompilation => list.singleWhere((i) => i.name == currentMapCompilationName, orElse: () => list.first);
+  MapCompilation get currentMapCompilation => list.where((i) => i.name == currentMapCompilationName).first;
 
   // 设置当前地图集合实例
   set currentMapCompilation(MapCompilation mapCompilation) {
@@ -93,10 +93,11 @@ class MapProvider with ChangeNotifier {
 
   /// 从本地读取保存数据
   Future _readLocalStorage() async {
-    StorageData mapData = await storage.get(PACKAGENAME);
+    StorageData mapData = await _storage.get(PACKAGENAME);
 
     if (mapData.code == 0) {
       _currentMapCompilationName = mapData.value["currentMapCompilationName"];
+      _customPath = mapData.value["list"].map<MapCompilation>((e) => MapCompilation.fromJson(e)).toList();
     }
   }
 
@@ -104,9 +105,10 @@ class MapProvider with ChangeNotifier {
   void _saveLocalStorage() {
     Map value = {
       "currentMapCompilationName": _currentMapCompilationName,
+      "list": _customPath.map((e) => e.toJson()).toList(),
     };
 
-    storage.set(PACKAGENAME, value: value);
+    _storage.set(PACKAGENAME, value: value);
   }
 
   /// 删除合集

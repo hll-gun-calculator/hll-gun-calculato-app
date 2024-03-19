@@ -1,27 +1,48 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:hll_gun_calculator/component/_keyboard/kit/universal_detection.dart';
 
+import '../../data/index.dart';
 import 'theme.dart';
 
-class NumberKeyboardWidget extends StatelessWidget {
-  final TextEditingController controller;
+class NumberKeyboardWidget extends StatefulWidget {
+  final ValueNotifier<TextEditingController> controller;
   final Function onSubmit;
   late KeyboardTheme theme;
+  final Factions? inputFactions;
 
   NumberKeyboardWidget({
     Key? key,
     KeyboardTheme? theme,
     required this.onSubmit,
     required this.controller,
+    this.inputFactions,
   }) : super(key: key) {
     this.theme = theme ?? KeyboardTheme();
   }
 
   @override
+  State<NumberKeyboardWidget> createState() => _NumberKeyboardWidgetState();
+}
+
+class _NumberKeyboardWidgetState extends State<NumberKeyboardWidget> with KeyboardUniversalDetection {
+  @override
+  _NumberKeyboardWidgetState initState() {
+    super.initState().initConfig(controller: widget.controller, factions: widget.inputFactions!);
+    return this;
+  }
+
+  void _onPressed(int number) {
+    if (super.value.toString().length > maxLength) return;
+
+    super.value = "${super.value}$number";
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: theme.padding,
+      padding: widget.theme.padding,
       child: MediaQuery.removePadding(
         context: context,
         removeTop: true,
@@ -36,72 +57,26 @@ class NumberKeyboardWidget extends StatelessWidget {
             mainAxisExtent: 65,
           ),
           children: [
-            NumberButton(
-              number: 1,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 2,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 3,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 4,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 5,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 6,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 7,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 8,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
-            ),
-            NumberButton(
-              number: 9,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
+            ...List.generate(9, (index) => index + 1).map(
+              (number) => NumberButton(
+                number: number,
+                size: widget.theme.buttonSize,
+                color: widget.theme.buttonColor,
+                onPressed: () => _onPressed(number),
+              ),
             ),
             Container(),
             NumberButton(
               number: 0,
-              size: theme.buttonSize,
-              color: theme.buttonColor,
-              controller: controller,
+              size: widget.theme.buttonSize,
+              color: widget.theme.buttonColor,
+              onPressed: () => _onPressed(0),
             ),
             // this button is used to submit the entered value
             IconButton.filled(
-              onPressed: () => onSubmit(),
+              onPressed: () => widget.onSubmit(),
               icon: const Icon(Icons.done_rounded),
-              iconSize: theme.buttonSize,
+              iconSize: widget.theme.buttonSize,
             ),
           ],
         ),
@@ -116,14 +91,14 @@ class NumberButton extends StatelessWidget {
   final int number;
   final double size;
   final Color color;
-  final TextEditingController controller;
+  final Function onPressed;
 
   const NumberButton({
     Key? key,
     required this.number,
     required this.size,
     required this.color,
-    required this.controller,
+    required this.onPressed,
   }) : super(key: key);
 
   @override
@@ -137,9 +112,7 @@ class NumberButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(size / 3),
           ),
         ),
-        onPressed: () {
-          controller.text += num.parse(number.toString()).toString();
-        },
+        onPressed: () => onPressed(),
         child: Center(
           child: Text(
             number.toString(),

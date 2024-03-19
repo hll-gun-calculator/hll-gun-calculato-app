@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:hll_gun_calculator/data/index.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_page_indicator/simple_page_indicator.dart';
 
@@ -25,7 +26,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late PageController _pageController;
 
-  int tabIndex = 0;
+  int initialPage = 0;
 
   int tabLength = 1;
 
@@ -38,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     // 初始tab
     tabLength = activeList.length;
     _pageController = PageController(
-      initialPage: tabIndex,
+      initialPage: initialPage,
       keepPage: true,
     );
     super.initState();
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 extendBodyBehindAppBar: true,
                 appBar: HomeAppBar(
                   contentHeight: MediaQuery.of(context).size.width < AppSize.kRang ? kToolbarHeight : .0,
-                  tabIndex: tabIndex,
+                  pageController: _pageController,
                 ),
                 drawer: Drawer(
                   backgroundColor: Theme.of(context).canvasColor,
@@ -164,12 +165,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 }
 
 class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final int tabIndex;
+  final PageController pageController;
   late double contentHeight;
 
   HomeAppBar({
     super.key,
-    required this.tabIndex,
+    required this.pageController,
     this.contentHeight = kToolbarHeight,
   });
 
@@ -181,6 +182,21 @@ class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _HomeAppBarState extends State<HomeAppBar> {
+  late HomeAppData homeApp;
+
+  @override
+  void initState() {
+    homeApp = App.provider.ofHomeApp(context).activeList.first;
+
+    widget.pageController.addListener(() {
+      int index = widget.pageController.page!.ceil();
+      setState(() {
+        homeApp = App.provider.ofHomeApp(context).activeList[index];
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -189,26 +205,34 @@ class _HomeAppBarState extends State<HomeAppBar> {
 
         return AppBar(
           forceMaterialTransparency: true,
-          flexibleSpace: FlexibleSpaceBar(
-            collapseMode: CollapseMode.parallax,
-            background: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 10,
-                sigmaY: 10,
-              ),
-              blendMode: BlendMode.srcIn,
-              child: Container(
-                color: Theme.of(context).appBarTheme.backgroundColor!.withOpacity(.9),
-              ),
-            ),
-          ),
+          flexibleSpace: homeApp.isShowAppBar
+              ? FlexibleSpaceBar(
+                  collapseMode: CollapseMode.parallax,
+                  background: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 10,
+                      sigmaY: 10,
+                    ),
+                    blendMode: BlendMode.srcIn,
+                    child: Container(
+                      color: Theme.of(context).appBarTheme.backgroundColor!.withOpacity(.9),
+                    ),
+                  ),
+                )
+              : null,
           leading: Builder(
             builder: (BuildContext context) {
+              if (homeApp.isShowAppBar) {
+                return IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+                );
+              }
+
               return IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
+                onPressed: () => Scaffold.of(context).openDrawer(),
                 tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               );
             },

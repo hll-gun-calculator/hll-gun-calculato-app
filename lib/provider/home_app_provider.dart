@@ -10,7 +10,7 @@ import '/pages/index/map.dart';
 class HomeAppProvider with ChangeNotifier {
   String PACKAGENAME = "home_app";
 
-  Storage storage = Storage();
+  Storage _storage = Storage();
 
   // 应用上限以及下限
   final int appMaxLength = 4;
@@ -31,6 +31,7 @@ class HomeAppProvider with ChangeNotifier {
       activeIcon: const Icon(Icons.map, size: 30),
       widget: const MapPage(),
       type: HomeAppType.Map,
+      isShowAppBar: false,
     ),
     HomeAppData(
       name: "landingTimer",
@@ -90,7 +91,7 @@ class HomeAppProvider with ChangeNotifier {
 
   /// 读取本地配置
   void _readLocalStorage() async {
-    StorageData homeAppData = await storage.get(PACKAGENAME);
+    StorageData homeAppData = await _storage.get(PACKAGENAME);
     if (homeAppData.code == 0) {
       _panelLists.value = [];
       _unactivatedPandeLists.value = [];
@@ -106,7 +107,7 @@ class HomeAppProvider with ChangeNotifier {
   /// 保存配置
   void _saveLocalStorage() {
     List value = _panelLists.value.map((e) => e.name).toList();
-    storage.set(PACKAGENAME, value: value);
+    _storage.set(PACKAGENAME, value: value);
   }
 
   /// 添加

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hll_gun_calculator/constants/api.dart';
 import 'package:hll_gun_calculator/widgets/map_image.dart';
 import 'package:provider/provider.dart';
 
@@ -227,7 +229,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             ),
             body: ListView(
               children: [
-                ...MapIconType.values.skipWhile((e) => e == MapIconType.None || e == MapIconType.Url || e == MapIconType.Assets).map((e) {
+                ...MapIconType.values.skipWhile((e) => e == MapIconType.None || e == MapIconType.Url || e == MapIconType.Assets || e == MapIconType.Arty).map((e) {
                   return SwitchListTile(
                     value: _markerManagementSwitch[e] ?? false,
                     title: Text(FlutterI18n.translate(context, "map.layers.${e.value}")),
@@ -263,61 +265,79 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           children: [
             Expanded(
               flex: 1,
-              child: mapData.hasMapCompilation
-                  ? const Center(
-                      child: Text("请选择地图合集"),
-                    )
-                  : Container(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(.1),
-                      child: MapCore(
-                        key: _mapCoreKey,
-                        mapProvider: mapData,
-                        inputFactions: App.provider.ofMap(context).currentMapGun.factions!,
+              child: Stack(
+                children: [
+                  mapData.hasMapCompilation
+                      ? const Center(
+                          child: Text("请选择地图合集"),
+                        )
+                      : Container(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                          child: MapCore(
+                            key: _mapCoreKey,
+                            mapProvider: mapData,
+                            inputFactions: App.provider.ofMap(context).currentMapGun.factions!,
+                          ),
+                        ),
+
+                  /// tool
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: ClipRRect(
+                      clipBehavior: Clip.antiAlias,
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaY: 10, sigmaX: 10),
+                        child: Container(
+                          color: Theme.of(context).colorScheme.background.withOpacity(.9),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () => _openMapsModal(),
+                                icon: const Icon(Icons.map),
+                              ),
+                              IconButton(
+                                onPressed: () => _openMarkerModal(),
+                                icon: Icon(_markerManagementSwitch.values.where((v) => v == true).isNotEmpty ? Icons.layers : Icons.layers_outlined),
+                              ),
+                              const Expanded(child: SizedBox()),
+                              IconButton(
+                                onPressed: () {
+                                  _mapCoreKey.currentState!.onResetMapPosition();
+                                },
+                                icon: const Icon(Icons.restart_alt),
+                              ),
+                              // IconButton(
+                              //   onPressed: () {
+                              //     _mapCoreKey.currentState!.scale("+");
+                              //   },
+                              //   icon: const Icon(Icons.add),
+                              // ),
+                              // IconButton(
+                              //   onPressed: () {
+                              //     _mapCoreKey.currentState!.scale("-");
+                              //   },
+                              //   icon: const Icon(Icons.remove),
+                              // ),
+                              if (_lock)
+                                IconButton.filled(
+                                  onPressed: () {
+                                    _mapCoreKey.currentState!.unlock();
+                                    setState(() {
+                                      _lock = false;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.location_off_sharp),
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-            ),
-
-            /// tool
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => _openMapsModal(),
-                  icon: const Icon(Icons.map),
-                ),
-                IconButton(
-                  onPressed: () => _openMarkerModal(),
-                  icon: Icon(_markerManagementSwitch.values.where((v) => v == true).isNotEmpty ? Icons.layers : Icons.layers_outlined),
-                ),
-                const Expanded(child: SizedBox()),
-                IconButton(
-                  onPressed: () {
-                    _mapCoreKey.currentState!.onResetMapPosition();
-                  },
-                  icon: const Icon(Icons.restart_alt),
-                ),
-                // IconButton(
-                //   onPressed: () {
-                //     _mapCoreKey.currentState!.scale("+");
-                //   },
-                //   icon: const Icon(Icons.add),
-                // ),
-                // IconButton(
-                //   onPressed: () {
-                //     _mapCoreKey.currentState!.scale("-");
-                //   },
-                //   icon: const Icon(Icons.remove),
-                // ),
-                if (_lock)
-                  IconButton.filled(
-                    onPressed: () {
-                      _mapCoreKey.currentState!.unlock();
-                      setState(() {
-                        _lock = false;
-                      });
-                    },
-                    icon: const Icon(Icons.location_off_sharp),
                   ),
-              ],
+                ],
+              ),
             ),
 
             const Divider(height: 1, thickness: 1),
@@ -354,6 +374,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                               ),
                                             ),
                                           ),
+
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -369,172 +390,206 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                               ),
                                             ),
 
-                                            /// tip 阵营不支持
-                                            if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!))
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
-                                                margin: const EdgeInsets.only(top: 5, bottom: 6),
-                                                color: Theme.of(context).colorScheme.error.withOpacity(.2),
-                                                width: MediaQuery.of(context).size.width,
-                                                child: Text.rich(
-                                                  TextSpan(
-                                                    style: TextStyle(
-                                                      color: Theme.of(context).colorScheme.error,
-                                                    ),
-                                                    children: [
-                                                      WidgetSpan(child: Icon(Icons.error, color: Theme.of(context).colorScheme.error, size: 16)),
-                                                      TextSpan(text: "此${FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")}阵营所支持的${App.provider.ofCalc(context).currentCalculatingFunction.name}计算函数不支持，你可以更换其他函数"),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-
                                             /// 火炮row
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                  flex: 1,
-                                                  child: Row(
-                                                    children: [
-                                                      Radio(
-                                                        value: e.value,
-                                                        toggleable: calcData.currentCalculatingFunction.hasChildValue(e.value.factions!),
-                                                        groupValue: mapData.currentMapGun,
-                                                        onChanged: (value) {
-                                                          // 检查计算函数内对应阵营函数是否可用
-                                                          if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!)) return;
+                                            Opacity(
+                                              opacity: calcData.currentCalculatingFunction.hasChildValue(e.value.factions!) ? 1 : .5,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Row(
+                                                      children: [
+                                                        Radio(
+                                                          value: e.value,
+                                                          toggleable: calcData.currentCalculatingFunction.hasChildValue(e.value.factions!),
+                                                          groupValue: mapData.currentMapGun,
+                                                          onChanged: (value) {
+                                                            // 检查计算函数内对应阵营函数是否可用
+                                                            if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!)) return;
 
-                                                          setState(() {
-                                                            mapData.currentMapGun = e.value;
-                                                            _calcResult();
-                                                          });
-                                                        },
-                                                      ),
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Card(
-                                                          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.only(right: 10, top: 5, bottom: 5, left: 5),
-                                                            child: Row(
-                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                              children: [
-                                                                Card(
-                                                                  color: e.value.name == mapData.currentMapGun.name ? e.value.color : Colors.transparent,
-                                                                  margin: EdgeInsets.zero,
-                                                                  child: SizedBox(
-                                                                    width: 44,
-                                                                    height: 44,
-                                                                    child: Center(
-                                                                      child: Padding(
-                                                                        padding: const EdgeInsets.all(10),
-                                                                        child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                                                            setState(() {
+                                                              mapData.currentMapGun = e.value;
+                                                              _calcResult();
+                                                            });
+                                                          },
+                                                        ),
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: Card(
+                                                            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.only(right: 10, top: 5, bottom: 5, left: 5),
+                                                              child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  Card(
+                                                                    color: e.value.name == mapData.currentMapGun.name ? e.value.color : Colors.transparent,
+                                                                    margin: EdgeInsets.zero,
+                                                                    child: SizedBox(
+                                                                      width: 44,
+                                                                      height: 44,
+                                                                      child: Center(
+                                                                        child: Padding(
+                                                                          padding: const EdgeInsets.all(10),
+                                                                          child: MapUtil().mapInfoMarkerItemAsIcon(MapInfoMarkerItem(iconType: MapIconType.Arty)),
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                ),
-                                                                Text(
-                                                                  "${e.value.result?.inputValue ?? 0}",
-                                                                  style: const TextStyle(
-                                                                    fontSize: 28,
+                                                                  Text(
+                                                                    "${e.value.result?.inputValue ?? 0}",
+                                                                    style: const TextStyle(
+                                                                      fontSize: 28,
+                                                                    ),
                                                                   ),
-                                                                ),
-                                                                const Icon(Icons.chevron_right),
-                                                                Column(
-                                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                                  children: [
-                                                                    Text(
-                                                                      "${e.value.result?.outputValue ?? 0}",
-                                                                      style: TextStyle(
-                                                                        fontSize: 16,
-                                                                        color: Theme.of(context).primaryColor,
+                                                                  const Icon(Icons.chevron_right),
+                                                                  Column(
+                                                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                                                    children: [
+                                                                      Text(
+                                                                        "${e.value.result?.outputValue ?? 0}",
+                                                                        style: TextStyle(
+                                                                          fontSize: 16,
+                                                                          color: Theme.of(context).primaryColor,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    Text(
-                                                                      "${e.value.result?.outputAngle.ceil() ?? 0}",
-                                                                      style: const TextStyle(fontSize: 12),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
+                                                                      Text(
+                                                                        "${e.value.result?.outputAngle.ceil() ?? 0}",
+                                                                        style: const TextStyle(fontSize: 12),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
 
-                                                IconButton(
-                                                  onPressed: () {
-                                                    _putGunTimer(gunTimerData, querId, e, id);
-                                                  },
-                                                  icon: Column(
-                                                    children: [
-                                                      Stack(
-                                                        children: [
-                                                          if (gunTimerData.getItem(querId).isTimerActive) const Icon(Icons.timer) else const Icon(Icons.timer_outlined),
-                                                        ],
-                                                      ),
-                                                      if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else const Text("0")
-                                                    ],
+                                                  IconButton(
+                                                    onPressed: () {
+                                                      _putGunTimer(gunTimerData, querId, e, id);
+                                                    },
+                                                    icon: Column(
+                                                      children: [
+                                                        Stack(
+                                                          children: [
+                                                            if (gunTimerData.getItem(querId).isTimerActive) const Icon(Icons.timer) else const Icon(Icons.timer_outlined),
+                                                          ],
+                                                        ),
+                                                        if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else const Text("0")
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
 
-                                                /// map button
-                                                PopupMenuButton(
-                                                  icon: Icon(
-                                                    Icons.adaptive.more,
-                                                    color: Theme.of(context).iconTheme.color,
-                                                  ),
-                                                  itemBuilder: (context) {
-                                                    return <PopupMenuEntry>[
-                                                      const PopupMenuItem(
-                                                        value: "gunDescription",
-                                                        child: Row(
-                                                          children: [Icon(Icons.text_fields), Text("火炮描述")],
-                                                        ),
-                                                      ),
-                                                      const PopupMenuDivider(),
-                                                      const PopupMenuItem(
-                                                        value: "timer",
-                                                        child: Row(
-                                                          children: [Icon(Icons.timer_outlined), Text("定时器")],
-                                                        ),
-                                                      ),
-                                                      if (e.value.result != null)
+                                                  /// map button
+                                                  PopupMenuButton(
+                                                    icon: Icon(
+                                                      Icons.adaptive.more,
+                                                      color: Theme.of(context).iconTheme.color,
+                                                    ),
+                                                    itemBuilder: (context) {
+                                                      return <PopupMenuEntry>[
                                                         const PopupMenuItem(
-                                                          value: "collect",
+                                                          value: "gunDescription",
                                                           child: Row(
-                                                            children: [Icon(Icons.star_border), Text("收藏")],
+                                                            children: [Icon(Icons.text_fields), Text("火炮描述")],
                                                           ),
-                                                        )
-                                                    ];
-                                                  },
-                                                  onSelected: (v) {
-                                                    switch (v) {
-                                                      case "gunDescription":
-                                                        _mapCoreKey.currentState!._openGunDetailModal(
-                                                          e.value,
-                                                          onEvent: (value) => setState(() {
-                                                            e.value.color = value;
-                                                          }),
-                                                        );
-                                                        break;
-                                                      case "timer":
-                                                        _putGunTimer(gunTimerData, querId, e, id);
-                                                        break;
-                                                      case "collect":
-                                                        _collect(e.value);
-                                                        break;
-                                                    }
-                                                  },
-                                                ),
-                                              ],
+                                                        ),
+                                                        const PopupMenuDivider(),
+                                                        const PopupMenuItem(
+                                                          value: "timer",
+                                                          child: Row(
+                                                            children: [Icon(Icons.timer_outlined), Text("定时器")],
+                                                          ),
+                                                        ),
+                                                        if (e.value.result != null)
+                                                          const PopupMenuItem(
+                                                            value: "collect",
+                                                            child: Row(
+                                                              children: [Icon(Icons.star_border), Text("收藏")],
+                                                            ),
+                                                          )
+                                                      ];
+                                                    },
+                                                    onSelected: (v) {
+                                                      switch (v) {
+                                                        case "gunDescription":
+                                                          _mapCoreKey.currentState!._openGunDetailModal(
+                                                            e.value,
+                                                            onEvent: (value) => setState(() {
+                                                              e.value.color = value;
+                                                            }),
+                                                          );
+                                                          break;
+                                                        case "timer":
+                                                          _putGunTimer(gunTimerData, querId, e, id);
+                                                          break;
+                                                        case "collect":
+                                                          _collect(e.value);
+                                                          break;
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ],
-                                        )
+                                        ),
+
+                                        /// tip 阵营不支持
+                                        if (!calcData.currentCalculatingFunction.hasChildValue(e.value.factions!))
+                                          Positioned.fill(
+                                            child: ClipRRect(
+                                              clipBehavior: Clip.hardEdge,
+                                              child: Stack(
+                                                children: [
+                                                  BackdropFilter(
+                                                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                                    child: const SizedBox(),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                    color: Theme.of(context).colorScheme.error.withOpacity(.2),
+                                                    child: Center(
+                                                      child: Row(
+                                                        children: [
+                                                          Flexible(
+                                                            flex: 1,
+                                                            child: Text.rich(
+                                                              TextSpan(
+                                                                style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 15),
+                                                                children: [
+                                                                  WidgetSpan(child: Icon(Icons.error, color: Theme.of(context).colorScheme.error, size: 20)),
+                                                                  const WidgetSpan(child: SizedBox(width: 5)),
+                                                                  TextSpan(text: "此${FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")}阵营所支持的${App.provider.ofCalc(context).currentCalculatingFunction.name}计算函数不支持，你可以更换其他函数"),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(width: 10),
+                                                          OutlinedButton.icon(
+                                                            icon: const Icon(Icons.help),
+                                                            label: const Text("帮助", style: TextStyle(fontWeight: FontWeight.bold)),
+                                                            onPressed: () => App.url.onPeUrl(Config.apis["app_web_site"]!.url + "/map/help"),
+                                                            style: ButtonStyle(
+                                                              visualDensity: VisualDensity.compact,
+                                                              foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.error.withOpacity(.8)),
+                                                              textStyle: MaterialStatePropertyAll(TextStyle(color: Theme.of(context).colorScheme.error.withOpacity(.8))),
+                                                              side: MaterialStatePropertyAll(BorderSide(color: Theme.of(context).colorScheme.error.withOpacity(.2))),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     );
                                   }).toList()
@@ -1032,31 +1087,70 @@ class MapCoreState extends State<MapCore> {
                 ),
               ),
 
-              /// 地图图层
+              /// 其他孩子-地图图层
               ...widget.mapProvider.currentMapInfo.childs.where((e) {
                 // 检查图层管理开关是否开启
                 return markerManagementSwitch.value[e.type] == true;
               }).map((e) {
                 return GestureDetector(
                   onTapUp: (detail) => _onPositionCalcResult(detail),
-                  child: RotatedBox(
-                    quarterTurns: e.type == MapIconType.ArtyRadius
-                        ? {
-                              MapInfoFactionInfoDirection.Left: 0,
-                              MapInfoFactionInfoDirection.Top: 1,
-                              MapInfoFactionInfoDirection.Right: 2,
-                              MapInfoFactionInfoDirection.Bottom: 3,
-                            }[App.provider.ofMap(context).currentMapGun.direction] ??
-                            0
-                        : 0,
-                    child: MapImageWidget(
-                      assets: widget.mapProvider.currentMapInfo.assets!,
-                      width: widget.mapProvider.currentMapInfo.size.dx,
-                      height: widget.mapProvider.currentMapInfo.size.dy,
-                    ),
+                  child: MapImageWidget(
+                    assets: e,
+                    width: widget.mapProvider.currentMapInfo.size.dx,
+                    height: widget.mapProvider.currentMapInfo.size.dy,
                   ),
                 );
               }).toList(),
+
+              /// 火炮范围-地图图层
+              if (widget.mapProvider.currentMapInfo.gunRangeChilds.isNotEmpty && widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction] != null && markerManagementSwitch.value[MapIconType.ArtyRadius]!)
+                StreamBuilder(
+                  stream: stream.stream,
+                  builder: (context, snapshot) {
+                    MapInfoAssets? currentGunAssets = widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction];
+
+                    return GestureDetector(
+                      onTapUp: (detail) => _onPositionCalcResult(detail),
+                      child: MapImageWidget(
+                        assets: currentGunAssets ?? widget.mapProvider.currentMapInfo.gunRangeChilds.values.first,
+                        width: widget.mapProvider.currentMapInfo.size.dx,
+                        height: widget.mapProvider.currentMapInfo.size.dy,
+                      ),
+                    );
+                  },
+                ),
+
+              /// 坐标
+              ...widget.mapProvider.currentMapInfo.markerPointAll.where((e) {
+                // 检查图层管理开关是否开启
+                return markerManagementSwitch.value[e.iconType] == true;
+              }).map((i) => Positioned(
+                    left: i.x - markerSize / 2,
+                    top: i.y - -markerSize,
+                    width: markerSize,
+                    height: markerSize,
+                    child: StreamBuilder(
+                      stream: stream.stream,
+                      builder: (context, snapshot) {
+                        final scale = snapshot.data ?? transformation.value[0];
+                        // Convert actual distance
+                        double gridOnePx = (200 * 10) / App.provider.ofMap(context).currentMapInfo.size.dy;
+                        // Current mark and mark distance
+                        double targetDistance = (Offset(i.x, i.y) - newMarker).distance * gridOnePx;
+                        double minimumHiddenIconDistance = 100;
+
+                        return AnimatedScale(
+                          duration: const Duration(microseconds: 250),
+                          scale: 1 / scale,
+                          alignment: Alignment.bottomCenter,
+                          child: MapPrefabricateGunMarkersIcon(
+                            isShowUpIcon: targetDistance > minimumHiddenIconDistance && Offset(i.x, i.y) != newMarker,
+                            onPressed: () => _openIconModal(i),
+                          ),
+                        );
+                      },
+                    ),
+                  )),
 
               /// 新坐标连线
               if (newMarker.dy >= 0 && newMarker.dx >= 0)
@@ -1105,8 +1199,8 @@ class MapCoreState extends State<MapCore> {
                         offset: const Offset(-markerSize / 2, (-markerSize / 2)),
                         child: AnimatedScale(
                           scale: 1 / scale,
-                          duration: const Duration(milliseconds: 300),
-                          child: ArtyIconWidget(
+                          duration: const Duration(microseconds: 250),
+                          child: MapGunMarkersIcon(
                             onPressed: () => _openNewGunPointModal(),
                             resultNumber: App.provider.ofMap(context).currentMapGun.result!.outputValue,
                           ),
@@ -1130,7 +1224,7 @@ class MapCoreState extends State<MapCore> {
                         return Transform.translate(
                           offset: const Offset(-20, -20),
                           child: AnimatedScale(
-                            duration: const Duration(milliseconds: 300),
+                            duration: const Duration(microseconds: 250),
                             scale: 1 / scale,
                             child: CupertinoButton(
                               padding: EdgeInsets.zero,
@@ -1173,38 +1267,6 @@ class MapCoreState extends State<MapCore> {
                   ),
                 );
               }).toList(),
-
-              /// 坐标
-              ...widget.mapProvider.currentMapInfo.markerPointAll.where((e) {
-                // 检查图层管理开关是否开启
-                return markerManagementSwitch.value[e.iconType] == true;
-              }).map(
-                (i) => Positioned(
-                  left: i.x - markerSize / 2,
-                  top: i.y - -markerSize,
-                  width: markerSize,
-                  height: markerSize,
-                  child: StreamBuilder(
-                    stream: stream.stream,
-                    builder: (context, snapshot) {
-                      final scale = snapshot.data ?? transformation.value[0];
-                      return AnimatedScale(
-                        duration: const Duration(milliseconds: 350),
-                        scale: 1 / scale,
-                        alignment: Alignment.bottomCenter,
-                        child: CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => {},
-                          child: IconButton.filledTonal(
-                            onPressed: () => _openIconModal(i),
-                            icon: MapUtil().mapInfoMarkerItem_FllAsIcon(i),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -1259,98 +1321,6 @@ class LineWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: LinePainter(start, end, color: color, width: width),
-    );
-  }
-}
-
-class ArtyIconWidget extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final String resultNumber;
-  final Color headerColor = const Color(0xffffd27c);
-  final Color color = const Color(0xffe5b452);
-  final double opacity = .9;
-
-  const ArtyIconWidget({
-    super.key,
-    this.onPressed,
-    this.resultNumber = "0",
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoButton(
-      pressedOpacity: .8,
-      padding: EdgeInsets.zero,
-      onPressed: onPressed,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            top: -12,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 14,
-              decoration: BoxDecoration(
-                color: headerColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(2),
-                  topRight: Radius.circular(2),
-                ),
-              ),
-              child: Wrap(
-                runAlignment: WrapAlignment.center,
-                alignment: WrapAlignment.center,
-                children: [
-                  if (resultNumber.isEmpty)
-                    const Icon(Icons.layers, size: 12)
-                  else
-                    Text(
-                      resultNumber.toString(),
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          ClipPath(
-            clipBehavior: Clip.hardEdge,
-            child: Container(
-              color: color.withOpacity(opacity),
-              height: 24,
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 24,
-            child: ClipPath(
-              clipBehavior: Clip.hardEdge,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: const BorderSide(color: Colors.transparent, width: 10, style: BorderStyle.solid),
-                    right: const BorderSide(color: Colors.transparent, width: 15, style: BorderStyle.solid),
-                    left: const BorderSide(color: Colors.transparent, width: 15, style: BorderStyle.solid),
-                    top: BorderSide(color: color.withOpacity(opacity), width: 10, style: BorderStyle.solid),
-                  ),
-                ),
-                child: const SizedBox(),
-              ),
-            ),
-          ),
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 8),
-              child: MapUtil().icon(
-                MapInfoMarkerItem(
-                  iconType: MapIconType.Arty,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

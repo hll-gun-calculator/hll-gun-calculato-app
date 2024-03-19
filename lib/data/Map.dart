@@ -34,8 +34,13 @@ class MapInfo {
   final MapInfoAssets? assets;
 
   // 地图孩子-其他图层
+  // 覆盖在[地图底图]上方
   @JsonKey(toJson: childsToJson)
   final List<MapInfoAssets> childs;
+
+  // 地图孩子-火炮图层
+  @JsonKey(toJson: gunRangeChildsToJson, fromJson: gunRangeChildsFromJson)
+  final Map<MapInfoFactionInfoDirection, MapInfoAssets> gunRangeChilds;
 
   // 标记
   @JsonKey(toJson: markerToJson, fromJson: markerFromJson, defaultValue: [])
@@ -80,6 +85,7 @@ class MapInfo {
     this.factions,
     required this.assets,
     this.childs = const [],
+    this.gunRangeChilds = const {},
     this.marker,
   });
 
@@ -96,6 +102,22 @@ class MapInfo {
   static List OffsetAsList(Offset value) => [value.dx, value.dy];
 
   static List<Map<String, dynamic>> childsToJson(List<MapInfoAssets> list) => list.map((e) => e.toJson()).toList();
+
+  static Map gunRangeChildsToJson(Map<MapInfoFactionInfoDirection, MapInfoAssets> gunRangeChilds) {
+    Map map = {};
+    gunRangeChilds.forEach((key, value) => map.addAll({key.value: value.toJson()}));
+    return map;
+  }
+
+  static Map<MapInfoFactionInfoDirection, MapInfoAssets> gunRangeChildsFromJson(Map gunRangeChilds) {
+    Map<MapInfoFactionInfoDirection, MapInfoAssets> map = {};
+    gunRangeChilds.forEach(
+      (key, value) => map.addAll({
+        MapInfoFactionInfoDirection.parse(key): MapInfoAssets.fromJson(value),
+      }),
+    );
+    return map;
+  }
 
   static Map<Factions, MapInfoFactionInfo> factionsFromJson(Map factions) {
     Map<Factions, MapInfoFactionInfo> map = {};
@@ -116,6 +138,7 @@ class MapInfo {
 
 /// 地图阵营位置
 enum MapInfoFactionInfoDirection {
+  Nont(value: "None"),
   Top(value: "Top"),
   Left(value: "Left"),
   Right(value: "Right"),
@@ -126,6 +149,39 @@ enum MapInfoFactionInfoDirection {
   const MapInfoFactionInfoDirection({
     required this.value,
   });
+
+  static List get toList {
+    List _keys = [];
+    for (var element in MapInfoFactionInfoDirection.values) {
+      _keys.add(element.value);
+    }
+    return _keys;
+  }
+
+  static MapInfoFactionInfoDirection _getItemAsName(String name) {
+    MapInfoFactionInfoDirection _key = MapInfoFactionInfoDirection.Left;
+    for (var i in MapInfoFactionInfoDirection.values) {
+      if (i.value == name) _key = i;
+    }
+    return _key;
+  }
+
+  static MapInfoFactionInfoDirection parse(dynamic i) {
+    if (i is int) {
+      if (i == -1) return MapInfoFactionInfoDirection.Left;
+      return MapInfoFactionInfoDirection.values[i];
+    }
+
+    if (i is String && MapInfoFactionInfoDirection.toList.contains(i)) {
+      return _getItemAsName(i);
+    }
+
+    if (i is MapInfoFactionInfoDirection) {
+      return i;
+    }
+
+    return MapInfoFactionInfoDirection.Left;
+  }
 }
 
 /// 地图阵营信息
@@ -271,7 +327,6 @@ class MapInfoAssets {
   int index;
 
   // 类型
-  @JsonKey(includeToJson: false, includeFromJson: false)
   MapIconType type;
 
   // 网络

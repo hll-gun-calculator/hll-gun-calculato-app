@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class GunComparisonTablePage extends StatefulWidget {
 class _GunComparisonTablePageState extends State<GunComparisonTablePage> with AutomaticKeepAliveClientMixin {
   Factions inputFactions = Factions.None;
 
-  TextEditingController _textController = TextEditingController();
+  ValueNotifier<TextEditingController> _textController = ValueNotifier(TextEditingController());
 
   // 火炮表格
   List gunCalcTable = [];
@@ -64,15 +65,15 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
 
   /// 处理回退
   void handleBackspace() {
-    final currentText = _textController.text;
-    final selection = _textController.selection;
+    final currentText = _textController.value.text;
+    final selection = _textController.value.selection;
     if (selection.baseOffset != selection.extentOffset) {
       final newText = currentText.replaceRange(
         selection.baseOffset,
         selection.extentOffset,
         '',
       );
-      _textController.value = TextEditingValue(
+      _textController.value.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(
           offset: selection.baseOffset,
@@ -84,7 +85,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
         selection.baseOffset,
         '',
       );
-      _textController.value = TextEditingValue(
+      _textController.value.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(
           offset: selection.baseOffset - 1,
@@ -102,7 +103,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     CalculatingFunctionChild e = calcData.defaultCalculatingFunction.childValue(inputFactions)!;
     int maximumRange = e.maximumRange; // 最大角度
     int minimumRange = e.minimumRange; // 最小角度
-    int inputRangValue = _textController.text.isEmpty ? -1 : int.parse((_textController.text).toString());
+    int inputRangValue = _textController.value.text.isEmpty ? -1 : int.parse((_textController.value.text).toString());
 
     /// 输入值范围表
     if (inputRangValue >= 0) {
@@ -286,7 +287,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  if (gunItem[0].toString().trim() == _textController.text.trim())
+                                  if (gunItem[0].toString().trim() == _textController.value.text.trim())
                                     const SizedBox(
                                       child: Icon(Icons.search),
                                       width: 40,
@@ -294,9 +295,9 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                   Text(
                                     "${gunItem[0]}",
                                     style: TextStyle(
-                                      color: gunItem[0].toString().trim() == _textController.text.trim() ? Theme.of(context).colorScheme.primary : null,
+                                      color: gunItem[0].toString().trim() == _textController.value.text.trim() ? Theme.of(context).colorScheme.primary : null,
                                       fontSize: 25,
-                                      fontWeight: gunItem[0].toString().trim() == _textController.text.trim() ? FontWeight.bold : FontWeight.normal,
+                                      fontWeight: gunItem[0].toString().trim() == _textController.value.text.trim() ? FontWeight.bold : FontWeight.normal,
                                     ),
                                   ),
                                 ],
@@ -317,7 +318,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                     style: TextStyle(
                                       fontSize: 25,
                                       color: Theme.of(context).primaryColor,
-                                      fontWeight: gunItem[0].toString().trim() == _textController.text.trim() ? FontWeight.bold : FontWeight.normal,
+                                      fontWeight: gunItem[0].toString().trim() == _textController.value.text.trim() ? FontWeight.bold : FontWeight.normal,
                                     ),
                                   ),
                                 ),
@@ -453,7 +454,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                       readOnly: true,
                                       showCursor: true,
                                       decoration: const InputDecoration(hintText: "(可选)输入区间中间值", contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                                      controller: _textController,
+                                      controller: _textController.value,
                                     ),
                                   ),
 
@@ -465,7 +466,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                       readOnly: true,
                                       showCursor: true,
                                       decoration: const InputDecoration.collapsed(hintText: "(可选)输入区间中间值"),
-                                      controller: _textController,
+                                      controller: _textController.value,
                                       onTap: () {
                                         keyboardWidgetKey.currentState?.openKeyboard();
                                       },
@@ -474,7 +475,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                 if (!rangeSelectorStatus)
                                   IconButton(
                                     visualDensity: VisualDensity.compact,
-                                    onPressed: _textController.text.isEmpty
+                                    onPressed: _textController.value.text.isEmpty
                                         ? null
                                         : () {
                                             handleBackspace();

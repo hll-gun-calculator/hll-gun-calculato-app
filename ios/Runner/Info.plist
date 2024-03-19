@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Gain access to the microphone and read the contents of the microphone for input</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>Let the program get this permission so that we can implement voice input</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Used to demonstrate file picker plugin</string>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
 		<key>CFBundleDevelopmentRegion</key>
@@ -47,8 +53,6 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 			<string>UIInterfaceOrientationPortrait</string>
 		</array>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Used to demonstrate file picker plugin</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

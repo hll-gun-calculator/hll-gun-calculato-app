@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +24,7 @@ class calcPage extends StatefulWidget {
 }
 
 class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin {
-  TextEditingController _textController = TextEditingController(text: "");
+  ValueNotifier<TextEditingController> _textController = ValueNotifier(TextEditingController(text: ""));
 
   FocusNode focusNode = FocusNode();
 
@@ -97,7 +98,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
   /// 擦除计算
   void _clearCalc() {
     setState(() {
-      _textController.text = "";
+      _textController.value.text = "";
       outputValue = "";
     });
   }
@@ -141,7 +142,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
   CalcResult _calcSubmit(CalcProvider calcData) {
     CalcResult result = App.calc.on(
       inputFactions: inputFactions,
-      inputValue: _textController.text,
+      inputValue: _textController.value.text,
       calculatingFunctionInfo: calcData.currentCalculatingFunction,
     );
 
@@ -165,15 +166,15 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
 
   /// 处理回退
   void handleBackspace() {
-    final currentText = _textController.text;
-    final selection = _textController.selection;
+    final currentText = _textController.value.text;
+    final selection = _textController.value.selection;
     if (selection.baseOffset != selection.extentOffset) {
       final newText = currentText.replaceRange(
         selection.baseOffset,
         selection.extentOffset,
         '',
       );
-      _textController.value = TextEditingValue(
+      _textController.value.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(
           offset: selection.baseOffset,
@@ -185,7 +186,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
         selection.baseOffset,
         '',
       );
-      _textController.value = TextEditingValue(
+      _textController.value.value = TextEditingValue(
         text: newText,
         selection: TextSelection.collapsed(
           offset: selection.baseOffset - 1,
@@ -230,7 +231,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                 autocorrect: true,
                                 autofocus: true,
                                 textAlign: TextAlign.end,
-                                controller: _textController,
+                                controller: _textController.value,
                                 focusNode: focusNode,
                                 autovalidateMode: AutovalidateMode.onUserInteraction,
                                 validator: (value) {
@@ -251,13 +252,13 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                     visualDensity: VisualDensity.compact,
                                     onPressed: () {
                                       num minimumRange = calcData.currentCalculatingFunction.child[inputFactions]!.minimumRange;
-                                      if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) > minimumRange) {
+                                      if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) > minimumRange) {
                                         setState(() {
-                                          _textController.text = (num.parse(_textController.text.toString()) - 1).toString();
+                                          _textController.value.text = (num.parse(_textController.value.text.toString()) - 1).toString();
                                         });
                                       } else {
                                         setState(() {
-                                          _textController.text = minimumRange.toString();
+                                          _textController.value.text = minimumRange.toString();
                                         });
                                       }
                                       _calcSubmit(calcData);
@@ -269,12 +270,12 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                     visualDensity: VisualDensity.compact,
                                     onPressed: () {
                                       num maximumRange = calcData.currentCalculatingFunction.child[inputFactions]!.maximumRange;
-                                      if (_textController.text.isNotEmpty && num.parse(_textController.text.toString()) < maximumRange) {
+                                      if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) < maximumRange) {
                                         setState(() {
-                                          _textController.text = (num.parse(_textController.text.toString()) + 1).toString();
+                                          _textController.value.text = (num.parse(_textController.value.text.toString()) + 1).toString();
                                         });
                                       } else {
-                                        _textController.text = maximumRange.toString();
+                                        _textController.value.text = maximumRange.toString();
                                       }
                                       _calcSubmit(calcData);
                                     },
@@ -382,7 +383,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
               duration: const Duration(milliseconds: 350),
               clipBehavior: Clip.hardEdge,
               color: Theme.of(context).primaryColor.withOpacity(.2),
-              height: collectData.primarySelection(_textController.text).isNotEmpty ? 80 : 0,
+              height: collectData.primarySelection(_textController.value.text).isNotEmpty ? 80 : 0,
               width: MediaQuery.of(context).size.width,
               child: OverflowBox(
                 alignment: Alignment.bottomCenter,
@@ -399,7 +400,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                           padding: const EdgeInsets.only(left: 20, top: 8, right: 20, bottom: 4),
                           scrollDirection: Axis.horizontal,
                           children: collectData
-                              .primarySelection(_textController.text)
+                              .primarySelection(_textController.value.text)
                               .map((e) => Container(
                                     margin: const EdgeInsets.only(right: 5),
                                     child: ElevatedButton(
@@ -454,7 +455,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          _textController.text = e.inputValue;
+                                          _textController.value.text = e.inputValue;
                                           _calcSubmit(calcData);
                                         });
                                       },

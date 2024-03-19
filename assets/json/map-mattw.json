@@ -1,5 +1,5 @@
 {
-  "name": "mattw",
+  "name": "test-mattw",
   "description": {
     "zh_CN": "位置"
   },
@@ -114,18 +114,24 @@
           "network": "https://mattw.io/maps-let-loose/assets/points/Carentan_SP_NoMap.png?build=2024-03-04T23:31:45+00:00"
         },
         {
-          "name": "Arty Rand",
-          "index": 1,
-          "type": "ArtyRadius",
-          "network": "https://mattw.io/maps-let-loose/assets/arty/Carentan_Arty1.png"
-        },
-        {
           "name": "plain grid",
           "index": 2,
           "type": "PlainGrid",
           "network": "https://mattw.io/maps-let-loose/assets/plain-grid.png"
         }
       ],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Carentan_Arty1.png"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Carentan_Arty2.png"
+        }
+      },
       "marker": [
         {
           "name": "PrimaryArty",

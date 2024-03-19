@@ -8,3 +8,7 @@
 
 "CFBundleName" = "HLL Gun Calc";
 "CFBundleDisplayName" = "HLL Gun Calc";
+
+"NSMicrophoneUsageDescription" = "Gain access to the microphone and read the contents of the microphone for input";
+"NSSpeechRecognitionUsageDescription" = "Let the program get this permission so that we can implement voice input";
+"NSPhotoLibraryUsageDescription" = "For file selection";

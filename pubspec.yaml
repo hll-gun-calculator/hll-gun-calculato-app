@@ -1,6 +1,6 @@
 name: hll_gun_calculator
 description: hll-gun-calculator
-version: 0.0.1
+version: 0.0.2
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -40,6 +40,7 @@ dependencies:
   extended_image: ^8.2.0
   uuid: any
   simple_page_indicator: 1.0.2
+  speech_to_text: any
 
 dev_dependencies:
   flutter_test:

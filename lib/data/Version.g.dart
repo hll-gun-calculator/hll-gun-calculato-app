@@ -16,10 +16,12 @@ NewVersion _$NewVersionFromJson(Map<String, dynamic> json) => NewVersion(
       web: json['web'] == null
           ? null
           : VersionBuildValue.fromJson(json['web'] as Map<String, dynamic>),
+      load: json['load'] as bool?,
     );
 
 Map<String, dynamic> _$NewVersionToJson(NewVersion instance) =>
     <String, dynamic>{
+      'load': instance.load,
       'android': NewVersion.ValueToJson(instance.android),
       'ios': NewVersion.ValueToJson(instance.ios),
       'web': NewVersion.ValueToJson(instance.web),
@@ -30,9 +32,10 @@ Versions _$VersionsFromJson(Map<String, dynamic> json) => Versions(
               ?.map((e) => VersionsItem.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-    );
+    )..load = json['load'] as bool;
 
 Map<String, dynamic> _$VersionsToJson(Versions instance) => <String, dynamic>{
+      'load': instance.load,
       'list': instance.list,
     };
 

@@ -26,6 +26,7 @@
     },
     "keyboards": {
       "None": "无",
+      "Speech": "语音输入",
       "Protogenesis": "原生键盘",
       "IncreaseAndDecrease": "增减键盘",
       "IndependentDigit": "数字单例键盘",

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 class ProtogenesisKeyboardWidget extends StatelessWidget {
-  final TextEditingController controller;
+  final ValueNotifier<TextEditingController> controller;
   final Function onSubmit;
   late KeyboardTheme theme;
 
@@ -23,7 +23,7 @@ class ProtogenesisKeyboardWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Center(
         child: TextField(
-          controller: controller,
+          controller: controller.value,
           onChanged: (v) => onSubmit(),
           decoration: const InputDecoration.collapsed(hintText: "0"),
           style: const TextStyle(

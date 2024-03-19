@@ -8,3 +8,7 @@
 
 "CFBundleName" = "人间地狱火炮计算器";
 "CFBundleDisplayName" = "人间地狱火炮计算器";
+
+"NSMicrophoneUsageDescription" = "获得麦克风的访问权限并读取麦克风的内容以进行输入";
+"NSSpeechRecognitionUsageDescription" = "让程序获得此权限，以便我们可以实现语音输入";
+"NSPhotoLibraryUsageDescription" = "用于文件选择";

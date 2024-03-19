@@ -5,10 +5,11 @@ import 'package:flutter/services.dart';
 
 import '/constants/app.dart';
 import '/data/index.dart';
+import 'kit/universal_detection.dart';
 import 'theme.dart';
 
 class IncreaseAndDecreaseKeyboard extends StatefulWidget {
-  final TextEditingController controller;
+  final ValueNotifier<TextEditingController> controller;
   late KeyboardTheme theme;
   final Function onSubmit;
   final Factions? inputFactions;
@@ -27,30 +28,35 @@ class IncreaseAndDecreaseKeyboard extends StatefulWidget {
   State<IncreaseAndDecreaseKeyboard> createState() => _IncreaseAndDecreaseKeyboardState();
 }
 
-class _IncreaseAndDecreaseKeyboardState extends State<IncreaseAndDecreaseKeyboard> {
+class _IncreaseAndDecreaseKeyboardState extends State<IncreaseAndDecreaseKeyboard> with KeyboardUniversalDetection {
+  // 每次触发加减幅度
+  double range = 10;
+
+  @override
+  _IncreaseAndDecreaseKeyboardState initState() {
+    super.initState().initConfig(controller: widget.controller, factions: widget.inputFactions!);
+    return this;
+  }
+
   /// 范围-加减范围按钮
   void _setValue(String type) {
-    CalculatingFunctionChild e = App.provider.ofCalc(context).defaultCalculatingFunction.childValue(widget.inputFactions!)!;
-    int maximumRange = e.maximumRange; // 最大角度
-    int minimumRange = e.minimumRange; // 最小角度
-
-    int input = int.parse(widget.controller.text.isEmpty ? minimumRange.toString() : widget.controller.text);
-
     setState(() {
       switch (type) {
         case "-":
-          if (input > minimumRange) {
-            widget.controller.text = (input - 10).toString();
-          } else {
-            widget.controller.text = minimumRange.toString();
+          if (super.value <= super.minimumRange || super.value >= super.maximumRange) {
+            super.value = minimumRange.ceil().toString();
+            return;
           }
+
+          super.value = (super.value - range).ceil().toString();
           break;
         case "+":
-          if (input > maximumRange) {
-            widget.controller.text = (input + 10).toString();
-          } else {
-            widget.controller.text = maximumRange.toString();
+          if ( super.value >= super.maximumRange) {
+            super.value = maximumRange.ceil().toString();
+            return;
           }
+
+          super.value = (super.value + range).ceil().toString();
           break;
       }
     });
@@ -69,9 +75,7 @@ class _IncreaseAndDecreaseKeyboardState extends State<IncreaseAndDecreaseKeyboar
           SizedBox(
             width: 80,
             child: IconButton.filledTonal(
-              onPressed: () {
-                _setValue("+");
-              },
+              onPressed: () => _setValue("+"),
               icon: const Icon(
                 Icons.arrow_upward,
                 size: 40,
@@ -82,25 +86,34 @@ class _IncreaseAndDecreaseKeyboardState extends State<IncreaseAndDecreaseKeyboar
           SizedBox(
             width: 100,
             child: TextField(
-              controller: widget.controller,
+              controller: controller.value,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
               decoration: const InputDecoration(
                 hintText: "0",
                 isDense: true,
-                // border: InputBorder.none,
                 isCollapsed: false,
+                counterText: ""
               ),
+              maxLength: maxLength,
               textAlign: TextAlign.center,
+              onSubmitted: (value) {
+                if (mounted && value.toString().isNotEmpty) {
+                  setState(() {
+                    double _value = double.parse(value.toString());
+                    if (_value > maximumRange || _value < minimumRange) {
+                      super.value = median.ceil().toString();
+                    }
+                  });
+                }
+              },
             ),
           ),
           const SizedBox(width: 10),
           SizedBox(
             width: 80,
             child: IconButton.filledTonal(
-              onPressed: () {
-                _setValue("-");
-              },
+              onPressed: () => _setValue("-"),
               icon: const Icon(
                 Icons.arrow_downward,
                 size: 40,

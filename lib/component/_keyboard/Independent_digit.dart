@@ -3,10 +3,11 @@
 import 'package:flutter/material.dart';
 
 import '/data/index.dart';
+import 'kit/universal_detection.dart';
 import 'theme.dart';
 
 class IndependentDigitKeyboard extends StatefulWidget {
-  final TextEditingController controller;
+  final ValueNotifier<TextEditingController> controller;
   late KeyboardTheme theme;
   final Function onSubmit;
   final Factions? inputFactions;
@@ -25,7 +26,7 @@ class IndependentDigitKeyboard extends StatefulWidget {
   State<IndependentDigitKeyboard> createState() => _IndependentDigitKeyboardState();
 }
 
-class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> {
+class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> with KeyboardUniversalDetection {
   int numberLength = 4;
   int numberLengthMax = 5;
   int numberLengthMin = 3;
@@ -33,14 +34,15 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> {
   List<TextEditingController> list = [];
 
   @override
-  void initState() {
+  _IndependentDigitKeyboardState initState() {
+    super.initState().initConfig(controller: widget.controller, factions: widget.inputFactions!);
     _initKeyboard();
-    super.initState();
+    return this;
   }
 
   /// 初始键盘
   void _initKeyboard() {
-    var text = widget.controller.text;
+    var text = super.value.toString();
 
     if (text.isEmpty) {
       _setNumberLength(number: numberLength);
@@ -54,10 +56,16 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> {
     }
   }
 
+  /// 取得总单例值
+  String get _getValue {
+    return num.parse(list.map((e) => e.text).toList().join('')).toString();
+  }
+
+  double get _getValueAsDouble => double.parse(_getValue.toString());
+
   /// 更新值
   void _updataValue() {
-    var value = num.parse(list.map((e) => e.text).toList().join('')).toString();
-    widget.controller.text = value;
+    super.value = _getValue;
     widget.onSubmit();
   }
 
@@ -151,6 +159,7 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> {
                                   onTap: () {
                                     setState(() {
                                       list.insert(0, TextEditingController(text: "0"));
+                                      _updataValue();
                                     });
                                   },
                                 ),
@@ -163,6 +172,7 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> {
                                   onTap: () {
                                     setState(() {
                                       list.removeAt(e.key);
+                                      _updataValue();
                                     });
                                   },
                                 ),
