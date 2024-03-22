@@ -79,7 +79,7 @@ Map<String, dynamic> _$MapGunResultToJson(MapGunResult instance) =>
 
 const _$FactionsEnumMap = {
   Factions.None: 'None',
-  Factions.America: 'America',
+  Factions.UnitedStates: 'UnitedStates',
   Factions.Germany: 'Germany',
   Factions.TheSovietUnion: 'TheSovietUnion',
   Factions.GreatBritain: 'GreatBritain',

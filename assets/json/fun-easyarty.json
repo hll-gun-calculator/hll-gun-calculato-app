@@ -4,7 +4,7 @@
   "author": "Max Leiter",
   "website": "easyarty.com",
   "child": {
-    "America": {
+    "UnitedStates": {
       "maximumRange": 1600,
       "minimumRange": 100,
       "envs": {

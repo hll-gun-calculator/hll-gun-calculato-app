@@ -35,7 +35,7 @@
     },
     "factions": {
       "None": "未知",
-      "America": "美国",
+      "UnitedStates": "美国",
       "Germany": "德国",
       "TheSovietUnion": "苏联",
       "GreatBritain": "大不列颠"

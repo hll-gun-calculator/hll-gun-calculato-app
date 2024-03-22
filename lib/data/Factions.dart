@@ -2,7 +2,7 @@
 
 enum Factions {
   None(value: "None"),
-  America(value: "America"),
+  UnitedStates(value: "UnitedStates"),
   Germany(value: "Germany"),
   TheSovietUnion(value: "TheSovietUnion"),
   GreatBritain(value: "GreatBritain");

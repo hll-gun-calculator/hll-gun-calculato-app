@@ -165,6 +165,8 @@ class MapGunMarkersIcon extends StatefulWidget {
   final Color? color;
   final double? opacity;
   final Function? onPressed;
+  final Color _defaultColor = const Color(0xffe5b452);
+  final Color _defaultHeaderColor = const Color(0xffffd27c);
 
   const MapGunMarkersIcon({
     super.key,
@@ -182,6 +184,9 @@ class MapGunMarkersIcon extends StatefulWidget {
 class _MapGunMarkersIconState extends State<MapGunMarkersIcon> {
   @override
   Widget build(BuildContext context) {
+    Color color = widget.color ?? widget._defaultColor;
+    Color headerColor = widget.headerColor ?? widget._defaultHeaderColor;
+
     return CupertinoButton(
       pressedOpacity: .8,
       padding: EdgeInsets.zero,
@@ -194,19 +199,23 @@ class _MapGunMarkersIconState extends State<MapGunMarkersIcon> {
           alignment: WrapAlignment.center,
           children: [
             MapImageBaseWidget(
-              backgroundColor: widget.color!.withOpacity(widget.opacity!),
+              backgroundColor: color.withOpacity(widget.opacity!),
               child: Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Column(
                   children: [
                     Container(
-                      color: widget.headerColor,
+                      color: Color.lerp(headerColor, widget._defaultHeaderColor, .2),
                       padding: const EdgeInsets.symmetric(vertical: 1),
                       margin: const EdgeInsets.only(bottom: 6),
                       child: Center(
                         child: Text(
                           widget.resultNumber ?? "0",
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 9,
+                            color: Color.alphaBlend(Colors.black, headerColor),
+                          ),
                         ),
                       ),
                     ),
@@ -225,7 +234,9 @@ class _MapGunMarkersIconState extends State<MapGunMarkersIcon> {
                 width: 2,
                 maxWidth: 30,
                 count: 3,
-                child: MapIconPoint(color: Color.lerp(widget.color, Theme.of(context).colorScheme.primary, .5)),
+                child: MapIconPoint(
+                  color: Color.lerp(color, Theme.of(context).colorScheme.primary, .5),
+                ),
               ),
             )
           ],

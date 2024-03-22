@@ -13,92 +13,34 @@
         4096,
         4096
       ],
-      "initialPosition": [
-        128,
-        1905
-      ],
       "factions": {
-        "America": {
+        "UnitedStates": {
           "gunPosition": [
             {
-              "name": "America Gun 1",
+              "name": "UnitedStates Gun 1",
               "description": {
                 "zh_CN": "位置"
               },
               "offset": [
-                114.876,
-                1890
-              ]
-            },
-            {
-              "name": "America Gun 2",
-              "offset": [
-                114.876,
-                1905
-              ]
-            },
-            {
-              "name": "America Gun 3",
-              "offset": [
-                114.876,
-                1925
+                62.814,
+                1938.179
               ]
             }
           ],
-          "points": [
-            [
-              40,
-              300
-            ],
-            [
-              40,
-              4096
-            ],
-            [
-              40,
-              600
-            ]
-          ],
+          "points": [],
           "direction": "Left"
         },
         "Germany": {
           "gunPosition": [
             {
-              "name": "1",
+              "name": "Germany Gun 1",
               "offset": [
-                3982,
-                1890
-              ]
-            },
-            {
-              "name": "2",
-              "offset": [
-                3982,
-                1905
-              ]
-            },
-            {
-              "name": "3",
-              "offset": [
-                3982,
-                1925
+                4022.278,
+                2041.206
               ]
             }
           ],
-          "points": [
-            [
-              900,
-              300
-            ],
-            [
-              900,
-              500
-            ],
-            [
-              900,
-              600
-            ]
-          ],
+          "points": [],
           "direction": "Right"
         }
       },
@@ -152,32 +94,14 @@
         4340,
         4340
       ],
-      "initialPosition": [
-        2000,
-        2000
-      ],
       "factions": {
-        "America": {
+        "UnitedStates": {
           "gunPosition": [
             {
               "name": "1",
               "offset": [
-                38.0,
-                490.9
-              ]
-            },
-            {
-              "name": "2",
-              "offset": [
-                41.0,
-                490.9
-              ]
-            },
-            {
-              "name": "3",
-              "offset": [
-                43.0,
-                490.9
+                1851.432,
+                327.699
               ]
             }
           ],
@@ -195,10 +119,18 @@
               600
             ]
           ],
-          "direction": "Left"
+          "direction": "Top"
         },
         "Germany": {
-          "gunPosition": [],
+          "gunPosition": [
+            {
+              "name": "1",
+              "offset": [
+                2028.839,
+                4089.848
+              ]
+            }
+          ],
           "points": [
             [
               900,
@@ -213,11 +145,23 @@
               600
             ]
           ],
-          "direction": "Right"
+          "direction": "Bottom"
         }
       },
       "assets": {
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Driel_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Driel_Arty1.png"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Driel_Arty2.png"
+        }
       },
       "marker": [
         {
@@ -226,6 +170,750 @@
           "points": []
         }
       ]
+    },
+    {
+      "name": "El Alamein",
+      "size": [
+        4340,
+        4340
+      ],
+      "factions": {
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                150.068,
+                2024.078
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "GreatBritain": {
+          "gunPosition": [
+            {
+              "name": "GreatBritain Gun 1",
+              "offset": [
+                4149.022,
+                1954.042
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/ElAlamein_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/ElAlamein_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/ElAlamein_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Foy",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                2350.529,
+                4027.289
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                2203.671,
+                114.536
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Foy_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Foy_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Foy_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Hill 400",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                133.585,
+                2293.106
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                3879.290,
+                2188.753
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Hill400_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Hill400_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Hill400_Arty2.png?build=2024-03-04T23:31:45+00:00\n"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Hürtgen Forest",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                162.013,
+                1959.996
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                3932.641,
+                2276.304
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/HurtgenV2_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/HurtgenV2_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/HurtgenV2_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Kharkov",
+      "size": [
+        4340,
+        4340
+      ],
+      "factions": {
+        "TheSovietUnion": {
+          "gunPosition": [
+            {
+              "name": "TheSovietUnion Gun 1",
+              "offset": [
+                2311.282,
+                118.811
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                2123.776,
+                4171.759
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Kharkov_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Kharkov_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Kharkov_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Kursk",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "TheSovietUnion": {
+          "gunPosition": [
+            {
+              "name": "TheSovietUnion Gun 1",
+              "offset": [
+                2156.278,
+                168.689
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                2033.550,
+                3943.807
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Kursk_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Kursk_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Kursk_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Mortain",
+      "size": [
+        4340,
+        4340
+      ],
+      "factions": {
+        "TheSovietUnion": {
+          "gunPosition": [
+            {
+              "name": "TheSovietUnion Gun 1",
+              "offset": [
+                248.972,
+                2001.847
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                4128.842,
+                2081.103
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Mortain_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Mortain_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Mortain_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Omaha",
+      "size": [
+        1920,
+        1920
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                54.366,
+                978.657
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                1797.794,
+                1033.780
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Omaha_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Left",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Omaha_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Right",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Omaha_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Purple Heart Lane",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                2059.356,
+                153.796
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                2076.812,
+                3924.768
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/PHL_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/PHL_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/PHL_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Remagen",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                2397.532,
+                133.118
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                1978.527,
+                3881.365
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Remagen_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Remagen_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Remagen_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Saint Marie Du Mont",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                2097.456,
+                73.896
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Top"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                1925.438,
+                4020.554
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Bottom"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/SMDMV2_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Top": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/SMDMV2_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Bottom": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/SMDMV2_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Saint Marie Egliese",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "UnitedStates": {
+          "gunPosition": [
+            {
+              "name": "UnitedStates Gun 1",
+              "offset": [
+                80.603,
+                2061.707
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                3936.819,
+                2043.296
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/SME_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/SME_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/SME_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Stalingrad",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "TheSovietUnion": {
+          "gunPosition": [
+            {
+              "name": "TheSovietUnion Gun 1",
+              "offset": [
+                111.170,
+                2148.985
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                3671.224,
+                2118.826
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Stalingrad_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Stalingrad_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Stalingrad_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
+    },
+    {
+      "name": "Utah Beach",
+      "size": [
+        4096,
+        4096
+      ],
+      "factions": {
+        "TheSovietUnion": {
+          "gunPosition": [
+            {
+              "name": "TheSovietUnion Gun 1",
+              "offset": [
+                152.278,
+                2027.644
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Left"
+        },
+        "Germany": {
+          "gunPosition": [
+            {
+              "name": "Germany Gun 1",
+              "offset": [
+                3660.235,
+                2144.580
+              ]
+            }
+          ],
+          "points": [],
+          "direction": "Right"
+        }
+      },
+      "assets": {
+        "name": "base",
+        "network": "https://mattw.io/maps-let-loose/assets/no-grid/Utah_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
+      },
+      "childs": [],
+      "gunRangeChilds": {
+        "Left": {
+          "name": "ArtyRadius Top",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Utah_Arty1.png?build=2024-03-04T23:31:45+00:00"
+        },
+        "Right": {
+          "name": "ArtyRadius Bottom",
+          "type": "ArtyRadius",
+          "network": "https://mattw.io/maps-let-loose/assets/arty/Utah_Arty2.png?build=2024-03-04T23:31:45+00:00"
+        }
+      },
+      "marker": []
     }
+
+
   ]
 }

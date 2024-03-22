@@ -62,11 +62,12 @@ class MapProvider with ChangeNotifier {
   // 设置选择地图
   set currentMapInfo(MapInfo mapInfo) {
     _currentMapInfoName = mapInfo.name;
+    if (mapInfo.gunPositions.isNotEmpty) _currentMapGun = mapInfo.gunPositions.first;
     notifyListeners();
   }
 
   // 是否有地图信息
-  bool get hasMapInfo => false;
+  bool get hasMapInfo => currentMapCompilation != null;
 
   // 当前选择火炮
   late Gun _currentMapGun = currentMapInfo.gunPositions.first;

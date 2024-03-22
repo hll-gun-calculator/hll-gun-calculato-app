@@ -46,7 +46,7 @@ Map<String, dynamic> _$CollectItemDataToJson(CollectItemData instance) =>
 
 const _$FactionsEnumMap = {
   Factions.None: 'None',
-  Factions.America: 'America',
+  Factions.UnitedStates: 'UnitedStates',
   Factions.Germany: 'Germany',
   Factions.TheSovietUnion: 'TheSovietUnion',
   Factions.GreatBritain: 'GreatBritain',

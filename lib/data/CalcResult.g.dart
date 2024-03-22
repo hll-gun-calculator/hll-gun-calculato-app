@@ -32,7 +32,7 @@ Map<String, dynamic> _$CalcResultToJson(CalcResult instance) =>
 
 const _$FactionsEnumMap = {
   Factions.None: 'None',
-  Factions.America: 'America',
+  Factions.UnitedStates: 'UnitedStates',
   Factions.Germany: 'Germany',
   Factions.TheSovietUnion: 'TheSovietUnion',
   Factions.GreatBritain: 'GreatBritain',

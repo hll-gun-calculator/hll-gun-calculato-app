@@ -699,7 +699,7 @@ class MapCoreState extends State<MapCore> {
     MapIconType.PresupposeArty: true,
     MapIconType.CollectArty: true,
     MapIconType.PlainGrid: false,
-    MapIconType.ArtyRadius: false,
+    MapIconType.ArtyRadius: true,
     MapIconType.Landmark: true,
   });
 
@@ -1055,222 +1055,261 @@ class MapCoreState extends State<MapCore> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      key: _mapBoxKey,
-      onHorizontalDragUpdate: (details) {
-        setState(() {
-          transformation.value = transformation.value..translate(details.delta.dx * 3, 0, 0);
-        });
-      },
-      child: InteractiveViewer(
-        boundaryMargin: const EdgeInsets.only(),
-        transformationController: transformation,
-        maxScale: _scaleMax,
-        minScale: _scaleMin,
-        constrained: false,
-        child: Container(
-          padding: const EdgeInsets.only(top: kToolbarHeight + 290 + 500, left: 500, right: 500, bottom: 500),
-          decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage("assets/images/maps/map-backdrop.png"), fit: BoxFit.scaleDown, repeat: ImageRepeat.repeat, opacity: .1, scale: .2),
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              /// 地图底层
-              GestureDetector(
-                onTapUp: (detail) => _onPositionCalcResult(detail),
-                // onLongPressDown: (LongPressDownDetails detail) => _onPositionCalcResult(detail),
-                child: MapImageWidget(
-                  assets: widget.mapProvider.currentMapInfo.assets!,
-                  width: widget.mapProvider.currentMapInfo.size.dx,
-                  height: widget.mapProvider.currentMapInfo.size.dy,
-                ),
+    return Consumer<CalcProvider>(
+      builder: (consumerContext, calcData, consumerWidget) {
+        return GestureDetector(
+          key: _mapBoxKey,
+          onHorizontalDragUpdate: (details) {
+            setState(() {
+              transformation.value = transformation.value..translate(details.delta.dx * 3, 0, 0);
+            });
+          },
+          child: InteractiveViewer(
+            boundaryMargin: const EdgeInsets.only(),
+            transformationController: transformation,
+            maxScale: _scaleMax,
+            minScale: _scaleMin,
+            constrained: false,
+            child: Container(
+              padding: const EdgeInsets.only(top: kToolbarHeight + 290 + 500, left: 500, right: 500, bottom: 500),
+              decoration: const BoxDecoration(
+                image: DecorationImage(image: AssetImage("assets/images/maps/map-backdrop.png"), fit: BoxFit.scaleDown, repeat: ImageRepeat.repeat, opacity: .1, scale: .2),
               ),
-
-              /// 其他孩子-地图图层
-              ...widget.mapProvider.currentMapInfo.childs.where((e) {
-                // 检查图层管理开关是否开启
-                return markerManagementSwitch.value[e.type] == true;
-              }).map((e) {
-                return GestureDetector(
-                  onTapUp: (detail) => _onPositionCalcResult(detail),
-                  child: MapImageWidget(
-                    assets: e,
-                    width: widget.mapProvider.currentMapInfo.size.dx,
-                    height: widget.mapProvider.currentMapInfo.size.dy,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  /// 地图底层
+                  GestureDetector(
+                    onTapUp: (detail) => _onPositionCalcResult(detail),
+                    // onLongPressDown: (LongPressDownDetails detail) => _onPositionCalcResult(detail),
+                    child: MapImageWidget(
+                      assets: widget.mapProvider.currentMapInfo.assets!,
+                      width: widget.mapProvider.currentMapInfo.size.dx,
+                      height: widget.mapProvider.currentMapInfo.size.dy,
+                    ),
                   ),
-                );
-              }).toList(),
 
-              /// 火炮范围-地图图层
-              if (widget.mapProvider.currentMapInfo.gunRangeChilds.isNotEmpty && widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction] != null && markerManagementSwitch.value[MapIconType.ArtyRadius]!)
-                StreamBuilder(
-                  stream: stream.stream,
-                  builder: (context, snapshot) {
-                    MapInfoAssets? currentGunAssets = widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction];
-
-                    return GestureDetector(
-                      onTapUp: (detail) => _onPositionCalcResult(detail),
+                  /// 其他孩子-地图图层
+                  ...widget.mapProvider.currentMapInfo.childs.where((e) {
+                    // 检查图层管理开关是否开启
+                    return markerManagementSwitch.value[e.type] == true;
+                  }).map((e) {
+                    return IgnorePointer(
+                      ignoring: true,
                       child: MapImageWidget(
-                        assets: currentGunAssets ?? widget.mapProvider.currentMapInfo.gunRangeChilds.values.first,
+                        assets: e,
                         width: widget.mapProvider.currentMapInfo.size.dx,
                         height: widget.mapProvider.currentMapInfo.size.dy,
                       ),
                     );
-                  },
-                ),
+                  }).toList(),
 
-              /// 坐标
-              ...widget.mapProvider.currentMapInfo.markerPointAll.where((e) {
-                // 检查图层管理开关是否开启
-                return markerManagementSwitch.value[e.iconType] == true;
-              }).map((i) => Positioned(
-                    left: i.x - markerSize / 2,
-                    top: i.y - -markerSize,
-                    width: markerSize,
-                    height: markerSize,
-                    child: StreamBuilder(
+                  /// 火炮范围-地图图层
+                  if (widget.mapProvider.currentMapInfo.gunRangeChilds.isNotEmpty && widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction] != null && markerManagementSwitch.value[MapIconType.ArtyRadius]!)
+                    StreamBuilder(
                       stream: stream.stream,
                       builder: (context, snapshot) {
-                        final scale = snapshot.data ?? transformation.value[0];
-                        // Convert actual distance
-                        double gridOnePx = (200 * 10) / App.provider.ofMap(context).currentMapInfo.size.dy;
-                        // Current mark and mark distance
-                        double targetDistance = (Offset(i.x, i.y) - newMarker).distance * gridOnePx;
-                        double minimumHiddenIconDistance = 100;
+                        MapInfoAssets? currentGunAssets = widget.mapProvider.currentMapInfo.gunRangeChilds[App.provider.ofMap(context).currentMapGun.direction];
 
-                        return AnimatedScale(
-                          duration: const Duration(microseconds: 250),
-                          scale: 1 / scale,
-                          alignment: Alignment.bottomCenter,
-                          child: MapPrefabricateGunMarkersIcon(
-                            isShowUpIcon: targetDistance > minimumHiddenIconDistance && Offset(i.x, i.y) != newMarker,
-                            onPressed: () => _openIconModal(i),
+                        return IgnorePointer(
+                          ignoring: true,
+                          child: MapImageWidget(
+                            assets: currentGunAssets ?? widget.mapProvider.currentMapInfo.gunRangeChilds.values.first,
+                            width: widget.mapProvider.currentMapInfo.size.dx,
+                            height: widget.mapProvider.currentMapInfo.size.dy,
                           ),
                         );
                       },
                     ),
-                  )),
 
-              /// 新坐标连线
-              if (newMarker.dy >= 0 && newMarker.dx >= 0)
-                StreamBuilder(
-                  stream: stream.stream,
-                  builder: (context, snapshot) {
-                    final scale = snapshot.data ?? transformation.value[0];
-                    return Consumer<CalcProvider>(builder: (calcContext, calcData, calcWidget) {
-                      Factions factions = widget.inputFactions;
-                      bool isCalcExceed = (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) > calcData.currentCalculatingFunction.child[factions]!.maximumRange) || (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) < calcData.currentCalculatingFunction.child[factions]!.minimumRange);
+                  /// 坐标
+                  ...widget.mapProvider.currentMapInfo.markerPointAll.where((e) {
+                    // 检查图层管理开关是否开启
+                    return markerManagementSwitch.value[e.iconType] == true;
+                  }).map((i) => Positioned(
+                        left: i.x - markerSize / 2,
+                        top: i.y - -markerSize,
+                        width: markerSize,
+                        height: markerSize,
+                        child: StreamBuilder(
+                          stream: stream.stream,
+                          builder: (context, snapshot) {
+                            final scale = snapshot.data ?? transformation.value[0];
+                            // Convert actual distance
+                            double gridOnePx = (200 * 10) / App.provider.ofMap(context).currentMapInfo.size.dy;
+                            // Current mark and mark distance
+                            double targetDistance = (Offset(i.x, i.y) - newMarker).distance * gridOnePx;
+                            double minimumHiddenIconDistance = 100;
 
-                      return LineWidget(
-                        start: widget.mapProvider.currentMapGun.offset,
-                        end: newMarker,
-                        color: !isCalcExceed ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
-                        width: 2.5 / scale,
-                      );
-                    });
-                  },
-                ),
-              if (newMarker.dy >= 0 && newMarker.dx >= 0)
-                Positioned(
-                  top: newMarker.dy - 1.5,
-                  left: newMarker.dx - 1.5,
-                  child: WaveBorder(
-                    count: 3,
-                    width: 3,
-                    maxWidth: 50,
-                    borderColor: Theme.of(context).colorScheme.primary.withOpacity(.5),
-                    child: const SizedBox(),
-                  ),
-                ),
-
-              /// 选择坐标
-              if (newMarker.dy >= 0 || newMarker.dx >= 0)
-                Positioned(
-                  left: newMarker.dx,
-                  top: newMarker.dy,
-                  width: markerSize,
-                  height: markerSize,
-                  child: StreamBuilder(
-                    stream: stream.stream,
-                    builder: (context, snapshot) {
-                      double scale = snapshot.data ?? transformation.value[0];
-                      return Transform.translate(
-                        offset: const Offset(-markerSize / 2, (-markerSize / 2)),
-                        child: AnimatedScale(
-                          scale: 1 / scale,
-                          duration: const Duration(microseconds: 250),
-                          child: MapGunMarkersIcon(
-                            onPressed: () => _openNewGunPointModal(),
-                            resultNumber: App.provider.ofMap(context).currentMapGun.result!.outputValue,
-                          ),
+                            return AnimatedScale(
+                              duration: const Duration(microseconds: 250),
+                              scale: 1 / scale,
+                              alignment: Alignment.bottomCenter,
+                              child: MapPrefabricateGunMarkersIcon(
+                                isShowUpIcon: targetDistance > minimumHiddenIconDistance && Offset(i.x, i.y) != newMarker,
+                                onPressed: () => _openIconModal(i),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
+                      )),
 
-              /// 火炮位置
-              ...widget.mapProvider.currentMapInfo.gunPositions.map((i) {
-                return Positioned(
-                  left: i.offset.dx,
-                  top: i.offset.dy,
-                  child: StreamBuilder(
-                    stream: stream.stream,
-                    builder: (context, snapshot) {
-                      final scale = snapshot.data ?? transformation.value[0];
+                  /// 新坐标连线
+                  if (newMarker.dy >= 0 && newMarker.dx >= 0)
+                    StreamBuilder(
+                      stream: stream.stream,
+                      builder: (context, snapshot) {
+                        final scale = snapshot.data ?? transformation.value[0];
+                        Factions factions = widget.inputFactions;
+                        bool isCalcExceed = (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) > calcData.currentCalculatingFunction.child[factions]!.maximumRange) || (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) < calcData.currentCalculatingFunction.child[factions]!.minimumRange);
 
-                      if (_scale < 1.7) {
-                        return Transform.translate(
-                          offset: const Offset(-20, -20),
-                          child: AnimatedScale(
-                            duration: const Duration(microseconds: 250),
+                        return LineWidget(
+                          start: widget.mapProvider.currentMapGun.offset,
+                          end: newMarker,
+                          color: !isCalcExceed ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
+                          width: 2.5 / scale,
+                        );
+                      },
+                    ),
+                  if (newMarker.dy >= 0 && newMarker.dx >= 0)
+                    Positioned(
+                      top: newMarker.dy - 1.5,
+                      left: newMarker.dx - 1.5,
+                      child: WaveBorder(
+                        count: 3,
+                        width: 3,
+                        maxWidth: 50,
+                        borderColor: Theme.of(context).colorScheme.primary.withOpacity(.5),
+                        child: const SizedBox(),
+                      ),
+                    ),
+
+                  /// 二点中线
+                  if (newMarker.dy >= 0 && newMarker.dx >= 0)
+                    Positioned(
+                      top: Offset.lerp(App.provider.ofMap(context).currentMapGun.offset, newMarker, .2)!.dy,
+                      left: Offset.lerp(App.provider.ofMap(context).currentMapGun.offset, newMarker, .2)!.dx,
+                      child: StreamBuilder(
+                        stream: stream.stream,
+                        builder: (context, snapshot) {
+                          final scale = snapshot.data ?? transformation.value[0];
+
+                          return AnimatedScale(
+                            duration: const Duration(milliseconds: 350),
                             scale: 1 / scale,
-                            child: CupertinoButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                setState(() {
-                                  widget.mapProvider.currentMapGun = i;
-                                });
-
-                                _openGunDetailModal(i, onEvent: (value) => setState(() {}));
-                              },
+                            alignment: Alignment.bottomCenter,
+                            child: Transform.translate(
+                              offset: const Offset(0, 0),
                               child: Container(
-                                width: 5,
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  color: i.name == widget.mapProvider.currentMapGun.name ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(.5),
-                                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                color: Theme.of(context).colorScheme.primary,
+                                child: Text(
+                                  "14s",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }
+                          );
+                        },
+                      ),
+                    ),
 
-                      return AnimatedScale(
-                        duration: const Duration(milliseconds: 350),
-                        scale: 1 / scale,
-                        alignment: Alignment.bottomCenter,
-                        child: Transform.translate(
-                          offset: Offset(scale * .3, 12),
-                          child: IconButton.filled(
-                            isSelected: i.name == widget.mapProvider.currentMapGun.name,
-                            visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
-                            color: Theme.of(context).colorScheme.primary,
-                            onPressed: () => _openNewGunPointModal(),
-                            icon: MapUtil().putArtyIcon,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }).toList(),
-            ],
+                  /// 选择坐标
+                  if (newMarker.dy >= 0 || newMarker.dx >= 0)
+                    Positioned(
+                      left: newMarker.dx,
+                      top: newMarker.dy,
+                      width: markerSize,
+                      height: markerSize,
+                      child: StreamBuilder(
+                        stream: stream.stream,
+                        builder: (context, snapshot) {
+                          double scale = snapshot.data ?? transformation.value[0];
+                          Factions factions = widget.inputFactions;
+                          bool isCalcExceed = (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) > calcData.currentCalculatingFunction.child[factions]!.maximumRange) || (num.parse(widget.mapProvider.currentMapGun.result!.inputValue) < calcData.currentCalculatingFunction.child[factions]!.minimumRange);
+
+                          return Transform.translate(
+                            offset: const Offset(-markerSize / 2, (-markerSize / 2)),
+                            child: AnimatedScale(
+                              scale: 1 / scale,
+                              duration: const Duration(microseconds: 250),
+                              child: MapGunMarkersIcon(
+                                headerColor: !isCalcExceed ? null : Theme.of(context).colorScheme.error,
+                                color: !isCalcExceed ? null : Theme.of(context).colorScheme.error,
+                                onPressed: () => _openNewGunPointModal(),
+                                resultNumber: isCalcExceed ? 'N/A' : App.provider.ofMap(context).currentMapGun.result!.outputValue,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                  /// 火炮位置
+                  ...widget.mapProvider.currentMapInfo.gunPositions.map((i) {
+                    return Positioned(
+                      left: i.offset.dx,
+                      top: i.offset.dy,
+                      child: StreamBuilder(
+                        stream: stream.stream,
+                        builder: (context, snapshot) {
+                          final scale = snapshot.data ?? transformation.value[0];
+
+                          if (_scale < 1.7) {
+                            return Transform.translate(
+                              offset: const Offset(-2.5, -2.5),
+                              child: AnimatedScale(
+                                duration: const Duration(microseconds: 250),
+                                scale: 1 / scale,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.mapProvider.currentMapGun = i;
+                                    });
+
+                                    _openGunDetailModal(i, onEvent: (value) => setState(() {}));
+                                  },
+                                  child: Container(
+                                    width: 5,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: i.name == widget.mapProvider.currentMapGun.name ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary.withOpacity(.5),
+                                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return AnimatedScale(
+                            duration: const Duration(milliseconds: 350),
+                            scale: 1 / scale,
+                            alignment: Alignment.bottomCenter,
+                            child: Transform.translate(
+                              offset: Offset(scale * .3, 12),
+                              child: IconButton.filled(
+                                isSelected: i.name == widget.mapProvider.currentMapGun.name,
+                                visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
+                                color: Theme.of(context).colorScheme.primary,
+                                onPressed: () => _openNewGunPointModal(),
+                                icon: MapUtil().putArtyIcon,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -1286,15 +1325,16 @@ class LinePainter extends CustomPainter {
     this.end, {
     this.color,
     this.width,
-  }) {
-    _paint = Paint()
-      ..color = color!
-      ..strokeWidth = width ?? 2.5
-      ..strokeCap = StrokeCap.square;
-  }
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    _paint = Paint()
+      ..color = color!
+      ..strokeWidth = width ?? 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square;
+
     canvas.drawLine(start, end, _paint);
   }
 

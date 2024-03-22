@@ -51,6 +51,8 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> wit
 
     if (text.length > numberLength) {
       _setNumberLength(number: numberLength, defaultValue: "9");
+    } else if (text.length < numberLengthMin) {
+      _setNumberLength(number: numberLengthMin, defaultValue: "0");
     } else {
       _setNumberLength(number: text.length, value: text);
     }
@@ -58,7 +60,7 @@ class _IndependentDigitKeyboardState extends State<IndependentDigitKeyboard> wit
 
   /// 取得总单例值
   String get _getValue {
-    return num.parse(list.map((e) => e.text).toList().join('')).toString();
+    return num.parse(list.map((e) => e.text).toList().join('')).ceil().toString();
   }
 
   double get _getValueAsDouble => double.parse(_getValue.toString());
