@@ -132,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           title: const Text('版本'),
                           subtitle: Text(packageData.currentVersion),
                           trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            _openVersion();
-                          },
+                          onTap: () => _openVersion(),
                         ),
                       ],
                     ),
