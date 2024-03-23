@@ -162,7 +162,9 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   subtitle: Text(i18nUtil.as(context, currentMapCompilation.description)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    App.url.opEnPage(context, "/setting/mapPackage");
+                    App.url.opEnPage(context, "/setting/mapPackage").then((value) => modalSetState(() {
+                      print(currentMapCompilation.name);
+                    }));
                   },
                 ),
                 const Divider(),
@@ -229,7 +231,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             ),
             body: ListView(
               children: [
-                ...MapIconType.values.skipWhile((e) => e == MapIconType.None || e == MapIconType.Url || e == MapIconType.Assets || e == MapIconType.Arty).map((e) {
+                ...MapIconType.values.where((e) => e != MapIconType.Url || e != MapIconType.Assets || e != MapIconType.Arty).map((e) {
                   return SwitchListTile(
                     value: _markerManagementSwitch[e] ?? false,
                     title: Text(FlutterI18n.translate(context, "map.layers.${e.value}")),

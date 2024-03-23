@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="hll_emplacement_calculator">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -16,16 +17,6 @@
 
   <title>HLL Gun Calc</title>
   <link rel="manifest" href="manifest.json">
-
-  <script>
-    const serviceWorkerVersion = null;
-  </script>
-  <script src="flutter.js" defer=""></script>
-  
-  
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-  
-  
   <style id="splash-screen-style">
     html {
       height: 100%
@@ -90,13 +81,6 @@
           }
     }
   </style>
-  <script id="splash-screen-script">
-    function removeSplashFromWeb() {
-      document.getElementById("splash")?.remove();
-      document.getElementById("splash-branding")?.remove();
-      document.body.style.background = "transparent";
-    }
-  </script>
 </head>
 <body>
   <picture id="splash">
@@ -104,9 +88,17 @@
       <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
       <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
   </picture>
-  
-  
-  
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
+  <script>
+    const serviceWorkerVersion = null;
+  </script>
+  <script src="flutter.js" defer=""></script>
   <script>
     window.addEventListener('load', function(ev) {
       _flutter.loader.loadEntrypoint({
@@ -120,7 +112,9 @@
         }
       });
     });
+
+    window.oncontextmenu = function(e){
+      e.preventDefault();
+    }
   </script>
-
-
 </body></html>

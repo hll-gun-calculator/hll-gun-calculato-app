@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, constant_identifier_names
 
+import 'package:json_annotation/json_annotation.dart';
+
 enum Factions {
   None(value: "None"),
   UnitedStates(value: "UnitedStates"),

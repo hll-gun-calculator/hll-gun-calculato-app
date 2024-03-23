@@ -106,19 +106,11 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
             ),
             const Divider(),
             ListTile(
-              title: Wrap(
-                spacing: 10,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text("来自第三方"),
-                  RawChip(
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    label: const Text("推荐"),
-                    color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
-                  ),
-                ],
+              leading: RawChip(
+                label: const Text("推荐"),
+                color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
               ),
+              title: Text("来自第三方"),
               subtitle: Text("我们陈列出一些社区提供’地图包‘选择"),
               trailing: Icon(Icons.open_in_new),
               onTap: () {
@@ -138,6 +130,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
               return ListTile(
                 title: Text(e.name),
                 trailing: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     if (e.load)
                       Container(
@@ -158,7 +151,8 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
                         onPressed: null,
                         icon: Icon(Icons.done),
                       ),
-                    TextButton.icon(
+                    if (!e.load && mapData.list.where((i) => i.name == e.name).isNotEmpty)
+                      TextButton.icon(
                       onPressed: () => _downloadAndUse(e),
                       icon: const Icon(Icons.add_circle_outline),
                       label: const Text("添加并作为默认"),

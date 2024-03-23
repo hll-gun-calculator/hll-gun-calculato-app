@@ -25,7 +25,13 @@ class DarkTheme extends AppBaseThemeItem {
   static dynamic data = AppThemeItem(
     name: "dark",
     isDefault: false,
-    themeData: ThemeData.dark(useMaterial3: true).copyWith(
+    themeData: ThemeData(
+      /// config
+      brightness: Brightness.dark,
+      useMaterial3: true,
+      fontFamily: "Noto_Sans_TC",
+
+      /// colors
       primaryColor: Colors.black,
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,

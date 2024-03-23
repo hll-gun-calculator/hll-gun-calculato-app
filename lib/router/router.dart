@@ -1,7 +1,7 @@
 import 'package:fluro/fluro.dart';
 
 // S Pages
-import '/pages/map/index.dart';
+import '../pages/setting/map_config.dart';
 import '/pages/setting/langage.dart';
 import '/pages/license/index.dart';
 import '/pages/collect/collect.dart';

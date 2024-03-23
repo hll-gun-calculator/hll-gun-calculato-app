@@ -107,23 +107,15 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             },
           ),
           const Divider(),
-           ListTile(
-            title: Wrap(
-              spacing: 10,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text("来自第三方"),
-                RawChip(
-                  padding: EdgeInsets.zero,
-                  visualDensity:  VisualDensity.compact,
-                  label: const Text("推荐"),
-                  color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
-                ),
-              ],
+          ListTile(
+            leading: RawChip(
+              label: const Text("推荐"),
+              color: MaterialStatePropertyAll(Theme.of(context).colorScheme.primary.withOpacity(.2)),
             ),
-            subtitle: Text("我们陈列出一些社区提供’计算函数‘选择"),
-            trailing: Icon(Icons.open_in_new),
-            onTap: () async {
+            title: const Text("来自第三方"),
+            subtitle: const Text("我们陈列出一些社区提供’计算函数‘选择"),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () {
               App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/calc/calcRecommendedList.html");
             },
           ),
@@ -140,6 +132,7 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             return ListTile(
               title: Text(e.name),
               trailing: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   if (e.load)
                     Container(

@@ -6,6 +6,12 @@
   "author": "mattwright324",
   "version": "0.0.1",
   "website": "mattw.io",
+  "updataFunction": [
+    {
+      "name": "github path",
+      "path": "https://hll-gun-calc.app-document.cabbagelol.net/config/calcFunction/mattw.json"
+    }
+  ],
   "data": [
     {
       "name": "Carentan",
@@ -151,6 +157,26 @@
       "assets": {
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Driel_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Driel_SP_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Driel_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Driel_Special.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Left",
@@ -209,7 +235,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/ElAlamein_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/ElAlamein_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/ElAlamein_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/ElAlamein_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/ElAlamein_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Left",
@@ -262,7 +313,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Foy_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Foy_SP_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Foy_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Foy_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Foy_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -315,7 +391,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Hill400_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Hill400_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Hill400_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Hill400_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Hill400_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Left",
@@ -368,7 +469,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/HurtgenV2_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/HurtgenV2_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/HurtgenV2_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/HurtgenV2_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/HurtgenV2_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Left",
@@ -421,7 +547,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Kharkov_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Kharkov_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Kharkov_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Kharkov_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Kharkov_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -474,7 +625,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Kursk_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Kursk_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Kursk_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Kursk_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Kursk_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -527,7 +703,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Mortain_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Mortain_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Mortain_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Mortain_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Mortain_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Left",
@@ -580,7 +781,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Omaha_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Omaha_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Omaha_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Omaha_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Omaha_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Left",
@@ -633,7 +859,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/PHL_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/PHL_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/PHL_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/PHL_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/PHL_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -686,7 +937,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Remagen_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Remagen_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Remagen_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Remagen_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Remagen_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -739,7 +1015,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/SMDMV2_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/SMDMV2_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/SMDMV2_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/SMDMV2_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/SMDMV2_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Top": {
           "name": "ArtyRadius Top",
@@ -792,7 +1093,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/SME_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/SME_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/SME_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/SME_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/SME_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Top",
@@ -845,7 +1171,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Stalingrad_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Stalingrad_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Stalingrad_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Stalingrad_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Stalingrad_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Top",
@@ -898,7 +1249,32 @@
         "name": "base",
         "network": "https://mattw.io/maps-let-loose/assets/no-grid/Utah_NoGrid.webp?build=2024-03-04T23:31:45+00:00"
       },
-      "childs": [],
+      "childs": [
+        {
+          "name": "Landmark",
+          "index": 0,
+          "type": "Landmark",
+          "network": "https://mattw.io/maps-let-loose/assets/points/Utah_NoMap.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Egg",
+          "index": 0,
+          "type": "Eggs",
+          "network": "https://mattw.io/maps-let-loose/assets/eggs/Utah_Eggs.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Special",
+          "index": 0,
+          "type": "Special",
+          "network": "https://mattw.io/maps-let-loose/assets/special/Utah_Special.png?build=2024-03-04T23:31:45+00:00"
+        },
+        {
+          "name": "Accessible",
+          "index": 0,
+          "type": "Accessible",
+          "network": "https://mattw.io/maps-let-loose/assets/accessibility/Utah_Accessible.png?build=2024-03-04T23:31:45+00:00"
+        }
+      ],
       "gunRangeChilds": {
         "Left": {
           "name": "ArtyRadius Top",
@@ -913,7 +1289,5 @@
       },
       "marker": []
     }
-
-
   ]
 }

@@ -10,11 +10,9 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
     CalculatingFunction(
       name: json['name'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
-      child: (json['child'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry($enumDecode(_$FactionsEnumMap, k),
-                CalculatingFunctionChild.fromJson(e as Map<String, dynamic>)),
-          ) ??
-          const {},
+      child: json['child'] == null
+          ? const {}
+          : CalculatingFunction.childFromJson(json['child'] as Map),
       author: json['author'] as String? ?? "none",
       website: json['website'] as String? ?? "",
       updataFunction: (json['updataFunction'] as List<dynamic>?)
@@ -37,7 +35,7 @@ Map<String, dynamic> _$CalculatingFunctionToJson(
       'name': instance.name,
       'description': const StringOrMapConverter().toJson(instance.description),
       'version': instance.version,
-      'child': CalculatingFunction.ChildToJson(instance.child),
+      'child': CalculatingFunction.childToJson(instance.child),
       'author': instance.author,
       'website': instance.website,
       'updataFunction': instance.updataFunction,
@@ -45,14 +43,6 @@ Map<String, dynamic> _$CalculatingFunctionToJson(
       'type': _$CalculatingFunctionTypeEnumMap[instance.type]!,
       'id': instance.id,
     };
-
-const _$FactionsEnumMap = {
-  Factions.None: 'None',
-  Factions.UnitedStates: 'UnitedStates',
-  Factions.Germany: 'Germany',
-  Factions.TheSovietUnion: 'TheSovietUnion',
-  Factions.GreatBritain: 'GreatBritain',
-};
 
 const _$CalculatingFunctionTypeEnumMap = {
   CalculatingFunctionType.Internal: 'Internal',

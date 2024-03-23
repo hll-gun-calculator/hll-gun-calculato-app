@@ -133,8 +133,8 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                 if (i.type == CalculatingFunctionType.Custom && i.updataFunction.isNotEmpty)
                   ListTile(
                     title: const Text("更新"),
-                    subtitle: Text("更新此配置文件"),
-                    trailing: updataLoad ? CircularProgressIndicator() : Icon(Icons.chevron_right),
+                    subtitle: const Text("更新此配置文件"),
+                    trailing: updataLoad ? const CircularProgressIndicator() : const Icon(Icons.chevron_right),
                     onTap: () => _updataConfigDetail(i, modalSetState),
                   ),
                 if (i.type == CalculatingFunctionType.Custom) const Divider(),
@@ -162,9 +162,9 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                   )
                 else
                   const EmptyWidget(),
-                Divider(),
+                const Divider(),
                 ListTile(
-                  title: Text("id"),
+                  title: const Text("id"),
                   trailing: Text(i.id),
                 )
               ],

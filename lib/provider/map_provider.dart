@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hll_gun_calculator/constants/api.dart';
 
 import '../data/index.dart';
 import '../utils/index.dart';
@@ -13,8 +14,7 @@ class MapProvider with ChangeNotifier {
   final Storage _storage = Storage();
 
   final List _localPath = [
-    {"name": "internal", "path": "assets/json/map-internal.json"},
-    {"name": "test-mattw", "path": "assets/json/map-mattw.json"}
+    {"name": "internal", "path": "assets/json/map-internal.json"}
   ];
 
   // 内置
@@ -79,17 +79,17 @@ class MapProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// 给当前选择的火炮添加计算结果
-  void setCurrentMapGunResult(MapGunResult mapGunResult) {
-    _currentMapGun.result = mapGunResult;
-    notifyListeners();
-  }
-
   Future init() async {
     _readLocalFiles();
     _readLocalStorage();
     notifyListeners();
     return true;
+  }
+
+  /// 给当前选择的火炮添加计算结果
+  void setCurrentMapGunResult(MapGunResult mapGunResult) {
+    _currentMapGun.result = mapGunResult;
+    notifyListeners();
   }
 
   /// 从本地读取保存数据
@@ -100,6 +100,15 @@ class MapProvider with ChangeNotifier {
       _currentMapCompilationName = mapData.value["currentMapCompilationName"];
       _customPath = mapData.value["list"].map<MapCompilation>((e) => MapCompilation.fromJson(e)).toList();
     }
+  }
+
+  /// 更新配置
+  void updataCustomConfig (String id, MapCompilation data) {
+    if (id.isEmpty) return;
+    int index = _customPath.indexWhere((i) => i.id == id);
+    _customPath[index] = data;
+    _saveLocalStorage();
+    notifyListeners();
   }
 
   /// 保存地图数据
@@ -131,6 +140,10 @@ class MapProvider with ChangeNotifier {
 
   /// 从本地读取自定义
   Future _readLocalFiles() async {
+    if (Config.env == Env.DEV) {
+      _localPath.add({"name": "test-mattw", "path": "assets/json/map-mattw.json"});
+    }
+
     for (var i in _localPath) {
       dynamic d = await rootBundle.loadString(i["path"]);
       MapCompilation mapCompilation = MapCompilation.fromJson(jsonDecode(d));

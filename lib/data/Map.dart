@@ -327,6 +327,7 @@ class MapInfoAssets {
   int index;
 
   // 类型
+  @JsonKey(defaultValue: MapIconType.None, unknownEnumValue: MapIconType.None)
   MapIconType type;
 
   // 网络

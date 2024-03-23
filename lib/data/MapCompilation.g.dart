@@ -14,6 +14,10 @@ MapCompilation _$MapCompilationFromJson(Map<String, dynamic> json) =>
           "",
       author: json['author'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
+      updataFunction: (json['updataFunction'] as List<dynamic>?)
+              ?.map((e) => UpdataFunction.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       data: (json['data'] as List<dynamic>?)
               ?.map((e) => MapInfo.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -28,6 +32,7 @@ Map<String, dynamic> _$MapCompilationToJson(MapCompilation instance) =>
       'description': const StringOrMapConverter().toJson(instance.description),
       'author': instance.author,
       'version': instance.version,
+      'updataFunction': instance.updataFunction,
       'data': MapCompilation.dataToJson(instance.data),
       'type': _$MapCompilationTypeEnumMap[instance.type]!,
     };

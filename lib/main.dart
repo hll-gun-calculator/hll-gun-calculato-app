@@ -12,6 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart' show FlutterNativeSplash;
 import 'package:flutter_i18n/loaders/decoders/json_decode_strategy.dart';
+import 'package:flutter_web_plugins/url_strategy.dart' show usePathUrlStrategy;
 
 import 'constants/api.dart';
 import 'provider/calc_provider.dart';
@@ -32,6 +33,7 @@ void runMain() {
 
   // 路由初始
   Routes.configureRoutes(FluroRouter());
+  usePathUrlStrategy();
 
   // 设置系统状态栏
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);

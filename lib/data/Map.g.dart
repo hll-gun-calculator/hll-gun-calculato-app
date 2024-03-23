@@ -127,7 +127,8 @@ Map<String, dynamic> _$MarkerPointItemToJson(MarkerPointItem instance) =>
 
 MapInfoAssets _$MapInfoAssetsFromJson(Map<String, dynamic> json) =>
     MapInfoAssets(
-      type: $enumDecodeNullable(_$MapIconTypeEnumMap, json['type']) ??
+      type: $enumDecodeNullable(_$MapIconTypeEnumMap, json['type'],
+              unknownValue: MapIconType.None) ??
           MapIconType.None,
       network: json['network'] as String? ?? '',
       local: json['local'] as String? ?? '',

@@ -25,7 +25,7 @@ class CalculatingFunction {
   late String version;
 
   // 阵营
-  @JsonKey(toJson: ChildToJson)
+  @JsonKey(toJson: childToJson, fromJson: childFromJson)
   late Map<Factions, CalculatingFunctionChild> child = {};
 
   // 作者
@@ -74,13 +74,15 @@ class CalculatingFunction {
           fun: "",
         );
 
-  static Map<String, dynamic> ChildToJson(Map<Factions, CalculatingFunctionChild>? child) {
+  static Map<String, dynamic> childToJson(Map<Factions, CalculatingFunctionChild>? child) {
     Map<String, dynamic> map = {};
     for (var i in child!.entries) {
       map.addAll({i.key.value: i.value.toJson()});
     }
     return map;
   }
+  
+  static Map<Factions, CalculatingFunctionChild> childFromJson (Map child) => child.map((key, value) => MapEntry(Factions.parse(key), CalculatingFunctionChild.fromJson(value)));
 
   factory CalculatingFunction.fromJson(Map<String, dynamic> json) => _$CalculatingFunctionFromJson(json);
 

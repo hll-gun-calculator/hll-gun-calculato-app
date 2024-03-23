@@ -65,6 +65,21 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: UbuntuMono
+      fonts:
+        - asset: assets/fonts/Ubuntu_Mono/UbuntuMono-Italic.ttf
+        - asset: assets/fonts/Ubuntu_Mono/UbuntuMono-Regular.ttf
+          style: italic
+    - family: Noto_Sans_TC
+      fonts:
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Black.otf
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Bold.otf
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Light.otf
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Medium.otf
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Regular.otf
+        - asset: assets/fonts/Noto_Sans_TC/NotoSansTC-Thin.otf
+          style: italic
   assets:
     - assets/
     - assets/images/
@@ -76,6 +91,9 @@ flutter:
     - assets/json/
     - assets/lang/
     - assets/audio/
+    - assets/fonts/
+    - assets/fonts/Ubuntu_Mono/
+    - assets/fonts/Noto_Sans_TC/
 
 flutter_native_splash:
   color: "#ffffff"

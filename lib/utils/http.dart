@@ -63,9 +63,6 @@ class Http {
       ),
     );
     headers = headers ?? {};
-    headers.addAll({
-      'Access-Control-Allow-Origin': '*'
-    });
 
     if (headers.isNotEmpty && Http.USERAGENT.isNotEmpty) {
       headers.addAll({HttpHeaders.userAgentHeader: Http.USERAGENT});
