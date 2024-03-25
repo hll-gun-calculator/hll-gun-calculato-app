@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
@@ -94,6 +97,40 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
     }
 
     setState(() {});
+  }
+
+  /// 区间建议
+  List getSuggestionGroups(List list, {int minGroups = 1, int maxGroups = 10}) {
+    if (list.isEmpty) {
+      return [];
+    }
+
+    int groupSize = list.length ~/ maxGroups;
+    groupSize = groupSize > 0 ? groupSize : 1;
+
+    List<dynamic> result = [];
+    for (int i = 0; i < list.length; i += groupSize) {
+      int mid = i + groupSize ~/ 2;
+      mid = mid < list.length ? mid : list.length - 1;
+      result.add(list[mid]);
+    }
+
+    while (result.length > maxGroups) {
+      result.removeLast();
+    }
+
+    while (result.length < minGroups) {
+      result.add([]);
+    }
+
+    return result;
+  }
+
+  /// 中间数
+  num centerNumber(dynamic start, dynamic end) {
+    num _start = num.parse(start.toString());
+    num _end = num.parse(end.toString());
+    return ((_start + _end) / 2).ceil();
   }
 
   /// 生成火炮数据
@@ -517,16 +554,15 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                               clipBehavior: Clip.hardEdge,
                               children: [
                                 /// 其他区间
-                                ...[1, 2, 3, 4, 5]
-                                    .map((e) => FilterChip(
-                                          label: const Wrap(
-                                            children: [
-                                              // Text("${(int.parse(_textController.text) - valueRange)}"),
-                                              Icon(Icons.remove, size: 13),
-                                              // Text("${(int.parse(_textController.text) + valueRange)}"),
-                                            ],
-                                          ),
-                                          onSelected: (bool value) {},
+                                ...getSuggestionGroups(gunCalcTable)
+                                    .map((e) => ActionChip(
+                                          label: Text(centerNumber(e[0], e[1]).toString()),
+                                          onPressed: () {
+                                            setState(() {
+                                              _textController.value.text = centerNumber(e[0], e[1]).toString();
+                                              _generateTableData();
+                                            });
+                                          },
                                           visualDensity: VisualDensity.compact,
                                         ))
                                     .toList(),
@@ -557,8 +593,9 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                 key: keyboardWidgetKey,
                 spatialName: "home_gun_comparison_table",
                 onSubmit: () {
-                  setState(() {});
-                  _generateTableData();
+                  setState(() {
+                    _generateTableData();
+                  });
                 },
                 initializePackup: true,
                 initializeKeyboardType: KeyboardType.IncreaseAndDecrease,

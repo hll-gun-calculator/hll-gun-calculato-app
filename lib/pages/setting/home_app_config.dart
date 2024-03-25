@@ -98,7 +98,7 @@ class _HomeAppConfigPageState extends State<HomeAppConfigPage> {
                         ),
                         title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
                         subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
-                        trailing: activeList.length >  homeAppData.appMinLength
+                        trailing: activeList.length >= homeAppData.appMinLength
                             ? IconButton.filledTonal(
                                 onPressed: () {
                                   homeAppData.remove(activeList[index]);

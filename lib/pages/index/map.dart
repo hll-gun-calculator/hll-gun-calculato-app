@@ -792,7 +792,7 @@ class MapCoreState extends State<MapCore> {
         ..scale(_scale)
         ..translate(
           -(App.provider.ofMap(context).currentMapInfo.size.dx / 2) - -(MediaQuery.of(context).size.width / 2),
-          -(mapBoxHeight) - -(kToolbarHeight + kTextTabBarHeight),
+          -(mapBoxHeight + kToolbarHeight + 290 + 580),
         );
 
       _scale = transformation.value.getMaxScaleOnAxis();
@@ -845,6 +845,16 @@ class MapCoreState extends State<MapCore> {
   /// 地图标记计算
   void _onPositionCalcResult(dynamic detail) {
     if (isLock.value) return;
+
+    if (App.provider.ofMap(context).currentMapGun == null) {
+      Fluttertoast.showToast(msg: "请选择火炮后再标记");
+      return;
+    }
+
+    if (!App.provider.ofCalc(context).currentCalculatingFunction.hasChildValue(App.provider.ofMap(context).currentMapGun.factions!)) {
+      Fluttertoast.showToast(msg: "当前阵营或计算函数不支持");
+      return;
+    }
 
     setState(() {
       newMarker = detail.localPosition;
@@ -1083,7 +1093,6 @@ class MapCoreState extends State<MapCore> {
                   /// 地图底层
                   GestureDetector(
                     onTapUp: (detail) => _onPositionCalcResult(detail),
-                    // onLongPressDown: (LongPressDownDetails detail) => _onPositionCalcResult(detail),
                     child: MapImageWidget(
                       assets: widget.mapProvider.currentMapInfo.assets!,
                       width: widget.mapProvider.currentMapInfo.size.dx,

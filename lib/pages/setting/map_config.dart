@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/index.dart';
+import '/utils/index.dart';
 import '/constants/app.dart';
 import '/widgets/map_card.dart';
 import '/data/index.dart';

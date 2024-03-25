@@ -13,7 +13,6 @@ class CalcProvider with ChangeNotifier {
 
   final List<Map> _localCalcPath = [
     {"name": "internal-calc", "path": "assets/json/fun-internal-calc.json"},
-    // {"name": "easyarty", "path": "assets/json/fun-easyarty.json"}
   ];
 
   // 内置配置列表
@@ -113,15 +112,16 @@ class CalcProvider with ChangeNotifier {
   /// 删除本地自定义
   void deleteLocalCustom(String name) {
     _customCalcList.removeWhere((i) => i.name == name && i.type == CalculatingFunctionType.Custom);
-
+    _currentCalculatingFunctionName.value = calcList.first.name;
     _save();
     notifyListeners();
   }
 
   /// 更新配置
   void updataCustomConfig (String id, CalculatingFunction data) {
-    if (id.isEmpty) return;
+    if (id.isEmpty && _customCalcList.isEmpty) return;
     int index = _customCalcList.indexWhere((i) => i.id == id);
+    if (index < 0) return;
     _customCalcList[index] = data;
     _save();
     notifyListeners();

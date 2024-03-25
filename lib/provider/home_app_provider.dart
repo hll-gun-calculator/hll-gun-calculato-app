@@ -14,7 +14,7 @@ class HomeAppProvider with ChangeNotifier {
 
   // 应用上限以及下限
   final int appMaxLength = 4;
-  final int appMinLength = 3;
+  final int appMinLength = 2;
 
   // 默认
   final List<HomeAppData> _allPanelLists = [

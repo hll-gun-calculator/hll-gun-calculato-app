@@ -72,14 +72,14 @@ class _SpeechKeyboardState extends State<SpeechKeyboard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (!_speechToText.isNotListening) Icon(Icons.settings_voice_rounded),
+            if (!_speechToText.isNotListening) const Icon(Icons.settings_voice_rounded),
             Container(
-              padding: EdgeInsets.only(top: 5, bottom: 20),
+              padding: const EdgeInsets.only(top: 5, bottom: 20),
               child: Text(
                 _speechToText.isListening
                     ? _lastWords
@@ -89,18 +89,17 @@ class _SpeechKeyboardState extends State<SpeechKeyboard> {
               ),
             ),
             GestureDetector(
-              onLongPressStart: (d) {
-                _startListening();
-              },
-              onLongPressUp: _speechEnabled == false
-                  ? null
-                  : () {
-                      _stopListening();
-                      _sum();
-                    },
-              child: ElevatedButton(
+              onLongPressStart: (LongPressStartDetails details) => _startListening(),
+              onLongPressUp: _speechEnabled == false ? null : () => {_stopListening(), _sum()},
+              child: IconButton.filledTonal(
                 onPressed: _speechEnabled == false ? null : () => {},
-                child: Icon(Icons.mic, size: 30),
+                icon: _speechToText.isListening
+                    ? const SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: CircularProgressIndicator(),
+                      )
+                    : const Icon(Icons.mic, size: 80),
               ),
             ),
           ],

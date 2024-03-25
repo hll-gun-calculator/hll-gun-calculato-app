@@ -121,6 +121,7 @@ class _SliderKeyboaedState extends State<SliderKeyboard> with KeyboardUniversalD
             inactiveColor: Theme.of(context).colorScheme.primary.withOpacity(.2),
             onChangeEnd: (v) {
               super.value = v.ceil().toString();
+              widget.onSubmit();
             },
             onChanged: (v) {
               setState(() {
@@ -174,6 +175,8 @@ class _SliderKeyboaedState extends State<SliderKeyboard> with KeyboardUniversalD
                         originalValue = originalValue + outInputValue;
                         super.value = originalValue.toStringAsFixed(0).toString();
                       });
+
+                      widget.onSubmit();
                     },
                     onChanged: (v) {
                       setState(() {
