@@ -11,7 +11,7 @@ part 'MapCompilation.g.dart';
 @JsonSerializable()
 class MapCompilation {
   @JsonKey(includeToJson: false, includeFromJson: false)
-  String id;
+  late String id;
 
   @StringOrMapConverter()
   String name;
@@ -30,6 +30,9 @@ class MapCompilation {
 
   MapCompilationType type;
 
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool _isEmpty = false;
+
   MapCompilation({
     this.id = "",
     this.name = "none",
@@ -40,13 +43,19 @@ class MapCompilation {
     this.data = const [],
     this.type = MapCompilationType.None,
   }) {
-    id = const Uuid().v5(
-      Uuid.NAMESPACE_NIL,
-      "MapCompilation-$name-$author-$version",
-    );
+    if (id.isNotEmpty) {
+      id = const Uuid().v5(
+        Uuid.NAMESPACE_NIL,
+        "MapCompilation-$name-$author-$version",
+      );
+    }
   }
 
+  bool get empty => _isEmpty;
+
   static List dataToJson(List<MapInfo> list) => list.map((e) => e.toJson()).toList();
+
+  factory MapCompilation.empty({String? id}) => MapCompilation(id: id!).._isEmpty = true;
 
   factory MapCompilation.fromJson(Map<String, dynamic> json) => _$MapCompilationFromJson(json);
 

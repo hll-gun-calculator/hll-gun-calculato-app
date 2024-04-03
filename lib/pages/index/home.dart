@@ -99,15 +99,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             children: [
                               DrawerHeader(
                                 curve: Curves.bounceIn,
-                                child: Title(
-                                  color: Colors.black,
-                                  child: Text(
-                                    packageData.package!.appName.toString(),
-                                    style: TextStyle(
-                                      fontSize: Theme.of(context).appBarTheme.titleTextStyle?.fontSize ?? 20,
-                                    ),
-                                  ),
-                                ),
+                                child: Container(),
                               ),
                               ListTile(
                                 title: Text(FlutterI18n.translate(context, "setting.cell.history.title")),

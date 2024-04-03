@@ -23,11 +23,11 @@ class _LanguagePageState extends State<LanguagePage> {
       "fileName": "zh_CN",
       "label": "中文",
     },
-    {
-      "name": "en_US",
-      "fileName": "en_US",
-      "label": "English",
-    }
+    // {
+    //   "name": "en_US",
+    //   "fileName": "en_US",
+    //   "label": "English",
+    // }
   ];
 
   late String currentPageSelectLang;

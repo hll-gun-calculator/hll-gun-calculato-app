@@ -60,8 +60,13 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
 
     for (var i in guideRecommendedBaseItem.updataFunction) {
       Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
-      requestList.add(jsonDecode(result.data));
+      if (result.data is Map && Map.from(result.data).isNotEmpty) {
+        requestList.add(result.data);
+      }
     }
+
+    // 下载失败或无
+    if (requestList.isEmpty) return MapCompilation.empty();
 
     MapCompilation newMapCompilation = MapCompilation.fromJson(requestList.first);
     newMapCompilation.type = MapCompilationType.Custom;
@@ -141,17 +146,17 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
                           strokeWidth: 2,
                         ),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isNotEmpty)
+                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isEmpty)
                       IconButton(
                         onPressed: () => _downloadConfig(e),
                         icon: const Icon(Icons.downloading),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isEmpty)
+                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isNotEmpty)
                       const IconButton(
                         onPressed: null,
                         icon: Icon(Icons.done),
                       ),
-                    if (!e.load && mapData.list.where((i) => i.name == e.name).isNotEmpty)
+                    if (!e.load && mapData.list.where((i) => i.name == e.name).isEmpty)
                       TextButton.icon(
                       onPressed: () => _downloadAndUse(e),
                       icon: const Icon(Icons.add_circle_outline),

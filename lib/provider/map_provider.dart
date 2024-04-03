@@ -38,7 +38,7 @@ class MapProvider with ChangeNotifier {
   // 设置当前地图集合实例
   set currentMapCompilation(MapCompilation mapCompilation) {
     _currentMapCompilationName = mapCompilation.name;
-    _saveLocalStorage();
+    _save();
     notifyListeners();
   }
 
@@ -50,7 +50,7 @@ class MapProvider with ChangeNotifier {
 
   set currentMapCompilationName(String name) {
     _currentMapCompilationName = name;
-    _saveLocalStorage();
+    _save();
     notifyListeners();
   }
 
@@ -107,12 +107,12 @@ class MapProvider with ChangeNotifier {
     if (id.isEmpty) return;
     int index = _customPath.indexWhere((i) => i.id == id);
     _customPath[index] = data;
-    _saveLocalStorage();
+    _save();
     notifyListeners();
   }
 
   /// 保存地图数据
-  void _saveLocalStorage() {
+  void _save() {
     Map value = {
       "currentMapCompilationName": _currentMapCompilationName,
       "list": _customPath.map((e) => e.toJson()).toList(),
@@ -125,7 +125,7 @@ class MapProvider with ChangeNotifier {
   void deleteMapCompilation(MapCompilation mapCompilation) {
     list.removeAt(list.indexWhere((element) => element.name == mapCompilation.name));
     _currentMapCompilationName = list.first.name;
-    _saveLocalStorage();
+    _save();
     notifyListeners();
   }
 
@@ -134,7 +134,7 @@ class MapProvider with ChangeNotifier {
     MapCompilation mapCompilation = MapCompilation.fromJson(data);
     mapCompilation.type = MapCompilationType.Custom;
     _customPath.add(mapCompilation);
-    _saveLocalStorage();
+    _save();
     notifyListeners();
   }
 

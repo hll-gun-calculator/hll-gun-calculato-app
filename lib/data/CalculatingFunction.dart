@@ -13,6 +13,9 @@ enum CalculatingFunctionType { Internal, Custom }
 /// 计算函数
 @JsonSerializable()
 class CalculatingFunction {
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  late String id;
+
   // 名称
   @StringOrMapConverter()
   late String name;
@@ -43,9 +46,11 @@ class CalculatingFunction {
   // 是否自定义配置(内置或自定义)
   late CalculatingFunctionType type;
 
-  late String id;
+  @JsonKey(includeToJson: false, includeFromJson: false)
+  bool _isEmpty = false;
 
   CalculatingFunction({
+    this.id = "",
     this.name = "none",
     this.version = "0.0.1",
     this.child = const {},
@@ -53,15 +58,18 @@ class CalculatingFunction {
     this.website = "",
     this.updataFunction = const [],
     this.type = CalculatingFunctionType.Internal,
-    this.id = "none",
     DateTime? creationTime,
   }) {
     this.creationTime = creationTime ?? DateTime.now();
-    id = const Uuid().v5(
-      Uuid.NAMESPACE_NIL,
-      "CalculatingFunction-$id-$name-${child.length}",
-    );
+    if (id.isNotEmpty) {
+      id = const Uuid().v5(
+        Uuid.NAMESPACE_NIL,
+        "CalculatingFunction-$id-$name-${child.length}",
+      );
+    }
   }
+
+  bool get empty => _isEmpty;
 
   bool hasChildValue(Factions faction) => child[faction] != null;
 
@@ -81,8 +89,10 @@ class CalculatingFunction {
     }
     return map;
   }
-  
-  static Map<Factions, CalculatingFunctionChild> childFromJson (Map child) => child.map((key, value) => MapEntry(Factions.parse(key), CalculatingFunctionChild.fromJson(value)));
+
+  static Map<Factions, CalculatingFunctionChild> childFromJson(Map child) => child.map((key, value) => MapEntry(Factions.parse(key), CalculatingFunctionChild.fromJson(value)));
+
+  factory CalculatingFunction.empty({String? id}) => CalculatingFunction(id: id!).._isEmpty = true;
 
   factory CalculatingFunction.fromJson(Map<String, dynamic> json) => _$CalculatingFunctionFromJson(json);
 

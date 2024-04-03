@@ -61,7 +61,7 @@ class CalcProvider with ChangeNotifier {
   /// 保存
   void _save() {
     storage.set(packageName, value: {
-      "custom": _customCalcList.where((i) => i.type == CalculatingFunctionType.Custom).toList(),
+      "custom": _customCalcList.map((e) => e.toJson()).toList(),
       "currentCalculatingFunctionName": currentCalculatingFunction.name,
     });
   }
