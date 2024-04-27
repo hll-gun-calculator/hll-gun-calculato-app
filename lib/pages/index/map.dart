@@ -163,8 +163,8 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     App.url.opEnPage(context, "/setting/mapPackage").then((value) => modalSetState(() {
-                      print(currentMapCompilation.name);
-                    }));
+                          print(currentMapCompilation.name);
+                        }));
                   },
                 ),
                 const Divider(),
@@ -692,6 +692,8 @@ class MapCoreState extends State<MapCore> {
 
   Offset newMarker = const Offset(-1, -1);
 
+  bool isMagnifying = false;
+
   // 地图加载状态
   bool mapLoading = true;
 
@@ -1076,6 +1078,24 @@ class MapCoreState extends State<MapCore> {
               transformation.value = transformation.value..translate(details.delta.dx * 3, 0, 0);
             });
           },
+          onTapUp: (d) {
+            print("onTapUp");
+            setState(() {
+              isMagnifying = true;
+            });
+          },
+          onTapCancel: () {
+            print("onTapCancel");
+            setState(() {
+              isMagnifying = false;
+            });
+          },
+          onTapDown: (d) {
+            print("onTapDown");
+            setState(() {
+              isMagnifying = true;
+            });
+          },
           child: InteractiveViewer(
             boundaryMargin: const EdgeInsets.only(),
             transformationController: transformation,
@@ -1214,7 +1234,7 @@ class MapCoreState extends State<MapCore> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                                 color: Theme.of(context).colorScheme.primary,
-                                child: Text(
+                                child: const Text(
                                   "14s",
                                   style: TextStyle(
                                     color: Colors.white,
@@ -1253,6 +1273,36 @@ class MapCoreState extends State<MapCore> {
                                 onPressed: () => _openNewGunPointModal(),
                                 resultNumber: isCalcExceed ? 'N/A' : App.provider.ofMap(context).currentMapGun.result!.outputValue,
                               ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                  /// 放大镜
+                  if (isMagnifying && (newMarker.dy >= 0 || newMarker.dx >= 0))
+                    Positioned(
+                      left: newMarker.dx - 200,
+                      top: newMarker.dy - 200,
+                      child: StreamBuilder(
+                        stream: stream.stream,
+                        builder: (context, snapshot) {
+                          double scale = snapshot.data ?? transformation.value[0];
+
+                          return Transform.translate(
+                            offset: const Offset(-0, -400),
+                            child: RawMagnifier(
+                              decoration: MagnifierDecoration(
+                                shape: CircleBorder(
+                                  side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2 / scale),
+                                ),
+                                shadows: [
+                                  BoxShadow(color: Colors.black.withOpacity(.2), blurRadius: 10, spreadRadius: 10),
+                                ],
+                              ),
+                              size: const Size(400, 400),
+                              focalPointOffset: const Offset(0, 400),
+                              magnificationScale: 1.3,
                             ),
                           );
                         },

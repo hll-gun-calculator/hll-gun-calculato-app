@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/v4.dart';
 
 import '/constants/api.dart';
 import '/constants/app.dart';
@@ -70,6 +71,8 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
 
     MapCompilation newMapCompilation = MapCompilation.fromJson(requestList.first);
     newMapCompilation.type = MapCompilationType.Custom;
+    newMapCompilation.id = MapCompilation().createId;
+
     App.provider.ofMap(context).addCustomConfig(title: newMapCompilation.name, data: newMapCompilation.toJson());
 
     setState(() {

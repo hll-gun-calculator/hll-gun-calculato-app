@@ -121,10 +121,17 @@ class MapProvider with ChangeNotifier {
     _storage.set(PACKAGENAME, value: value);
   }
 
-  /// 删除合集
+  /// 删除特定合集
   void deleteMapCompilation(MapCompilation mapCompilation) {
-    list.removeAt(list.indexWhere((element) => element.name == mapCompilation.name));
+    list.removeAt(list.indexWhere((element) => element.id == mapCompilation.id));
     _currentMapCompilationName = list.first.name;
+    _save();
+    notifyListeners();
+  }
+
+  /// 删除自定义合集
+  void deleteCustomMapCompilation () {
+    _customPath.clear();
     _save();
     notifyListeners();
   }

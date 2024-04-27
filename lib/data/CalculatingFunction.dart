@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import 'MapToI18n.dart';
+import 'UpdataFunctionBaseClass.dart';
 import 'index.dart';
 
 part 'CalculatingFunction.g.dart';
@@ -13,7 +14,6 @@ enum CalculatingFunctionType { Internal, Custom }
 /// 计算函数
 @JsonSerializable()
 class CalculatingFunction {
-  @JsonKey(includeToJson: false, includeFromJson: false)
   late String id;
 
   // 名称
@@ -38,6 +38,7 @@ class CalculatingFunction {
   late String website;
 
   // 更新地址
+  @JsonKey(toJson: updataFunctionToJson, fromJson: updataFunctionFromJson)
   late List<UpdataFunction> updataFunction;
 
   // 创建时间
@@ -91,6 +92,14 @@ class CalculatingFunction {
   }
 
   static Map<Factions, CalculatingFunctionChild> childFromJson(Map child) => child.map((key, value) => MapEntry(Factions.parse(key), CalculatingFunctionChild.fromJson(value)));
+
+  static List updataFunctionToJson (List<UpdataFunction> values) => values.map((e) => e.toJson()).toList();
+
+  static List<UpdataFunction> updataFunctionFromJson (List values) {
+    var t = values.map((e) => UpdataFunction.fromJson(e)).toList();
+
+    return t;
+  }
 
   factory CalculatingFunction.empty({String? id}) => CalculatingFunction(id: id!).._isEmpty = true;
 

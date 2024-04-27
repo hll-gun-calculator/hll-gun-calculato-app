@@ -34,9 +34,10 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
   void _getRecommendedList() async {
     GuideRecommendedCalcFunction;
 
-    setState(() {
-      load = true;
-    });
+    if (mounted)
+      setState(() {
+        load = true;
+      });
 
     Response result = await Http.request(
       "config/calcFunction/recommendeds.json",

@@ -28,10 +28,10 @@ GuideRecommendedBaseItem _$GuideRecommendedBaseItemFromJson(
       name: json['name'] as String? ?? "none",
       description: _$JsonConverterFromJson<Object, dynamic>(
           json['description'], const StringOrMapConverter().fromJson),
-      updataFunction: (json['updataFunction'] as List<dynamic>?)
-              ?.map((e) => UpdataFunction.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
+      updataFunction: json['updataFunction'] == null
+          ? const []
+          : GuideRecommendedBaseItem.updataFunctionFromJson(
+              json['updataFunction'] as List),
     );
 
 Map<String, dynamic> _$GuideRecommendedBaseItemToJson(
@@ -39,7 +39,8 @@ Map<String, dynamic> _$GuideRecommendedBaseItemToJson(
     <String, dynamic>{
       'name': instance.name,
       'description': const StringOrMapConverter().toJson(instance.description),
-      'updataFunction': instance.updataFunction,
+      'updataFunction': GuideRecommendedBaseItem.updataFunctionToJson(
+          instance.updataFunction),
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(

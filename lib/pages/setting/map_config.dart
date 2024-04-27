@@ -102,6 +102,11 @@ class _MapPackagePageState extends State<MapPackagePage> {
     );
   }
 
+  /// 删除配置
+  void _deleteMapConfig() {
+    App.provider.ofMap(context).deleteCustomMapCompilation();
+  }
+
   @override
   void initState() {
     selectMapCompilation = App.provider.ofMap(context).currentMapCompilation;
@@ -122,6 +127,12 @@ class _MapPackagePageState extends State<MapPackagePage> {
                   },
                   icon: const Icon(Icons.done),
                 ),
+              IconButton(
+                onPressed: () {
+                  _deleteMapConfig();
+                },
+                icon: Icon(Icons.delete),
+              )
             ],
           ),
           body: ListView(

@@ -1,3 +1,4 @@
+import 'package:hll_gun_calculator/data/UpdataFunctionBaseClass.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'MapToI18n.dart';
@@ -29,6 +30,7 @@ class GuideRecommendedBaseItem {
   dynamic description;
 
   // 更新地址
+  @JsonKey(toJson: updataFunctionToJson, fromJson: updataFunctionFromJson)
   late List<UpdataFunction> updataFunction;
 
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -40,6 +42,10 @@ class GuideRecommendedBaseItem {
     this.updataFunction = const [],
     this.load = false,
   });
+
+  static List updataFunctionToJson (List<UpdataFunction> values) => values.map((e) => e.toJson()).toList();
+
+  static List<UpdataFunction> updataFunctionFromJson (List values) => values.map((e) => UpdataFunction.fromJson(e)).toList();
 
   factory GuideRecommendedBaseItem.fromJson(Map<String, dynamic> json) => _$GuideRecommendedBaseItemFromJson(json);
 

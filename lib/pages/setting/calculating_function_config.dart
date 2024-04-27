@@ -79,7 +79,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     });
 
     List requestList = [];
-    for (var i in i.updataFunction) {
+    for (var i in i.updataFunction!) {
       Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
       requestList.add(jsonDecode(result.data));
     }
@@ -130,7 +130,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                   title: const Text("作者"),
                   trailing: Text(i.author),
                 ),
-                if (i.type == CalculatingFunctionType.Custom && i.updataFunction.isNotEmpty)
+                if (i.type == CalculatingFunctionType.Custom && i.updataFunction!.isNotEmpty)
                   ListTile(
                     title: const Text("更新"),
                     subtitle: const Text("更新此配置文件"),

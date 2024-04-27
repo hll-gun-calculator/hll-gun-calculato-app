@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import 'MapToI18n.dart';
+import 'UpdataFunctionBaseClass.dart';
 import 'index.dart';
 
 part 'MapCompilation.g.dart';
@@ -10,7 +11,6 @@ part 'MapCompilation.g.dart';
 /// 地图合集
 @JsonSerializable()
 class MapCompilation {
-  @JsonKey(includeToJson: false, includeFromJson: false)
   late String id;
 
   @StringOrMapConverter()
@@ -23,6 +23,7 @@ class MapCompilation {
 
   String version;
 
+  @JsonKey(toJson: updataFunctionToJson, fromJson: updataFunctionFromJson)
   List<UpdataFunction> updataFunction;
 
   @JsonKey(toJson: dataToJson)
@@ -44,16 +45,22 @@ class MapCompilation {
     this.type = MapCompilationType.None,
   }) {
     if (id.isNotEmpty) {
-      id = const Uuid().v5(
-        Uuid.NAMESPACE_NIL,
-        "MapCompilation-$name-$author-$version",
-      );
+      id = createId;
     }
   }
 
   bool get empty => _isEmpty;
 
+  String get createId => const Uuid().v5(
+    Uuid.NAMESPACE_NIL,
+    "MapCompilation-$name-$author-$version",
+  );
+
   static List dataToJson(List<MapInfo> list) => list.map((e) => e.toJson()).toList();
+
+  static List updataFunctionToJson (List<UpdataFunction> values) => values.map((e) => e.toJson()).toList();
+
+  static List<UpdataFunction> updataFunctionFromJson (List values) => values.map((e) => UpdataFunction.fromJson(e)).toList();
 
   factory MapCompilation.empty({String? id}) => MapCompilation(id: id!).._isEmpty = true;
 

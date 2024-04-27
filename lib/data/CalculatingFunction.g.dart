@@ -8,6 +8,7 @@ part of 'CalculatingFunction.dart';
 
 CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
     CalculatingFunction(
+      id: json['id'] as String? ?? "",
       name: json['name'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
       child: json['child'] == null
@@ -15,14 +16,13 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
           : CalculatingFunction.childFromJson(json['child'] as Map),
       author: json['author'] as String? ?? "none",
       website: json['website'] as String? ?? "",
-      updataFunction: (json['updataFunction'] as List<dynamic>?)
-              ?.map((e) => UpdataFunction.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
+      updataFunction: json['updataFunction'] == null
+          ? const []
+          : CalculatingFunction.updataFunctionFromJson(
+              json['updataFunction'] as List),
       type:
           $enumDecodeNullable(_$CalculatingFunctionTypeEnumMap, json['type']) ??
               CalculatingFunctionType.Internal,
-      id: json['id'] as String? ?? "none",
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
@@ -32,16 +32,17 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CalculatingFunctionToJson(
         CalculatingFunction instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'description': const StringOrMapConverter().toJson(instance.description),
       'version': instance.version,
       'child': CalculatingFunction.childToJson(instance.child),
       'author': instance.author,
       'website': instance.website,
-      'updataFunction': instance.updataFunction,
+      'updataFunction':
+          CalculatingFunction.updataFunctionToJson(instance.updataFunction),
       'creationTime': instance.creationTime.toIso8601String(),
       'type': _$CalculatingFunctionTypeEnumMap[instance.type]!,
-      'id': instance.id,
     };
 
 const _$CalculatingFunctionTypeEnumMap = {
