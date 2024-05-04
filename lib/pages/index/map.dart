@@ -22,8 +22,8 @@ import '/utils/index.dart';
 import '/widgets/map_card.dart';
 import '/widgets/wave_border.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+class MapPage extends HomeAppWidget {
+  MapPage({super.key});
 
   @override
   State<MapPage> createState() => _mapPageState();

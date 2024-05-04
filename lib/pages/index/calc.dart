@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +18,14 @@ import '/widgets/hisroy_calc_card.dart';
 import '/constants/app.dart';
 import '/provider/collect_provider.dart';
 
-class calcPage extends StatefulWidget {
-  const calcPage({super.key});
+class CalcPage extends HomeAppWidget {
+  CalcPage({super.key});
 
   @override
-  State<calcPage> createState() => _calcPageState();
+  State<CalcPage> createState() => _CalcPageState();
 }
 
-class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin {
+class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin {
   ValueNotifier<TextEditingController> _textController = ValueNotifier(TextEditingController(text: ""));
 
   FocusNode focusNode = FocusNode();
@@ -35,8 +37,23 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
   // 预选
   List primarySelectionList = [];
 
+  /// 输入控制 S
+  // 是否完成输入操作
+  bool isCompleteInputOperation = false;
+
+  // 定时器延迟
+  int count = 3;
+
+  /// 输入控制 E
+
   @override
   void initState() {
+    _initFactions();
+    super.initState();
+  }
+
+  /// 初始阵营
+  void _initFactions() {
     CalculatingFunction currentCalculatingFunction = App.provider.ofCalc(context).currentCalculatingFunction;
     Factions firstName = Factions.None;
 
@@ -46,8 +63,6 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
       // 初始所支持的阵营
       if (Factions.values.where((e) => e == firstName).isNotEmpty) inputFactions = Factions.values.where((e) => e == firstName).first;
     });
-
-    super.initState();
   }
 
   /// 选择阵营
@@ -165,7 +180,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
   }
 
   /// 处理回退
-  void handleBackspace() {
+  void _handleBackspace() {
     final currentText = _textController.value.text;
     final selection = _textController.value.selection;
     if (selection.baseOffset != selection.extentOffset) {
@@ -197,11 +212,24 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
     setState(() {});
   }
 
+  /// 处理输入定时器
+  /// 当用户输入值停止操作后开始计时，超出特定时间再次输入将清空输入值，否则继续在待输入框内输入
+  void _handInputTimer() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      count--;
+      isCompleteInputOperation = false;
+      if (count <= 0) {
+        isCompleteInputOperation = true;
+        timer.cancel();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Consumer3<CalcProvider, HistoryProvider, CollectProvider>(
-      builder: (consumerContext, calcData, historyData, collectData, widget) {
+      builder: (consumerContext, calcData, historyData, collectData, consumerWidget) {
         return Column(
           children: <Widget>[
             Expanded(
@@ -364,7 +392,7 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
                 const Expanded(flex: 1, child: SizedBox()),
                 IconButton(
                   onPressed: () {
-                    handleBackspace();
+                    _handleBackspace();
                   },
                   icon: const Icon(Icons.backspace),
                 ),
@@ -472,10 +500,26 @@ class _calcPageState extends State<calcPage> with AutomaticKeepAliveClientMixin 
 
             /// 键盘
             KeyboardWidget(
-              spatialName: "home_calc",
+              spatialName: widget.name,
               initializePackup: true,
               initializeKeyboardType: KeyboardType.Number,
-              onSubmit: () => historyData.add(_calcSubmit(calcData)),
+              onSubmit: () {
+                if (_textController.value.text.isEmpty) return;
+
+                if (isCompleteInputOperation) {
+                  setState(() {
+                    isCompleteInputOperation = false;
+                    _clearCalc();
+                  });
+                  return;
+                }
+
+                // 处理输入定时器
+                _handInputTimer();
+
+                // 计算结果 且添加到历史
+                historyData.add(_calcSubmit(calcData));
+              },
               controller: _textController,
             ),
 

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 enum HomeAppType {
-  Calc(name: "Calc"),
-  GunComparisonTable(name: "GunComparisonTable"),
-  LandingTimer(name: "LandingTimer"),
-  Map(name: "Map");
+  None(name: "none"),
+  Test(name: "test"),
+  Calc(name: "gunCalc"),
+  GunComparisonTable(name: "gunComparisonTable"),
+  LandingTimer(name: "landingTimer"),
+  Map(name: "map");
 
   final String name;
 
@@ -13,26 +15,37 @@ enum HomeAppType {
   });
 }
 
+abstract class HomeAppWidget extends StatefulWidget {
+  late String _name;
+
+  HomeAppWidget({super.key});
+
+  String get name => _name;
+}
+
 class HomeAppData {
-  // 面板名称
-  late String name;
   // 图标
   Icon icon;
+
   // 激活图标
   Icon activeIcon;
+
   // widget
-  Widget widget;
+  HomeAppWidget widget;
+
   // 类型
   HomeAppType type = HomeAppType.Calc;
+
   // 是否显示appbar
   bool isShowAppBar;
 
   HomeAppData({
-    required this.name,
     required this.icon,
     required this.activeIcon,
     required this.widget,
     required this.type,
     this.isShowAppBar = true,
-  });
+  }) {
+    widget._name = type.name;
+  }
 }

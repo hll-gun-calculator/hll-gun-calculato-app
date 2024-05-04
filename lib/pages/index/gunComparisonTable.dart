@@ -12,10 +12,8 @@ import '/constants/app.dart';
 import '/data/index.dart';
 import '/provider/calc_provider.dart';
 
-class GunComparisonTablePage extends StatefulWidget {
-  const GunComparisonTablePage({
-    super.key,
-  });
+class GunComparisonTablePage extends HomeAppWidget {
+  GunComparisonTablePage({super.key});
 
   @override
   State<GunComparisonTablePage> createState() => _GunComparisonTablePageState();

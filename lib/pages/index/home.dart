@@ -280,7 +280,7 @@ class _HomeBodyState extends State<HomeBody> {
                     return NavigationRailDestination(
                       icon: nav.icon,
                       selectedIcon: nav.activeIcon,
-                      label: Text(FlutterI18n.translate(context, "${nav.name}.title")),
+                      label: Text(FlutterI18n.translate(context, "${nav.type.name}.title")),
                     );
                   }).toList(),
                   selectedIndex: tabIndex,

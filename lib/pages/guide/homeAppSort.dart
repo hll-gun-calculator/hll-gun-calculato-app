@@ -72,8 +72,8 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
             ...homeAppData.unactivatedList.map((e) {
               return ListTile(
                 leading: e.icon,
-                title: Text(FlutterI18n.translate(context, "${e.name}.title")),
-                subtitle: Text(FlutterI18n.translate(context, "${e.name}.describe")),
+                title: Text(FlutterI18n.translate(context, "${e.type.name}.title")),
+                subtitle: Text(FlutterI18n.translate(context, "${e.type.name}.describe")),
                 trailing: IconButton.filledTonal(
                   onPressed: homeAppData.activeList.length <= homeAppData.appMaxLength ? () => homeAppData.add(e) : null,
                   icon: const Icon(Icons.add),
@@ -85,7 +85,7 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
         children: [
           for (int index = 0; index < activeList.length; index++)
             ReorderableDragStartListener(
-              key: ValueKey(activeList[index].name),
+              key: ValueKey(activeList[index].type.name),
               index: index,
               child: ListTile(
                 leading: Wrap(
@@ -101,8 +101,8 @@ class _GuideHomeAppSoreState extends State<GuideHomeAppSore> {
                     activeList[index].activeIcon,
                   ],
                 ),
-                title: Text(FlutterI18n.translate(context, "${activeList[index].name}.title")),
-                subtitle: Text(FlutterI18n.translate(context, "${activeList[index].name}.describe")),
+                title: Text(FlutterI18n.translate(context, "${activeList[index].type.name}.title")),
+                subtitle: Text(FlutterI18n.translate(context, "${activeList[index].type.name}.describe")),
                 trailing: IconButton.filledTonal(
                   onPressed: homeAppData.activeList.length > homeAppData.appMinLength ? () => homeAppData.remove(activeList[index]) : null,
                   icon: const Icon(Icons.delete_outline),

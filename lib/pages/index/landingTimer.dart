@@ -6,8 +6,8 @@ import '/constants/app.dart';
 import '/data/index.dart';
 import '/provider/gun_timer_provider.dart';
 
-class LandingTimerPage extends StatefulWidget {
-  const LandingTimerPage({super.key});
+class LandingTimerPage extends HomeAppWidget {
+  LandingTimerPage({super.key});
 
   @override
   State<LandingTimerPage> createState() => _LandingTimerPageState();

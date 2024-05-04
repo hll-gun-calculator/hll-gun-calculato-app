@@ -19,32 +19,28 @@ class HomeAppProvider with ChangeNotifier {
   // 默认
   final List<HomeAppData> _allPanelLists = [
     HomeAppData(
-      name: "gunCalc",
       icon: const Icon(Icons.calculate_outlined, size: 30),
       activeIcon: const Icon(Icons.calculate, size: 30),
-      widget: const calcPage(),
+      widget: CalcPage(),
       type: HomeAppType.Calc,
     ),
     HomeAppData(
-      name: "map",
       icon: const Icon(Icons.map_outlined, size: 30),
       activeIcon: const Icon(Icons.map, size: 30),
-      widget: const MapPage(),
+      widget: MapPage(),
       type: HomeAppType.Map,
       isShowAppBar: false,
     ),
     HomeAppData(
-      name: "landingTimer",
       icon: const Icon(Icons.timer_outlined, size: 30),
       activeIcon: const Icon(Icons.timer, size: 30),
-      widget: const LandingTimerPage(),
+      widget: LandingTimerPage(),
       type: HomeAppType.LandingTimer,
     ),
     HomeAppData(
-      name: "gunComparisonTable",
       icon: const Icon(Icons.table_chart_outlined, size: 30),
       activeIcon: const Icon(Icons.table_chart, size: 30),
-      widget: const GunComparisonTablePage(),
+      widget: GunComparisonTablePage(),
       type: HomeAppType.GunComparisonTable,
     ),
   ];
@@ -82,11 +78,11 @@ class HomeAppProvider with ChangeNotifier {
 
   /// 是否激活列表有此item
   bool hasItem(String name) {
-    return activeList.where((element) => element.name == name).isNotEmpty;
+    return activeList.where((element) => element.type.name == name).isNotEmpty;
   }
 
   HomeAppData _stringAsHomeAppData(String name) {
-    return _allPanelLists.where((homeApp) => homeApp.name == name).first;
+    return _allPanelLists.where((homeApp) => homeApp.type.name == name).first;
   }
 
   /// 读取本地配置
@@ -106,7 +102,7 @@ class HomeAppProvider with ChangeNotifier {
 
   /// 保存配置
   void _saveLocalStorage() {
-    List value = _panelLists.value.map((e) => e.name).toList();
+    List value = _panelLists.value.map((e) => e.type.name).toList();
     _storage.set(PACKAGENAME, value: value);
   }
 
