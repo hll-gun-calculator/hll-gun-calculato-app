@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -92,7 +93,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                 children: [
                   CheckboxListTile(
                     value: timedRemoval,
-                    title: const Text("是否开启自动移除"),
+                    title: Text(FlutterI18n.translate(context, "landingTimer.settings.autoRemovalComplete")),
                     onChanged: (v) {
                       modalSetState(() {
                         timedRemoval = v as bool;
@@ -102,9 +103,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                   ),
                   if (timedRemoval)
                     TextFormField(
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "0",
-                        helperText: "自动消失秒，范围0-99",
+                        helperText: FlutterI18n.translate(context, "landingTimer.settings.inputAutoRemovalCompleteHelperText"),
                         contentPadding: EdgeInsets.symmetric(horizontal: 15),
                         border: InputBorder.none,
                       ),
@@ -120,8 +121,8 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                   const Divider(),
                   CheckboxListTile(
                     value: keepRollingBottom,
-                    title: const Text("是否一直滚动底部"),
-                    subtitle: const Text("实时查看最新炮弹"),
+                    title: Text(FlutterI18n.translate(context, "landingTimer.settings.autoScrollFooter")),
+                    subtitle: Text(FlutterI18n.translate(context, "landingTimer.settings.autoScrollFooterDescription")),
                     onChanged: (v) {
                       modalSetState(() {
                         keepRollingBottom = v as bool;
@@ -134,8 +135,8 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                   ),
                   CheckboxListTile(
                     value: isSoundValue,
-                    title: const Text("落地声音"),
-                    subtitle: const Text("计时结束播放声音"),
+                    title: Text(FlutterI18n.translate(context, "landingTimer.settings.soundValue")),
+                    subtitle: Text(FlutterI18n.translate(context, "landingTimer.settings.soundValueDescription")),
                     onChanged: (v) {
                       modalSetState(() {
                         isSoundValue = v as bool;
@@ -146,9 +147,9 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                       App.config.updateAttr("landing_timer.is_sound_value", isSoundValue);
                     },
                   ),
-                  const ListTile(
-                    title: Text("声音大小"),
-                    subtitle: Text("结束时播放声音音量"),
+                  ListTile(
+                    title: Text(FlutterI18n.translate(context, "landingTimer.settings.volume")),
+                    subtitle: Text(FlutterI18n.translate(context, "landingTimer.settings.volumeDescription")),
                   ),
                   Slider(
                     label: (_volumeValue * 100).toStringAsFixed(0),
@@ -172,12 +173,12 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
     );
   }
 
-  /// 炮弹状态widget
+  /// 炮弹状态Widget
   Widget _landingsSubtitleWidget(Landing landing) {
     if (landing.countdownTimeSeconds > 1 && landing.countdownTimeSeconds < 5) {
-      return const Text("注意炮弹即将落地");
-    } else if (landing.countdownTimeSeconds <= 1) return const Text("已落地");
-    return const Text("炮弹飞行中..");
+      return Text(FlutterI18n.translate(context, "landingTimer.landingCloseCompletion"));
+    } else if (landing.countdownTimeSeconds <= 1) return Text(FlutterI18n.translate(context, "landingTimer.landingComplete"));
+    return Text(FlutterI18n.translate(context, "landingTimer.landingInExecution"));
   }
 
   @override
@@ -240,11 +241,11 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                         }).toList(),
                       ),
                     )
-                  : const Center(
+                  : Center(
                       child: Opacity(
                         opacity: .3,
                         child: Text(
-                          "请点击下方的 + 号,来模拟炮弹落地计时",
+                          FlutterI18n.translate(context, "landingTimer.nullPrompt"),
                           style: TextStyle(fontSize: 16),
                         ),
                       ),

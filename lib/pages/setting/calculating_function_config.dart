@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hll_gun_calculator/component/_code/index.dart';
 import 'package:provider/provider.dart';
 
 import '/component/_empty/index.dart';
@@ -79,7 +82,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     });
 
     List requestList = [];
-    for (var i in i.updataFunction!) {
+    for (var i in i.updataFunction) {
       Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
       requestList.add(jsonDecode(result.data));
     }
@@ -87,6 +90,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     modalSetState(() {
       CalculatingFunction newCalculatingFunction = CalculatingFunction.fromJson(requestList.first);
       newCalculatingFunction.type = CalculatingFunctionType.Custom;
+      newCalculatingFunction.updateTime = DateTime.now();
       App.provider.ofCalc(context).updataCustomConfig(i.id, newCalculatingFunction);
       updataLoad = false;
     });
@@ -99,6 +103,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
       useSafeArea: true,
+      scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -115,57 +120,53 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
             body: ListView(
               children: [
                 ListTile(
-                  title: const Text("名称"),
+                  title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.name")),
                   trailing: Text(i.name),
                 ),
                 ListTile(
-                  title: const Text("版本"),
+                  title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.version")),
                   trailing: Text(i.version),
                 ),
                 ListTile(
-                  title: const Text("网站"),
+                  title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.website")),
                   trailing: Text(i.website),
                 ),
                 ListTile(
-                  title: const Text("作者"),
+                  title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.author")),
                   trailing: Text(i.author),
                 ),
-                if (i.type == CalculatingFunctionType.Custom && i.updataFunction!.isNotEmpty)
+                if (i.type == CalculatingFunctionType.Custom && i.updataFunction.isNotEmpty)
                   ListTile(
-                    title: const Text("更新"),
-                    subtitle: const Text("更新此配置文件"),
+                    title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.updataFunctionTitle")),
+                    subtitle: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.updataFunctionTitleDescription")),
                     trailing: updataLoad ? const CircularProgressIndicator() : const Icon(Icons.chevron_right),
                     onTap: () => _updataConfigDetail(i, modalSetState),
                   ),
                 if (i.type == CalculatingFunctionType.Custom) const Divider(),
                 if (i.type == CalculatingFunctionType.Custom)
                   ListTile(
-                    title: const Text("创建时间"),
+                    title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.creationTime")),
                     trailing: TimeWidget(data: i.creationTime.toString()),
                   ),
                 const Divider(),
-                const ListTile(
-                  title: Text("支持阵营"),
+                ListTile(
+                  title: Text(FlutterI18n.translate(context, "calculatingFunction.modalSheet.factions")),
                 ),
                 if (i.child.isNotEmpty)
-                  Column(
-                    children: i.child.entries.map((e) {
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: Text(FlutterI18n.translate(context, "basic.factions.${e.key.value}")),
-                            subtitle: Text(e.value.toJson().toString()),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  )
+                  ...i.child.entries.map((e) {
+                    return ListTile(
+                      title: Text(FlutterI18n.translate(context, "basic.factions.${e.key.value}")),
+                      subtitle: CodeConvertJsonView(
+                        data: e.value,
+                      ),
+                    );
+                  }).toList()
                 else
                   const EmptyWidget(),
                 const Divider(),
                 ListTile(
                   title: const Text("id"),
-                  trailing: Text(i.id),
+                  trailing: Text(i.id ?? "none"),
                 )
               ],
             ),
@@ -178,7 +179,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
   /// 删除配置
   void _deleteConfig(String name) {
     if (_currentCalculatingFunctionName == name) {
-      Fluttertoast.showToast(msg: "选择中无法删除，请切换函数");
+      Fluttertoast.showToast(msg: FlutterI18n.translate(context, "calculatingFunction.deletionFailure"));
       return;
     }
 
@@ -188,9 +189,9 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
 
   /// 确定配置
   /// 保存添加
-  void _onModalDone() {
+  void _onModalDone({bool use = false}) {
     if (titleController.text.isEmpty) {
-      Fluttertoast.showToast(msg: "缺少标题");
+      Fluttertoast.showToast(msg: FlutterI18n.translate(context, "calculatingFunction.failureMissingTitle"));
       return;
     }
 
@@ -198,6 +199,15 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
           title: titleController.text,
           data: jsonEncode(importCalculatingFunction.toJson()),
         );
+
+    // 并立即使用
+    if (use) {
+      setState(() {
+        _currentCalculatingFunctionName = titleController.text;
+        App.provider.ofCalc(context).currentCalculatingFunctionName = titleController.text;
+      });
+    }
+
     Navigator.pop(context);
   }
 
@@ -304,6 +314,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
       useSafeArea: true,
+      scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -312,7 +323,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
               actions: [
                 IconButton(
                   onPressed: () => _onModalDone(),
-                  icon: const Icon(Icons.add_circle),
+                  icon: const Icon(Icons.add),
                 ),
               ],
             ),
@@ -326,20 +337,12 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                       value: defaultType,
                       isExpanded: true,
                       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                      items: const [
-                        DropdownMenuItem(
-                          value: "0",
-                          child: Text("从网络导入"),
-                        ),
-                        DropdownMenuItem(
-                          value: "1",
-                          child: Text("从本地导入"),
-                        ),
-                        DropdownMenuItem(
-                          value: "2",
-                          child: Text("从本地创建"),
-                        ),
-                      ],
+                      items: ["0", "1", "2"]
+                          .map((itemIndex) => DropdownMenuItem(
+                                value: itemIndex,
+                                child: Text(FlutterI18n.translate(context, "calculatingFunction.modalImport.type.$itemIndex.name")),
+                              ))
+                          .toList(),
                       onChanged: (v) {
                         setState(() {
                           defaultType = v as String;
@@ -356,19 +359,19 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                       children: [
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: "地址",
-                            hintText: "https://",
+                            labelText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.0.labelText"),
+                            hintText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.0.hintText"),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                             suffix: importLoad
                                 ? const SizedBox(
-                                    width: 10,
-                                    height: 10,
+                                    width: 25,
+                                    height: 25,
                                     child: CircularProgressIndicator(),
                                   )
                                 : TextButton.icon(
                                     onPressed: () => _networkDownloadConfigType(calcData, pathController.text, modalSetState),
                                     icon: const Icon(Icons.download),
-                                    label: const Text("下载"),
+                                    label: Text(FlutterI18n.translate(context, "calculatingFunction.modalImport.type.0.suffix")),
                                   ),
                           ),
                           keyboardType: TextInputType.url,
@@ -377,8 +380,8 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                             pathController.text = v;
                           },
                           validator: (value) {
-                            if (value!.isEmpty) return "地址不可空";
-                            if (regular.check(RegularType.Link, value).code != 0) return "并非正确的地址";
+                            if (value!.isEmpty) return FlutterI18n.translate(context, "calculatingFunction.modalImport.type.0.validatorPathNull");
+                            if (regular.check(RegularType.Link, value).code != 0) return FlutterI18n.translate(context, "calculatingFunction.modalImport.type.0.validatorNotLink");
                             return null;
                           },
                         ),
@@ -388,13 +391,13 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                     TextField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: "地址",
-                        hintText: "local://",
+                        labelText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.1.labelText"),
+                        hintText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.1.hintText"),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                         suffix: TextButton.icon(
                           onPressed: () => _localImportConfigType(),
                           icon: const Icon(Icons.file_download_rounded),
-                          label: const Text("导入文件"),
+                          label: Text(FlutterI18n.translate(context, "calculatingFunction.modalImport.type.1.suffix")),
                         ),
                       ),
                       controller: pathController,
@@ -403,13 +406,13 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                     TextField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: "地址",
-                        hintText: "local://",
+                        labelText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.2.labelText"),
+                        hintText: FlutterI18n.translate(context, "calculatingFunction.modalImport.type.2.hintText"),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                         suffix: TextButton.icon(
                           onPressed: () => _localCreateConfigType(),
                           icon: const Icon(Icons.edit),
-                          label: const Text("创建"),
+                          label: Text(FlutterI18n.translate(context, "calculatingFunction.modalImport.type.2.suffix")),
                         ),
                       ),
                       controller: pathController,
@@ -428,9 +431,32 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                       titleController.text = v;
                     },
                     validator: (value) {
-                      if (value!.isEmpty) return "缺少标题";
+                      if (calcData.calcList.where((element) => element.name == titleController.text).isNotEmpty) return FlutterI18n.translate(context, "calculatingFunction.titleExist");
+                      if (value!.isEmpty) return FlutterI18n.translate(context, "calculatingFunction.failureMissingTitle");
                       return null;
                     },
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () => _onModalDone(),
+                      child: Text("创建"),
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () => _onModalDone(use: true),
+                      child: Text("创建并使用"),
+                    ),
                   ),
                 ],
               ),
@@ -441,17 +467,18 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
     );
   }
 
+  /// 删除配置
+  void _deleteMapConfig() {
+    App.provider.ofCalc(context).deleteCustomMapCompilation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CalcProvider>(builder: (context, calcData, widget) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(FlutterI18n.translate(context, "calculatingFunctionConfig.title")),
+          title: Text(FlutterI18n.translate(context, "calculatingFunction.title")),
           actions: [
-            IconButton(
-              onPressed: () => _openAddConfigModal(calcData),
-              icon: const Icon(Icons.add),
-            ),
             if (calcData.currentCalculatingFunctionName != _currentCalculatingFunctionName)
               IconButton(
                 onPressed: () {
@@ -465,6 +492,32 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                 },
                 icon: const Icon(Icons.done),
               ),
+            PopupMenuButton(
+              icon: const Icon(Icons.more_horiz),
+              itemBuilder: (itemBuilder) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  child: Wrap(
+                    spacing: 5,
+                    children: [
+                      const Icon(Icons.add),
+                      Text(FlutterI18n.translate(context, "calculatingFunction.createConfiguration")),
+                    ],
+                  ),
+                  onTap: () => _openAddConfigModal(calcData),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  child: Wrap(
+                    spacing: 5,
+                    children: [
+                      const Icon(Icons.delete),
+                      Text(FlutterI18n.translate(context, "calculatingFunction.deleteConfiguration")),
+                    ],
+                  ),
+                  onTap: () => _deleteMapConfig(),
+                ),
+              ],
+            ),
           ],
         ),
         body: ListView(

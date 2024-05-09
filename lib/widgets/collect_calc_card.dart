@@ -12,7 +12,7 @@ class CollectCalcCard extends StatefulWidget {
   final CollectItemData i;
   final Widget? leading;
 
-  CollectCalcCard({
+  const CollectCalcCard({
     super.key,
     required this.i,
     this.leading,

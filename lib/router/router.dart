@@ -1,7 +1,8 @@
 import 'package:fluro/fluro.dart';
+import 'package:hll_gun_calculator/pages/setting/destock.dart';
 
 // S Pages
-import '../pages/setting/map_config.dart';
+import '/pages/setting/map_config.dart';
 import '/pages/setting/langage.dart';
 import '/pages/license/index.dart';
 import '/pages/collect/collect.dart';
@@ -85,6 +86,12 @@ class Routes {
       "url": '/setting/version',
       "item": (context, params) {
         return const VersionPage();
+      }
+    },
+    {
+      "url": '/setting/destock',
+      "item": (context, params) {
+        return const DestockPage();
       }
     },
     {

@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           ),
                         ),
                         ListTile(
-                          title: const Text('版本'),
+                          title: Text(FlutterI18n.translate(context, "setting.versions.title")),
                           subtitle: Text(packageData.currentVersion),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: () => _openVersion(),

@@ -1,9 +1,7 @@
-import 'package:hll_gun_calculator/data/UpdataFunction.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 import 'MapToI18n.dart';
-import 'UpdataFunctionBaseClass.dart';
 import 'index.dart';
 
 part 'MapCompilation.g.dart';
@@ -23,6 +21,8 @@ class MapCompilation {
 
   String version;
 
+  String website;
+
   @JsonKey(toJson: updataFunctionToJson, fromJson: updataFunctionFromJson)
   List<UpdataFunction> updataFunction;
 
@@ -40,6 +40,7 @@ class MapCompilation {
     this.description = "",
     this.author = "none",
     this.version = "0.0.1",
+    this.website = "",
     this.updataFunction = const [],
     this.data = const [],
     this.type = MapCompilationType.None,
@@ -52,17 +53,19 @@ class MapCompilation {
   bool get empty => _isEmpty;
 
   String get createId => const Uuid().v5(
-    Uuid.NAMESPACE_NIL,
-    "MapCompilation-$name-$author-$version",
-  );
+        Uuid.NAMESPACE_NIL,
+        "MapCompilation-$name-$author-$version",
+      );
 
   static List dataToJson(List<MapInfo> list) => list.map((e) => e.toJson()).toList();
 
-  static List updataFunctionToJson (List<UpdataFunction> values) => values.map((e) => e.toJson()).toList();
+  static List updataFunctionToJson(List<UpdataFunction> values) => values.map((e) => e.toJson()).toList();
 
-  static List<UpdataFunction> updataFunctionFromJson (List values) => values.map((e) => UpdataFunction.fromJson(e)).toList();
+  static List<UpdataFunction> updataFunctionFromJson(List values) => values.map((e) => UpdataFunction.fromJson(e)).toList();
 
-  factory MapCompilation.empty({String? id}) => MapCompilation(id: id!).._isEmpty = true;
+  factory MapCompilation.empty({String? id}) => MapCompilation()
+    ..id = id ?? ""
+    .._isEmpty = true;
 
   factory MapCompilation.fromJson(Map<String, dynamic> json) => _$MapCompilationFromJson(json);
 

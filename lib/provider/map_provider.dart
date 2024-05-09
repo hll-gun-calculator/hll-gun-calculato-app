@@ -123,7 +123,7 @@ class MapProvider with ChangeNotifier {
 
   /// 删除特定合集
   void deleteMapCompilation(MapCompilation mapCompilation) {
-    list.removeAt(list.indexWhere((element) => element.id == mapCompilation.id));
+    list.removeAt(list.indexWhere((element) => element.id == mapCompilation.name));
     _currentMapCompilationName = list.first.name;
     _save();
     notifyListeners();
@@ -148,7 +148,7 @@ class MapProvider with ChangeNotifier {
   /// 从本地读取自定义
   Future _readLocalFiles() async {
     if (Config.env == Env.DEV) {
-      _localPath.add({"name": "test-mattw", "path": "assets/json/map-mattw.json"});
+      _localPath.add({"name": "test-local-mattw", "path": "assets/json/map-mattw.json"});
     }
 
     for (var i in _localPath) {

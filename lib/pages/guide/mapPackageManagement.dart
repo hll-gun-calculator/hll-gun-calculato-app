@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/v4.dart';
 
 import '/constants/api.dart';
 import '/constants/app.dart';
@@ -17,8 +14,10 @@ class GuideMapPackageManagement extends StatefulWidget {
   State<GuideMapPackageManagement> createState() => _GuideMapPackageManagementState();
 }
 
-class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
+class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> with AutomaticKeepAliveClientMixin  {
   late GuideRecommendedMap guideRecommendedMap = GuideRecommendedMap();
+
+  Map completeDownloadList = {};
 
   bool load = false;
 
@@ -76,10 +75,18 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
     App.provider.ofMap(context).addCustomConfig(title: newMapCompilation.name, data: newMapCompilation.toJson());
 
     setState(() {
+      completeDownloadList[guideRecommendedBaseItem.name] = DateTime.now();
       guideRecommendedBaseItem.load = false;
     });
 
     return newMapCompilation;
+  }
+
+  /// 下载标记
+  /// 检查是否下载成功过
+  bool _downloadCompletionMark (String name) {
+    MapProvider mapData = App.provider.ofMap(context);
+    return mapData.list.where((element) => element.name == name).isNotEmpty || completeDownloadList[name] != null;
   }
 
   /// 下载并使用
@@ -87,6 +94,9 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
     MapCompilation newMapCompilation = await _downloadConfig(guideRecommendedBaseItem);
     App.provider.ofMap(context).currentMapCompilationName = newMapCompilation.name;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -149,17 +159,17 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> {
                           strokeWidth: 2,
                         ),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isEmpty)
+                    else if (!e.load && !_downloadCompletionMark(e.name))
                       IconButton(
                         onPressed: () => _downloadConfig(e),
                         icon: const Icon(Icons.downloading),
                       )
-                    else if (!e.load && mapData.list.where((element) => element.name == e.name).isNotEmpty)
+                    else if (!e.load && _downloadCompletionMark(e.name))
                       const IconButton(
                         onPressed: null,
                         icon: Icon(Icons.done),
                       ),
-                    if (!e.load && mapData.list.where((i) => i.name == e.name).isEmpty)
+                    if (!e.load && !_downloadCompletionMark(e.name))
                       TextButton.icon(
                       onPressed: () => _downloadAndUse(e),
                       icon: const Icon(Icons.add_circle_outline),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -492,11 +493,13 @@ class _calculatingFunctionCreatePageState extends State<CalculatingFunctionCreat
                           hintText: "",
                           contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                           label: Text("函数"),
+                          border: InputBorder.none,
                         ),
                         minLines: 2,
                         maxLines: 4,
                         controller: e.funController,
                       ),
+
 
                       const Divider(height: 1, thickness: 1),
                       Container(

@@ -153,12 +153,10 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
   /// 初始键盘
   void initKeyboard() async {
     dynamic keyboardStorageSelectValue = await App.config.getAttr("keyboard.${widget.spatialName}.select");
-    dynamic keyboardStorageStatusValue = await App.config.getAttr("keyboard.${widget.spatialName}.status");
+    dynamic keyboardStorageStatusValue = await App.config.getAttr("keyboard.${widget.spatialName}.status", defaultValue: widget.initializePackup);
 
     if (mounted) {
       setState(() {
-        keyboardSwitchValue = widget.initializePackup;
-
         // 初始键盘类型
         if (keyboardStorageSelectValue is bool && !keyboardStorageSelectValue || keyboardStorageSelectValue == null) {
           selectKeyboards = widget.initializeKeyboardType ?? KeyboardType.Number;
@@ -199,7 +197,7 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
         return StatefulBuilder(builder: (modalContext, modalSetState) {
           return Scaffold(
             appBar: AppBar(
-              title: Text("选择键盘"),
+              title: Text(FlutterI18n.translate(context, "basic.keyboard.title")),
             ),
             body: GridView(
               padding: const EdgeInsets.all(15),
@@ -234,7 +232,7 @@ class KeyboardWidgetState extends State<KeyboardWidget> {
                                   height: 100,
                                 ),
                               const SizedBox(height: 5),
-                              Text(FlutterI18n.translate(context, "basic.keyboards.${e.name}")),
+                              Text(FlutterI18n.translate(context, "basic.keyboard.child.${e.name}")),
                             ],
                           ),
                         ),

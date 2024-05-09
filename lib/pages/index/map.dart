@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,10 +25,10 @@ class MapPage extends HomeAppWidget {
   MapPage({super.key});
 
   @override
-  State<MapPage> createState() => _mapPageState();
+  State<MapPage> createState() => _MapPageState();
 }
 
-class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   final GlobalKey<MapCoreState> _mapCoreKey = GlobalKey<MapCoreState>();
 
   I18nUtil i18nUtil = I18nUtil();
@@ -87,17 +86,17 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       return;
     }
     setState(() {
-      Map currerGun = listTimerIndex.where((element) => element["id"] == id).first;
+      Map currentGun = listTimerIndex.where((element) => element["id"] == id).first;
 
       // 添加
       gunTimerData.add(
-        id: currerGun['id'],
+        id: currentGun['id'],
         type: LandingType.MapGun,
         isAutoShow: true,
         endCallback: (l) {
           // 添加后更新
-          currerGun['index'] = currerGun['index'] = currerGun['index'] + 1;
-          currerGun['id'] = "${e.value.name}-${e.value.id}-${currerGun['index']}";
+          currentGun['index'] = currentGun['index'] = currentGun['index'] + 1;
+          currentGun['id'] = "${e.value.name}-${e.value.id}-${currentGun['index']}";
         },
       );
     });
@@ -303,34 +302,38 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                 onPressed: () => _openMarkerModal(),
                                 icon: Icon(_markerManagementSwitch.values.where((v) => v == true).isNotEmpty ? Icons.layers : Icons.layers_outlined),
                               ),
-                              const Expanded(child: SizedBox()),
-                              IconButton(
-                                onPressed: () {
-                                  _mapCoreKey.currentState!.onResetMapPosition();
-                                },
-                                icon: const Icon(Icons.restart_alt),
+                              PopupMenuButton(
+                                icon: const Wrap(
+                                  children: [
+                                    Icon(Icons.center_focus_strong_rounded),
+                                    Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
+                                itemBuilder: (itemBuilder) => [
+                                  PopupMenuItem(
+                                    child: const Text("地图居中"),
+                                    onTap: () {
+                                      _mapCoreKey.currentState!.onResetMapPosition();
+                                    },
+                                  ),
+                                  PopupMenuItem(
+                                    child: const Text("定位火炮标居中"),
+                                    onTap: () {
+                                      _mapCoreKey.currentState!.onResetGunPosition();
+                                    },
+                                  ),
+                                ],
                               ),
-                              // IconButton(
-                              //   onPressed: () {
-                              //     _mapCoreKey.currentState!.scale("+");
-                              //   },
-                              //   icon: const Icon(Icons.add),
-                              // ),
-                              // IconButton(
-                              //   onPressed: () {
-                              //     _mapCoreKey.currentState!.scale("-");
-                              //   },
-                              //   icon: const Icon(Icons.remove),
-                              // ),
+                              const Spacer(),
                               if (_lock)
-                                IconButton.filled(
+                                IconButton(
+                                  icon: const Icon(Icons.location_off_sharp),
                                   onPressed: () {
-                                    _mapCoreKey.currentState!.unlock();
                                     setState(() {
+                                      _mapCoreKey.currentState!.unlock();
                                       _lock = false;
                                     });
                                   },
-                                  icon: const Icon(Icons.location_off_sharp),
                                 ),
                             ],
                           ),
@@ -363,15 +366,15 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                             children: mapData.currentMapInfo.gunPositions.isNotEmpty
                                 ? mapData.currentMapInfo.gunPositions.asMap().entries.map((e) {
                                     String id = listTimerIndex[e.key]['id'];
-                                    String querId = "$id-${LandingType.MapGun.name}"; // 查询id，与生成的id缺少类型
+                                    String inquireId = "$id-${LandingType.MapGun.name}"; // 查询id，与生成的id缺少类型
                                     return Stack(
                                       children: [
-                                        if (gunTimerData.hasItemId(querId))
+                                        if (gunTimerData.hasItemId(inquireId))
                                           Positioned.fill(
                                             child: Opacity(
                                               opacity: .3,
                                               child: LinearProgressIndicator(
-                                                value: gunTimerData.getItem(querId).countdownTimeSeconds / gunTimerData.getItem(querId).duration.inSeconds * 1,
+                                                value: gunTimerData.getItem(inquireId).countdownTimeSeconds / gunTimerData.getItem(inquireId).duration.inSeconds * 1,
                                                 backgroundColor: Colors.transparent,
                                               ),
                                             ),
@@ -380,15 +383,17 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Container(
-                                              margin: const EdgeInsets.only(left: 55, top: 5),
-                                              child: Wrap(
-                                                spacing: 10,
-                                                children: [
-                                                  Text(e.value.name),
-                                                  Text(FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")),
-                                                  Text(e.value.direction.name),
-                                                ],
+                                            SelectionArea(
+                                              child: Container(
+                                                margin: const EdgeInsets.only(left: 55, top: 5),
+                                                child: Wrap(
+                                                  spacing: 10,
+                                                  children: [
+                                                    Text(i18nUtil.as(context, e.value.name)),
+                                                    Text(FlutterI18n.translate(context, "basic.factions.${e.value.factions!.value}")),
+                                                    Text(FlutterI18n.translate(context, "map.direction.${e.value.direction.name}")),
+                                                  ],
+                                                ),
                                               ),
                                             ),
 
@@ -472,17 +477,15 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                   ),
 
                                                   IconButton(
-                                                    onPressed: () {
-                                                      _putGunTimer(gunTimerData, querId, e, id);
-                                                    },
+                                                    onPressed: () => _putGunTimer(gunTimerData, inquireId, e, id),
                                                     icon: Column(
                                                       children: [
                                                         Stack(
                                                           children: [
-                                                            if (gunTimerData.getItem(querId).isTimerActive) const Icon(Icons.timer) else const Icon(Icons.timer_outlined),
+                                                            if (gunTimerData.getItem(inquireId).isTimerActive) const Icon(Icons.timer) else const Icon(Icons.timer_outlined),
                                                           ],
                                                         ),
-                                                        if (gunTimerData.getItem(querId).isTimerActive) Text(gunTimerData.getItem(querId).countdownTimeSeconds.toString()) else const Text("0")
+                                                        if (gunTimerData.getItem(inquireId).isTimerActive) Text(gunTimerData.getItem(inquireId).countdownTimeSeconds.toString()) else const Text("0")
                                                       ],
                                                     ),
                                                   ),
@@ -528,7 +531,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                           );
                                                           break;
                                                         case "timer":
-                                                          _putGunTimer(gunTimerData, querId, e, id);
+                                                          _putGunTimer(gunTimerData, inquireId, e, id);
                                                           break;
                                                         case "collect":
                                                           _collect(e.value);
@@ -576,7 +579,7 @@ class _mapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                           OutlinedButton.icon(
                                                             icon: const Icon(Icons.help),
                                                             label: const Text("帮助", style: TextStyle(fontWeight: FontWeight.bold)),
-                                                            onPressed: () => App.url.onPeUrl(Config.apis["app_web_site"]!.url + "/map/help"),
+                                                            onPressed: () => App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/map/help"),
                                                             style: ButtonStyle(
                                                               visualDensity: VisualDensity.compact,
                                                               foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.error.withOpacity(.8)),
@@ -773,10 +776,29 @@ class MapCoreState extends State<MapCore> {
     });
   }
 
-  /// 地图坐标重置
+  /// 定位地图中心坐标
   void onResetMapPosition() {
     _resetMap();
     _scale = 1;
+  }
+
+  /// 定位火炮中心坐标
+  void onResetGunPosition() {
+    final size = MediaQuery.of(context).size;
+
+    if (newMarker.dy < 0 && newMarker.dx < 0) return;
+
+    // 初始显示地图全貌
+    _scale = max(
+      size.width / App.provider.ofMap(context).currentMapInfo.size.dx,
+      size.height / App.provider.ofMap(context).currentMapInfo.size.dy,
+    );
+    transformation.value = Matrix4.identity()
+      ..scale(_scale)
+      ..translate(
+        -(newMarker.dx / 2) - -(MediaQuery.of(context).size.width / 2),
+        -(newMarker.dy + kToolbarHeight + 290 + 580),
+      );
   }
 
   /// 重置地图
@@ -1079,19 +1101,16 @@ class MapCoreState extends State<MapCore> {
             });
           },
           onTapUp: (d) {
-            print("onTapUp");
             setState(() {
               isMagnifying = true;
             });
           },
           onTapCancel: () {
-            print("onTapCancel");
             setState(() {
               isMagnifying = false;
             });
           },
           onTapDown: (d) {
-            print("onTapDown");
             setState(() {
               isMagnifying = true;
             });

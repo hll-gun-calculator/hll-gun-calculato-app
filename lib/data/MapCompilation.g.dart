@@ -15,6 +15,7 @@ MapCompilation _$MapCompilationFromJson(Map<String, dynamic> json) =>
           "",
       author: json['author'] as String? ?? "none",
       version: json['version'] as String? ?? "0.0.1",
+      website: json['website'] as String? ?? "",
       updataFunction: json['updataFunction'] == null
           ? const []
           : MapCompilation.updataFunctionFromJson(
@@ -34,6 +35,7 @@ Map<String, dynamic> _$MapCompilationToJson(MapCompilation instance) =>
       'description': const StringOrMapConverter().toJson(instance.description),
       'author': instance.author,
       'version': instance.version,
+      'website': instance.website,
       'updataFunction':
           MapCompilation.updataFunctionToJson(instance.updataFunction),
       'data': MapCompilation.dataToJson(instance.data),

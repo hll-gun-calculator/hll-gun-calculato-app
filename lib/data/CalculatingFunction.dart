@@ -44,6 +44,9 @@ class CalculatingFunction {
   // 创建时间
   late DateTime creationTime;
 
+  // 更新时间
+  late DateTime updateTime;
+
   // 是否自定义配置(内置或自定义)
   late CalculatingFunctionType type;
 
@@ -60,8 +63,10 @@ class CalculatingFunction {
     this.updataFunction = const [],
     this.type = CalculatingFunctionType.Internal,
     DateTime? creationTime,
+    DateTime? updateTime,
   }) {
     this.creationTime = creationTime ?? DateTime.now();
+    this.updateTime = updateTime ?? DateTime.now();
     if (id.isNotEmpty) {
       id = const Uuid().v5(
         Uuid.NAMESPACE_NIL,

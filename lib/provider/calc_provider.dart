@@ -150,4 +150,11 @@ class CalcProvider with ChangeNotifier {
     _save();
     notifyListeners();
   }
+
+  /// 删除自定义合集
+  void deleteCustomMapCompilation () {
+    _customCalcList.clear();
+    _save();
+    notifyListeners();
+  }
 }

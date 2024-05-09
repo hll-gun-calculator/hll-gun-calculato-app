@@ -26,6 +26,9 @@ CalculatingFunction _$CalculatingFunctionFromJson(Map<String, dynamic> json) =>
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
+      updateTime: json['updateTime'] == null
+          ? null
+          : DateTime.parse(json['updateTime'] as String),
     )..description = _$JsonConverterFromJson<Object, dynamic>(
         json['description'], const StringOrMapConverter().fromJson);
 
@@ -42,6 +45,7 @@ Map<String, dynamic> _$CalculatingFunctionToJson(
       'updataFunction':
           CalculatingFunction.updataFunctionToJson(instance.updataFunction),
       'creationTime': instance.creationTime.toIso8601String(),
+      'updateTime': instance.updateTime.toIso8601String(),
       'type': _$CalculatingFunctionTypeEnumMap[instance.type]!,
     };
 

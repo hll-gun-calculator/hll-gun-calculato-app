@@ -205,10 +205,10 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
           body: ListView(
             children: [
               TextField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "0",
-                  labelText: "区间",
-                  helperText: "用户输入值时，取该正负区间的范围结果",
+                  labelText: FlutterI18n.translate(context, "gunComparisonTable.setting.section"),
+                  helperText: FlutterI18n.translate(context, "gunComparisonTable.setting.sectionHelperText"),
                   contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 ),
                 keyboardType: TextInputType.number,
@@ -281,19 +281,19 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
               Container(
                 color: Theme.of(context).primaryColor.withOpacity(.1),
                 child: Table(
-                  children: const [
+                  children: [
                     TableRow(
                       children: [
                         TableCell(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                            child: Text("距离", textAlign: TextAlign.end),
+                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                            child: Text(FlutterI18n.translate(context, "gunComparisonTable.distance"), textAlign: TextAlign.end),
                           ),
                         ),
                         TableCell(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                            child: Text("MIL"),
+                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                            child: Text(FlutterI18n.translate(context, "gunComparisonTable.density")),
                           ),
                         ),
                       ],
@@ -358,16 +358,9 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                   ),
                                 ),
                                 Text(
-                                  "MIL",
+                                  FlutterI18n.translate(context, "gunComparisonTable.density"),
                                   style: TextStyle(color: Theme.of(context).primaryColor.withOpacity(.4)),
                                 ),
-                                // IconButton(
-                                //   onPressed: () {
-                                //     String title = "${gunItem[1].inputValue} -> ${gunItem[1].outputValue}";
-                                //     collectData.add(gunItem[1], title, remark: "来自火炮表格的收藏, $title");
-                                //   },
-                                //   icon: Icon(Icons.star_border, color: Colors.yellow.shade800),
-                                // ),
                               ],
                             ),
                           ),
@@ -488,7 +481,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                     child: TextField(
                                       readOnly: true,
                                       showCursor: true,
-                                      decoration: const InputDecoration(hintText: "(可选)输入区间中间值", contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                                      decoration: InputDecoration(hintText: FlutterI18n.translate(context, "gunComparisonTable.inputHelperText"), contentPadding: EdgeInsets.symmetric(horizontal: 10)),
                                       controller: _textController.value,
                                     ),
                                   ),
@@ -500,7 +493,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                     child: TextField(
                                       readOnly: true,
                                       showCursor: true,
-                                      decoration: const InputDecoration.collapsed(hintText: "(可选)输入区间中间值"),
+                                      decoration: InputDecoration.collapsed(hintText: FlutterI18n.translate(context, "gunComparisonTable.inputHelperText")),
                                       controller: _textController.value,
                                       onTap: () {
                                         keyboardWidgetKey.currentState?.openKeyboard();

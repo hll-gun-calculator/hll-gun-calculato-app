@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
 import '/utils/index.dart';
@@ -29,7 +30,11 @@ class _MapPackagePageState extends State<MapPackagePage> {
 
     List requestList = [];
     for (var i in i.updataFunction) {
-      Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
+      Response result = await Http.request(
+        i.path,
+        method: Http.GET,
+        httpDioType: HttpDioType.none,
+      );
       requestList.add(jsonDecode(result.data));
     }
 
@@ -48,6 +53,7 @@ class _MapPackagePageState extends State<MapPackagePage> {
       clipBehavior: Clip.hardEdge,
       useRootNavigator: true,
       useSafeArea: true,
+      scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
         return StatefulBuilder(builder: (context, modalSetState) {
           return Scaffold(
@@ -67,32 +73,34 @@ class _MapPackagePageState extends State<MapPackagePage> {
             body: ListView(
               children: [
                 ListTile(
-                  title: const Text("名称"),
+                  title: Text(FlutterI18n.translate(context, "map.modalSheet.name")),
                   trailing: Text(i.name),
                 ),
                 ListTile(
-                  title: const Text("版本"),
+                  title: Text(FlutterI18n.translate(context, "map.modalSheet.version")),
                   trailing: Text(i.version),
                 ),
                 ListTile(
-                  title: const Text("作者"),
+                  title: Text(FlutterI18n.translate(context, "map.modalSheet.website")),
+                  trailing: Text(i.website),
+                ),
+                ListTile(
+                  title: Text(FlutterI18n.translate(context, "map.modalSheet.author")),
                   trailing: Text(i.author),
                 ),
                 if (i.type == MapCompilationType.Custom && i.updataFunction.isNotEmpty)
                   ListTile(
-                    title: const Text("更新"),
-                    subtitle: const Text("更新此配置文件"),
+                    title: Text(FlutterI18n.translate(context, "map.modalSheet.updataFunctionTitle")),
+                    subtitle: Text(FlutterI18n.translate(context, "map.modalSheet.updataFunctionTitleDescription")),
                     trailing: updataLoad ? const CircularProgressIndicator() : const Icon(Icons.chevron_right),
                     onTap: () => _updataConfigDetail(i, modalSetState),
                   ),
                 const Divider(),
-                const ListTile(
-                  title: Text("地图"),
+                ListTile(
+                  title: Text(FlutterI18n.translate(context, "map.modalSheet.mapListTitle")),
                 ),
                 ...i.data.asMap().entries.map((e) {
-                  return MapCardWidget(
-                    i: e.value,
-                  );
+                  return MapCardWidget(i: e.value);
                 }).toList()
               ],
             ),

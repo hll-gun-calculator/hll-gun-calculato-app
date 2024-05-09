@@ -15,12 +15,12 @@ class StorageConfig extends Storage {
   }
 
   /// 取得配置值
-  getAttr(String key) async {
+  getAttr(String key, {dynamic defaultValue}) async {
     StorageData userData = await get(PACKAGENAME);
     Map data = userData.value ??= {};
 
-    if (userData.code != 0) return false;
+    if (userData.code != 0) return defaultValue ??= false;
     // * The configuration is usually of type bool
-    return Map.from(data).containsKey(key) ? data[key] : false;
+    return Map.from(data).containsKey(key) ? data[key] : defaultValue ??= false;
   }
 }

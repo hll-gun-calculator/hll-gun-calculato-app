@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-import '../../data/index.dart';
+import '/data/index.dart';
 import 'theme.dart';
 
 class SpeechKeyboard extends StatefulWidget {
@@ -84,8 +85,8 @@ class _SpeechKeyboardState extends State<SpeechKeyboard> {
                 _speechToText.isListening
                     ? _lastWords
                     : _speechEnabled
-                        ? '点击麦克风开始收听…'
-                        : '设备不支持',
+                        ? FlutterI18n.translate(context, "basic.keyboard.speech.micRecord")
+                        : FlutterI18n.translate(context, "basic.keyboard.speech.deviceNotSupported"),
               ),
             ),
             GestureDetector(

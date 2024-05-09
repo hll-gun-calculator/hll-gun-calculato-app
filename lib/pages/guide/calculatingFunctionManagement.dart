@@ -17,7 +17,7 @@ class GuideCalculatingFunctionManagement extends StatefulWidget {
   State<GuideCalculatingFunctionManagement> createState() => _GuideCalculatingFunctionManagementState();
 }
 
-class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFunctionManagement> {
+class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFunctionManagement> with AutomaticKeepAliveClientMixin {
   Storage storage = Storage();
 
   bool load = false;
@@ -34,10 +34,11 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
   void _getRecommendedList() async {
     GuideRecommendedCalcFunction;
 
-    if (mounted)
+    if (mounted) {
       setState(() {
         load = true;
       });
+    }
 
     Response result = await Http.request(
       "config/calcFunction/recommendeds.json",
@@ -88,6 +89,9 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
     CalculatingFunction newCalculatingFunction = await _downloadConfig(guideRecommendedBaseItem);
     App.provider.ofCalc(context).currentCalculatingFunctionName = newCalculatingFunction.name;
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {

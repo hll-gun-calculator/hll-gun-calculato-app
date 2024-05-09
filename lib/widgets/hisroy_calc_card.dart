@@ -117,7 +117,6 @@ class _historyCalcCardState extends State<HistoryCalcCard> {
               appBar: AppBar(
                 leading: const CloseButton(),
                 actions: [
-                  Text(collectData.hasAsId(calcResult.id).toString()),
                   DropdownButtonHideUnderline(
                     child: DropdownButton(
                       padding: const EdgeInsets.all(5),

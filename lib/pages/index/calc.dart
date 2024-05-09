@@ -42,7 +42,7 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
   bool isCompleteInputOperation = false;
 
   // 定时器延迟
-  int count = 3;
+  int count = 10;
 
   /// 输入控制 E
 
@@ -309,7 +309,7 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                                     },
                                   ),
                                   const SizedBox(width: 10),
-                                  const Text("米"),
+                                  Text(FlutterI18n.translate(context, "gunCalc.meter")),
                                 ],
                               ),
                               TextField(
@@ -318,8 +318,8 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                                 style: const TextStyle(fontSize: 50).copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
-                                decoration: const InputDecoration(
-                                  counterText: '角度 (结果)',
+                                decoration: InputDecoration(
+                                  counterText: FlutterI18n.translate(context, "gunCalc.result"),
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.zero,
                                   hintText: "0",
@@ -397,9 +397,9 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                   icon: const Icon(Icons.backspace),
                 ),
                 IconButton(
-                  onPressed: () {
-                    _clearCalc();
-                  },
+                  onPressed: _textController.value.text.isNotEmpty
+                      ? () => _clearCalc()
+                      : null,
                   icon: const Icon(Icons.delete),
                 ),
               ],

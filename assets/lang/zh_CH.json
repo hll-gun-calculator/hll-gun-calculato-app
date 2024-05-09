@@ -24,14 +24,21 @@
     "tip": {
       "notContent": "空空如也"
     },
-    "keyboards": {
-      "None": "无",
-      "Speech": "语音输入",
-      "Protogenesis": "原生键盘",
-      "IncreaseAndDecrease": "增减键盘",
-      "IndependentDigit": "数字单例键盘",
-      "Number": "数字键盘",
-      "Slider": "滑块键盘"
+    "keyboard": {
+      "title": "选择键盘",
+      "speech": {
+        "micRecord": "点击麦克风开始收听",
+        "deviceNotSupported": "设备不支持"
+      },
+      "child": {
+        "None": "无",
+        "Speech": "语音输入",
+        "Protogenesis": "原生键盘",
+        "IncreaseAndDecrease": "增减键盘",
+        "IndependentDigit": "数字单例键盘",
+        "Number": "数字键盘",
+        "Slider": "滑块键盘"
+      }
     },
     "factions": {
       "None": "未知",
@@ -46,16 +53,41 @@
   },
   "gunCalc": {
     "title": "火炮计算器",
-    "describe": "火炮密位计算器"
+    "describe": "火炮密位计算器",
+    "meter": "米",
+    "result": "角度 (结果)",
+    "erase": "擦除计算",
+    "backDelete": "删减"
   },
   "landingTimer": {
     "title": "火炮倒计时",
     "describe": "火炮炮弹落地计时器",
-    "put": "发射"
+    "put": "发射",
+    "nullPrompt": "请点击下方的 + 号,来模拟炮弹落地计时",
+    "landingInExecution": "炮弹飞行中..",
+    "landingCloseCompletion": "注意炮弹即将落地",
+    "landingComplete": "已落地",
+    "settings": {
+      "autoRemovalComplete": "是否开启自动移除",
+      "inputAutoRemovalCompleteHelperText": "自动消失秒，范围0-99",
+      "autoScrollFooter": "是否一直滚动底部",
+      "autoScrollFooterDescription": "实时查看最新炮弹",
+      "soundValue": "落地声音",
+      "soundValueDescription": "计时结束播放声音",
+      "volume": "声音大小",
+      "volumeDescription": "结束时播放声音音量"
+    }
   },
   "gunComparisonTable": {
     "title": "火炮表格",
-    "describe": "火炮密位大全表格"
+    "describe": "火炮密位大全表格",
+    "distance": "距离",
+    "density": "MIL",
+    "inputHelperText": "(可选)输入区间中间值",
+    "setting": {
+      "section": "区间",
+      "sectionHelperText": "用户输入值时，取该正负区间的范围结果"
+    }
   },
   "map": {
     "title": "地图测量",
@@ -65,6 +97,12 @@
     "layerMap": "地图图层",
     "timer": "定时器",
     "collect": "结果收藏",
+    "direction": {
+      "Top": "上",
+      "Left": "左",
+      "Right": "右",
+      "Down": "下"
+    },
     "layers": {
       "Arty": "火炮",
       "PresupposeArty": "预设火炮位置",
@@ -72,13 +110,22 @@
       "PlainGrid": "网格",
       "ArtyRadius": "火炮范围",
       "Landmark": "地标"
+    },
+    "gunDetailModalSheet": {
+
+    },
+    "iconModalSheet": {
+
+    },
+    "modalSheet": {
+      "name": "名称",
+      "version": "版本",
+      "website": "网站",
+      "author": "作者",
+      "updataFunctionTitle": "更新",
+      "updataFunctionTitleDescription": "更新此配置文件",
+      "mapListTitle": "地图"
     }
-  },
-  "gunComputer": {
-    "meter": "米",
-    "result": "角度 (结果)",
-    "erase": "擦除计算",
-    "backDelete": "删减"
   },
   "collect": {
     "title": "收藏",
@@ -144,6 +191,9 @@
     "language": {
       "title": "语言"
     },
+    "destock": {
+      "title": "清理"
+    },
     "theme": {
       "title": "主题",
       "describe": "颜色外观,定时主题切换,字体大小",
@@ -161,7 +211,49 @@
   "history": {
     "title": "计算历史"
   },
-  "calculatingFunctionConfig": {
-    "title": "计算函数配置"
+  "calculatingFunction": {
+    "title": "计算函数配置",
+    "failureMissingTitle": "缺少标题",
+    "deletionFailure": "选择中无法删除，请切换函数",
+    "titleExist": "已存在相同名称配置标题，请修改标题名称",
+    "deleteConfiguration": "删除所有导入配置",
+    "createConfiguration": "创建新配置",
+    "modalImport": {
+      "type": {
+        "0": {
+          "name": "从网络导入",
+          "labelText": "网址",
+          "hintText": "https://",
+          "suffix": "下载",
+          "validatorPathNull": "地址不可空",
+          "validatorNotLink": "并非正确的地址"
+        },
+        "1": {
+          "name": "从本地导入",
+          "labelText": "地址",
+          "hintText": "local://",
+          "suffix": "导入文件"
+        },
+        "2": {
+          "name": "从本地创建",
+          "labelText": "地址",
+          "hintText": "local://",
+          "suffix": "创建"
+        }
+      },
+      "title": "",
+      "path": ""
+    },
+    "modalSheet": {
+      "name": "名称",
+      "version": "版本",
+      "website": "网站",
+      "author": "作者",
+      "updataFunctionTitle": "更新",
+      "updataFunctionTitleDescription": "更新此配置文件",
+      "creationTime": "创建时间",
+      "factions": "支持阵营",
+      "id": "id"
+    }
   }
 }

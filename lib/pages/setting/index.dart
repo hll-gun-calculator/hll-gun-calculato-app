@@ -25,6 +25,11 @@ class _SettingPageState extends State<SettingPage> {
     urlUtil.opEnPage(context, "/setting/mapPackage");
   }
 
+  /// 清理
+  void _openDestock() {
+    urlUtil.opEnPage(context, "/setting/destock");
+  }
+
   /// 首页面板配置
   void _openHomeAppConfig() {
     urlUtil.opEnPage(context, "/setting/homeAppConfig");
@@ -85,8 +90,13 @@ class _SettingPageState extends State<SettingPage> {
             trailing: const Icon(Icons.chevron_right),
           ),
           ListTile(
-            title: const Text("主题"),
+            title: Text(FlutterI18n.translate(context, "setting.theme.title")),
             onTap: () => urlUtil.opEnPage(context, "/theme"),
+            trailing: const Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            title: Text(FlutterI18n.translate(context, "setting.destock.title")),
+            onTap: () => _openDestock(),
             trailing: const Icon(Icons.chevron_right),
           ),
           const Divider(),

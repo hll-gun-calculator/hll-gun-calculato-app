@@ -1,19 +1,16 @@
 {
   "basic": {
+    "button": {
+      "next": "下一步",
+      "prev": "上一步",
+      "complete": "完成",
+      "resume": "继续"
+    },
     "function": {
       "auto": {
         "title": "自动",
         "describe": "依照系统决定"
       }
-    },
-    "tip": {
-      "notContent": "空"
-    },
-    "factions": {
-      "UnitedStates": "美国",
-      "Germany": "德国",
-      "TheSovietUnion": "苏联",
-      "GreatBritain": "大不列颠"
     },
     "time": {
       "seconds": "{s}秒前",
@@ -23,33 +20,113 @@
       "yesterday": "昨天",
       "beforeYesterday": "前天",
       "dayAgo": "{s}天前"
+    },
+    "tip": {
+      "notContent": "空空如也"
+    },
+    "keyboards": {
+      "None": "无",
+      "Speech": "语音输入",
+      "Protogenesis": "原生键盘",
+      "IncreaseAndDecrease": "增减键盘",
+      "IndependentDigit": "数字单例键盘",
+      "Number": "数字键盘",
+      "Slider": "滑块键盘"
+    },
+    "factions": {
+      "None": "未知",
+      "UnitedStates": "美国",
+      "Germany": "德国",
+      "TheSovietUnion": "苏联",
+      "GreatBritain": "大不列颠"
     }
   },
   "home": {
     "title": "首页"
   },
-  "license": {
-    "title": "开源"
-  },
-  "collect": {
-    "title": "收藏"
-  },
-  "gunComputer": {
-    "meter": "米",
+  "gunCalc": {
+    "title": "火炮计算器",
+    "describe": "火炮密位计算器",
+    "meter": "M",
     "result": "角度 (结果)",
     "erase": "擦除计算",
-    "backDelet": "删减"
+    "backDelete": "删减"
+  },
+  "landingTimer": {
+    "title": "火炮倒计时",
+    "describe": "火炮炮弹落地计时器",
+    "put": "发射"
+  },
+  "gunComparisonTable": {
+    "title": "火炮表格",
+    "describe": "火炮密位大全表格"
+  },
+  "map": {
+    "title": "地图测量",
+    "describe": "可视化地图标记测量",
+    "selectNewMap": "选择新地图",
+    "searchMapTip": "搜索地图",
+    "layerMap": "地图图层",
+    "timer": "定时器",
+    "collect": "结果收藏",
+    "layers": {
+      "Arty": "火炮",
+      "PresupposeArty": "预设火炮位置",
+      "CollectArty": "收藏火炮",
+      "PlainGrid": "网格",
+      "ArtyRadius": "火炮范围",
+      "Landmark": "地标"
+    }
+  },
+  "collect": {
+    "title": "收藏",
+    "describe": "坐标收藏"
+  },
+  "networkDetection": {
+    "title": "网络监测",
+    "status": {
+      "0": "检查中",
+      "1": "服务正常",
+      "2": "服务异常",
+      "3": "服务未知"
+    }
   },
   "setting": {
     "title": "设置中心",
     "cell": {
-      "history": {
-        "title": "游览历史",
-        "describe": "游览过往内容"
+      "calculatingFunctionConfig": {
+        "title": "计算函数配置",
+        "describe": "管理应用计算函数"
       },
-      "website": {
-        "title": "网站地址",
-        "describe": "网站"
+      "appNetwork": {
+        "title": "网络清单",
+        "describe": "程序网络地址列表"
+      },
+      "mapConfig": {
+        "title": "地图配置",
+        "describe": "管理应用内地图合集"
+      },
+      "history": {
+        "title": "计算历史",
+        "describe": "计算历史内容"
+      },
+      "homeAppConfig": {
+        "title": "首页面板配置",
+        "describe": "配置首页面板、排序"
+      },
+      "license": {
+        "title": "许可证",
+        "describe": "许可证信息"
+      },
+      "guide": {
+        "title": "引导",
+        "describe": "重置引导"
+      },
+      "appWebsite": {
+        "title": "应用网站"
+      },
+      "privacy": {
+        "title": "隐私协议"
       }
     },
     "versions": {
@@ -63,7 +140,7 @@
       "superHairVersionTip": "未找到对应版本,您当前版本可能是超发版本"
     },
     "language": {
-      "title": "language"
+      "title": "语言"
     },
     "theme": {
       "title": "主题",
@@ -77,39 +154,6 @@
     "appInfo": {
       "title": "应用程序",
       "describe": "打开程序应用信息"
-    },
-    "notice": {
-      "title": "通知设置",
-      "describe": "应用相应通知管理",
-      "tagstitle": "身份标签",
-      "switch": {
-        "title": "应用推送",
-        "describe": "是否接收来自应用推送信息"
-      },
-      "site": {
-        "title": "站内推送",
-        "describe": "是否接收站内消息推送"
-      }
-    },
-    "support": {
-      "title": "支持",
-      "guide": "应用初始引导",
-      "feedbackTitle": "反馈群(612949946)",
-      "feedbackDescription": "和作者更加接近呢",
-      "githubTitle": "Github",
-      "githubDescription": "访问开源仓库",
-      "donateTitle": "捐赠",
-      "donateDescription": "向BFBAN APP的开发者捐赠",
-      "licenseTitle": "许可证",
-      "licenseDescription": "列出程序许可证",
-      "appDocumentationTitle": "应用文档",
-      "appDocumentationDescription": "帮助文档地址"
-    },
-    "publicTranslator": {
-      "title": "翻译模块",
-      "describe": "翻译密匙配置,开关",
-      "switch": "开关",
-      "switchDescription": "翻译模块启动开关"
     }
   },
   "history": {
@@ -117,9 +161,5 @@
   },
   "calculatingFunctionConfig": {
     "title": "计算函数配置"
-  },
-  "landingTimer": {
-    "title": "炮弹定时器",
-    "put": "推"
   }
 }
