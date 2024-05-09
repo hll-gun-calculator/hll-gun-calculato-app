@@ -52,9 +52,9 @@ class _NumberKeyboardWidgetState extends State<NumberKeyboardWidget> with Keyboa
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            mainAxisExtent: 65,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            mainAxisExtent: 55,
           ),
           children: [
             ...List.generate(9, (index) => index + 1).map(
@@ -109,7 +109,7 @@ class NumberButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(size / 3),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
         onPressed: () => onPressed(),

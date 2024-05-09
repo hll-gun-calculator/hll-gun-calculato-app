@@ -11,7 +11,7 @@ class KeyboardTheme {
   NumberKeyboardFeaturButtonTheme? featureButtonTheme;
 
   KeyboardTheme({
-    this.buttonSize = 50,
+    this.buttonSize = 40,
     this.buttonColor = Colors.transparent,
     this.iconColor = Colors.transparent,
     EdgeInsets? padding,

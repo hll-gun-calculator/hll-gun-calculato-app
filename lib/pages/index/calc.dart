@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +36,9 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
   // 预选
   List primarySelectionList = [];
 
+  // 快速操作加减, TRUE: 复杂，FALSE: 简单
+  bool isQuickOperation = false;
+
   /// 输入控制 S
   // 是否完成输入操作
   bool isCompleteInputOperation = false;
@@ -49,7 +51,16 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
   @override
   void initState() {
     _initFactions();
+    _initQuickOperation();
     super.initState();
+  }
+
+  /// 初始快速操作加减面板
+  void _initQuickOperation() async {
+    bool status = await App.config.getAttr("gunCalc.quickOperation", defaultValue: false);
+    setState(() {
+      isQuickOperation = status;
+    });
   }
 
   /// 初始阵营
@@ -225,6 +236,13 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
     });
   }
 
+  void _switchQuickOperationPanel() {
+    setState(() {
+      isQuickOperation = !isQuickOperation;
+      App.config.updateAttr("gunCalc.quickOperation", isQuickOperation);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -234,42 +252,156 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
           children: <Widget>[
             Expanded(
               flex: 1,
-              child: InkWell(
-                child: ListView(
-                  reverse: true,
-                  children: [
-                    /// 当前计算
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              TextFormField(
-                                readOnly: true,
-                                showCursor: true,
-                                style: const TextStyle(fontSize: 50),
-                                decoration: const InputDecoration.collapsed(hintText: "0"),
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-                                maxLines: 3,
-                                minLines: 1,
-                                autocorrect: true,
-                                autofocus: true,
-                                textAlign: TextAlign.end,
-                                controller: _textController.value,
-                                focusNode: focusNode,
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  if (value!.isEmpty) return null;
-                                  if (num.parse(value.toString()) > 1600) return "超出限制, 数字应该在100-1600";
-                                  if (num.parse(value.toString()) < 100) return "小于限制, 数字应该在100-1600";
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 5),
+              child: ListView(
+                reverse: true,
+                children: [
+                  /// 当前计算
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            TextFormField(
+                              readOnly: true,
+                              showCursor: true,
+                              style: const TextStyle(fontSize: 50),
+                              decoration: const InputDecoration.collapsed(hintText: "0"),
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+                              maxLines: 3,
+                              minLines: 1,
+                              autocorrect: true,
+                              autofocus: true,
+                              textAlign: TextAlign.end,
+                              controller: _textController.value,
+                              focusNode: focusNode,
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value!.isEmpty) return null;
+                                if (num.parse(value.toString()) > 1600) return "超出限制, 数字应该在100-1600";
+                                if (num.parse(value.toString()) < 100) return "小于限制, 数字应该在100-1600";
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 5),
+
+                            /// 快速加减
+                            if (isQuickOperation)
+                              Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ...[100, 50, 10, 5]
+                                          .map((e) => ActionChip(
+                                                label: Text(e.toString()),
+                                                visualDensity: VisualDensity.compact,
+                                                padding: EdgeInsets.zero,
+                                                onPressed: () {
+                                                  num minimumRange = calcData.currentCalculatingFunction.child[inputFactions]!.minimumRange;
+                                                  if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) > minimumRange) {
+                                                    setState(() {
+                                                      _textController.value.text = (num.parse(_textController.value.text.toString()) - e).toString();
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      _textController.value.text = minimumRange.toString();
+                                                    });
+                                                  }
+                                                  _calcSubmit(calcData);
+                                                },
+                                              ))
+                                          .toList(),
+                                      const SizedBox(width: 5),
+                                      IconButton.filledTonal(
+                                        enableFeedback: true,
+                                        icon: const Icon(Icons.remove),
+                                        padding: EdgeInsets.zero,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () {
+                                          num minimumRange = calcData.currentCalculatingFunction.child[inputFactions]!.minimumRange;
+                                          if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) > minimumRange) {
+                                            setState(() {
+                                              _textController.value.text = (num.parse(_textController.value.text.toString()) - 1).toString();
+                                            });
+                                          } else {
+                                            setState(() {
+                                              _textController.value.text = minimumRange.toString();
+                                            });
+                                          }
+                                          _calcSubmit(calcData);
+                                        },
+                                      ),
+                                      SizedBox(
+                                        width: 40,
+                                        child: Text(
+                                          FlutterI18n.translate(context, "gunCalc.meter"),
+                                          textAlign: TextAlign.right,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      ...[100, 50, 10, 5]
+                                          .map((e) => ActionChip(
+                                                label: Text(e.toString()),
+                                                visualDensity: VisualDensity.compact,
+                                                padding: EdgeInsets.zero,
+                                                onPressed: () {
+                                                  num maximumRange = calcData.currentCalculatingFunction.child[inputFactions]!.maximumRange;
+                                                  if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) < maximumRange) {
+                                                    setState(() {
+                                                      _textController.value.text = (num.parse(_textController.value.text.toString()) + e).toString();
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      _textController.value.text = maximumRange.toString();
+                                                    });
+                                                  }
+                                                  _calcSubmit(calcData);
+                                                },
+                                              ))
+                                          .toList(),
+                                      const SizedBox(width: 5),
+                                      IconButton.filledTonal(
+                                        icon: const Icon(Icons.add),
+                                        padding: EdgeInsets.zero,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () {
+                                          num maximumRange = calcData.currentCalculatingFunction.child[inputFactions]!.maximumRange;
+                                          if (_textController.value.text.isNotEmpty && num.parse(_textController.value.text.toString()) < maximumRange) {
+                                            setState(() {
+                                              _textController.value.text = (num.parse(_textController.value.text.toString()) + 1).toString();
+                                            });
+                                          } else {
+                                            _textController.value.text = maximumRange.toString();
+                                          }
+                                          _calcSubmit(calcData);
+                                        },
+                                      ),
+                                      const SizedBox(width: 40),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.keyboard_arrow_up),
+                                        padding: EdgeInsets.zero,
+                                        visualDensity: VisualDensity.compact,
+                                        onPressed: () => _switchQuickOperationPanel(),
+                                      ),
+                                      const SizedBox(width: 40),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            else
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -308,34 +440,38 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                                       _calcSubmit(calcData);
                                     },
                                   ),
+                                  IconButton(
+                                    icon: const Icon(Icons.more_vert),
+                                    padding: EdgeInsets.zero,
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () => _switchQuickOperationPanel(),
+                                  ),
                                   const SizedBox(width: 10),
                                   Text(FlutterI18n.translate(context, "gunCalc.meter")),
                                 ],
                               ),
-                              TextField(
-                                readOnly: true,
-                                showCursor: false,
-                                style: const TextStyle(fontSize: 50).copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                decoration: InputDecoration(
-                                  counterText: FlutterI18n.translate(context, "gunCalc.result"),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
-                                  hintText: "0",
-                                ),
-                                textAlign: TextAlign.end,
-                                keyboardType: TextInputType.number,
-                                controller: TextEditingController(text: outputValue),
+                            TextField(
+                              readOnly: true,
+                              showCursor: false,
+                              style: const TextStyle(fontSize: 50).copyWith(
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                            ],
-                          ),
+                              decoration: InputDecoration(
+                                counterText: FlutterI18n.translate(context, "gunCalc.result"),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                                hintText: "0",
+                              ),
+                              textAlign: TextAlign.end,
+                              keyboardType: TextInputType.number,
+                              controller: TextEditingController(text: outputValue),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                onLongPress: () => _openSelectFactions(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
 
@@ -343,53 +479,52 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
             Row(
               children: [
                 IconButton(
-                  onPressed: () {
-                    _openHistoryModel(historyData);
-                  },
+                  onPressed: () => _openHistoryModel(historyData),
                   icon: const Icon(Icons.history),
                 ),
-                Wrap(
-                  children: [
-                    GestureDetector(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          child: Wrap(
-                            runAlignment: WrapAlignment.center,
+                Flexible(
+                  flex: 1,
+                  child: SizedBox(
+                    height: 30,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        RawChip(
+                          onPressed: () => _openSelectFactions(),
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          avatar: const Icon(Icons.flag),
+                          label: Row(
                             children: [
                               Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
-                              const Icon(Icons.arrow_drop_down),
+                              const Icon(Icons.keyboard_arrow_down_outlined, size: 18),
                             ],
                           ),
                         ),
-                      ),
-                      onTap: () => _openSelectFactions(),
-                    ),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          child: Wrap(
-                            runAlignment: WrapAlignment.center,
+                        const SizedBox(width: 5),
+                        RawChip(
+                          onPressed: () {
+                            App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
+                              setState(() {
+                                inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
+                              });
+                            });
+                          },
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          avatar: const Icon(Icons.functions),
+                          label: Row(
                             children: [
                               Text(calcData.currentCalculatingFunctionName),
-                              const Icon(Icons.arrow_drop_down),
+                              const Icon(Icons.keyboard_arrow_down_outlined, size: 18),
                             ],
                           ),
                         ),
-                      ),
-                      onTap: () => {
-                        App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
-                          setState(() {
-                            inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
-                          });
-                        }),
-                      },
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                const Expanded(flex: 1, child: SizedBox()),
+                // const Expanded(flex: 1, child: SizedBox()),
                 IconButton(
                   onPressed: () {
                     _handleBackspace();
@@ -397,9 +532,7 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                   icon: const Icon(Icons.backspace),
                 ),
                 IconButton(
-                  onPressed: _textController.value.text.isNotEmpty
-                      ? () => _clearCalc()
-                      : null,
+                  onPressed: _textController.value.text.isNotEmpty ? () => _clearCalc() : null,
                   icon: const Icon(Icons.delete),
                 ),
               ],
@@ -467,7 +600,7 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
                                             Row(
                                               children: [
                                                 Text(e.inputValue),
-                                                const SizedBox(child: Icon(Icons.arrow_right_alt_sharp, size: 15), width: 25),
+                                                const SizedBox(width: 25, child: Icon(Icons.arrow_right_alt_sharp, size: 15)),
                                                 Chip(
                                                   label: Text(
                                                     e.outputValue,

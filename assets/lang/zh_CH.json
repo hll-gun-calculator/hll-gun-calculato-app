@@ -4,7 +4,8 @@
       "next": "下一步",
       "prev": "上一步",
       "complete": "完成",
-      "resume": "继续"
+      "resume": "继续",
+      "cancel": "取消"
     },
     "function": {
       "auto": {
@@ -218,6 +219,7 @@
     "titleExist": "已存在相同名称配置标题，请修改标题名称",
     "deleteConfiguration": "删除所有导入配置",
     "createConfiguration": "创建新配置",
+    "currentUse": "当前使用",
     "modalImport": {
       "type": {
         "0": {

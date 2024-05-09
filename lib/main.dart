@@ -29,6 +29,7 @@ void runMain() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  // 初始持久-前缀名称
   SharedPreferences.setPrefix("Hll.");
 
   // 路由初始

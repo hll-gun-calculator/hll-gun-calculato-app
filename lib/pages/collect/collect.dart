@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:provider/provider.dart';
 
@@ -17,19 +16,26 @@ class CollectPage extends StatefulWidget {
 class _CollectPageState extends State<CollectPage> {
   bool isEdit = false;
 
-  bool selectAll = false;
+  bool isSelectAll = false;
 
   List<String> selectList = [];
+
+  /// 删除选择的收藏
+  void deleteSelectCollect(CollectProvider collectData) {
+    for (var id in selectList) {
+      collectData.deleteAsId(id);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<CollectProvider>(
-      builder: (BuildContext context, CollectProvider data, Widget? widget) {
+      builder: (BuildContext context, CollectProvider collectData, Widget? widget) {
         return Scaffold(
           appBar: AppBar(
             title: Text(FlutterI18n.translate(context, "collect.title")),
             actions: [
-              if (data.list.isNotEmpty)
+              if (collectData.list.isNotEmpty && !isEdit)
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -43,9 +49,9 @@ class _CollectPageState extends State<CollectPage> {
           body: Column(
             children: [
               Expanded(
-                child: data.list.isNotEmpty
+                child: collectData.list.isNotEmpty
                     ? ListView(
-                        children: data
+                        children: collectData
                             .sort()
                             .list
                             .map(
@@ -64,8 +70,8 @@ class _CollectPageState extends State<CollectPage> {
                                                 selectList.add(i.id.toString());
                                               }
 
-                                              if (selectList.length != data.list.length) {
-                                                selectAll = false;
+                                              if (selectList.length != collectData.list.length) {
+                                                isSelectAll = false;
                                               }
                                             });
                                           },
@@ -84,22 +90,25 @@ class _CollectPageState extends State<CollectPage> {
                 Row(
                   children: [
                     Checkbox(
-                      value: selectAll || selectList.length == data.list.length,
+                      value: isSelectAll || selectList.length == collectData.list.length,
                       onChanged: (v) {
                         setState(() {
-                          (v as bool) ? selectList.addAll(data.list.map((e) => e.id).toList()) : selectList = [];
-                          selectAll = !selectAll;
+                          (v as bool) ? selectList.addAll(collectData.list.map((e) => e.id).toList()) : selectList = [];
+                          isSelectAll = !isSelectAll;
                         });
                       },
                     ),
                     IconButton(
-                      onPressed: () {
-                        for (var id in selectList) {
-                          data.deleteAsId(id);
-                        }
-                      },
+                      onPressed: () => deleteSelectCollect(collectData),
                       icon: const Icon(Icons.delete),
                     ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => setState(() {
+                        isEdit = !isEdit;
+                      }),
+                      child: Text(FlutterI18n.translate(context, "basic.button.complete")),
+                    )
                   ],
                 ),
             ],

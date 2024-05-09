@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -447,15 +445,15 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: () => _onModalDone(),
-                      child: Text("创建"),
+                      child: const Text("创建"),
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Expanded(
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: () => _onModalDone(use: true),
-                      child: Text("创建并使用"),
+                      child: const Text("创建并使用"),
                     ),
                   ),
                 ],
@@ -483,7 +481,7 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
               IconButton(
                 onPressed: () {
                   if (calcData.currentCalculatingFunctionName.isNotEmpty) {
-                    calcData.selectCalculatingFunction(calcData.currentCalculatingFunctionName);
+                    calcData.selectCalculatingFunction(_currentCalculatingFunctionName);
 
                     setState(() {
                       _currentCalculatingFunctionName = calcData.currentCalculatingFunctionName;
@@ -524,10 +522,10 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
           children: calcData.sort().calcList.map((i) {
             return RadioListTile<String>(
               value: i.name,
-              groupValue: calcData.currentCalculatingFunctionName,
-              onChanged: (v) {
+              groupValue: _currentCalculatingFunctionName,
+              onChanged: (value) {
                 setState(() {
-                  calcData.currentCalculatingFunctionName = i.name;
+                  _currentCalculatingFunctionName = i.name;
                 });
               },
               title: Text(i.name),
@@ -538,11 +536,24 @@ class _calculatingFunctionPageState extends State<CalculatingFunctionPage> {
                   Text(i.version.toString()),
                 ],
               ),
-              secondary: IconButton(
-                icon: const Icon(Icons.more_horiz),
-                onPressed: () {
-                  _openConfigDetail(i);
-                },
+              secondary: Wrap(
+                spacing: 5,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (i.name == calcData.currentCalculatingFunction.name)
+                    ActionChip(
+                      padding: EdgeInsets.zero,
+                      labelStyle: const TextStyle(fontSize: 12),
+                      visualDensity: VisualDensity.compact,
+                      label: Text(FlutterI18n.translate(context, "calculatingFunction.currentUse")),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.more_horiz),
+                    onPressed: () {
+                      _openConfigDetail(i);
+                    },
+                  ),
+                ],
               ),
             );
           }).toList(),

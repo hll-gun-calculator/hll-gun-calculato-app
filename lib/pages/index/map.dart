@@ -579,7 +579,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                           OutlinedButton.icon(
                                                             icon: const Icon(Icons.help),
                                                             label: const Text("帮助", style: TextStyle(fontWeight: FontWeight.bold)),
-                                                            onPressed: () => App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/map/help"),
+                                                            onPressed: () => App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/map/help.html"),
                                                             style: ButtonStyle(
                                                               visualDensity: VisualDensity.compact,
                                                               foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.error.withOpacity(.8)),
@@ -615,23 +615,19 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                     child: Row(
                       children: [
-                        const Expanded(flex: 1, child: SizedBox(width: 5)),
-                        GestureDetector(
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              child: Wrap(
-                                runAlignment: WrapAlignment.center,
-                                children: [
-                                  Text(calcData.currentCalculatingFunctionName),
-                                  const Icon(Icons.arrow_drop_down),
-                                ],
-                              ),
-                            ),
+                        const Spacer(),
+                        RawChip(
+                          onPressed: () => App.url.opEnPage(context, "/calculatingFunctionConfig"),
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(.2),
+                          avatar: const Icon(Icons.functions),
+                          label: Row(
+                            children: [
+                              Text(calcData.currentCalculatingFunctionName),
+                              const Icon(Icons.keyboard_arrow_down_outlined, size: 18),
+                            ],
                           ),
-                          onTap: () => {
-                            App.url.opEnPage(context, "/calculatingFunctionConfig"),
-                          },
                         ),
                       ],
                     ),
@@ -1231,39 +1227,6 @@ class MapCoreState extends State<MapCore> {
                         maxWidth: 50,
                         borderColor: Theme.of(context).colorScheme.primary.withOpacity(.5),
                         child: const SizedBox(),
-                      ),
-                    ),
-
-                  /// 二点中线
-                  if (newMarker.dy >= 0 && newMarker.dx >= 0)
-                    Positioned(
-                      top: Offset.lerp(App.provider.ofMap(context).currentMapGun.offset, newMarker, .2)!.dy,
-                      left: Offset.lerp(App.provider.ofMap(context).currentMapGun.offset, newMarker, .2)!.dx,
-                      child: StreamBuilder(
-                        stream: stream.stream,
-                        builder: (context, snapshot) {
-                          final scale = snapshot.data ?? transformation.value[0];
-
-                          return AnimatedScale(
-                            duration: const Duration(milliseconds: 350),
-                            scale: 1 / scale,
-                            alignment: Alignment.bottomCenter,
-                            child: Transform.translate(
-                              offset: const Offset(0, 0),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                                color: Theme.of(context).colorScheme.primary,
-                                child: const Text(
-                                  "14s",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ),
 

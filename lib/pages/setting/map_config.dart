@@ -20,6 +20,8 @@ class MapPackagePage extends StatefulWidget {
 class _MapPackagePageState extends State<MapPackagePage> {
   late MapCompilation selectMapCompilation;
 
+  I18nUtil i18nUtil = I18nUtil();
+
   bool updataLoad = false;
 
   /// 更新配置
@@ -135,18 +137,28 @@ class _MapPackagePageState extends State<MapPackagePage> {
                   },
                   icon: const Icon(Icons.done),
                 ),
-              IconButton(
-                onPressed: () {
-                  _deleteMapConfig();
-                },
-                icon: Icon(Icons.delete),
-              )
+
+              PopupMenuButton(
+                icon: const Icon(Icons.more_horiz),
+                itemBuilder: (itemBuilder) => <PopupMenuEntry>[
+                  PopupMenuItem(
+                    child: Wrap(
+                      spacing: 5,
+                      children: [
+                        const Icon(Icons.delete),
+                        Text(FlutterI18n.translate(context, "map.deleteConfiguration")),
+                      ],
+                    ),
+                    onTap: () => _deleteMapConfig(),
+                  ),
+                ],
+              ),
             ],
           ),
           body: ListView(
             children: mapData.list.map((i) {
               return RadioListTile(
-                value: i.name,
+                value: i18nUtil.as(context, i.name),
                 groupValue: selectMapCompilation.name,
                 title: Text(i.name),
                 subtitle: Text(i.author),
@@ -155,9 +167,22 @@ class _MapPackagePageState extends State<MapPackagePage> {
                     selectMapCompilation = i;
                   });
                 },
-                secondary: IconButton(
-                  onPressed: () => _openConfigDetail(i),
-                  icon: const Icon(Icons.more_horiz),
+                secondary: Wrap(
+                  spacing: 5,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    if (i.name == mapData.currentMapCompilationName)
+                      ActionChip(
+                        padding: EdgeInsets.zero,
+                        labelStyle: const TextStyle(fontSize: 12),
+                        visualDensity: VisualDensity.compact,
+                        label: Text(FlutterI18n.translate(context, "calculatingFunction.currentUse")),
+                      ),
+                    IconButton(
+                      onPressed: () => _openConfigDetail(i),
+                      icon: const Icon(Icons.more_horiz),
+                    ),
+                  ],
                 ),
               );
             }).toList(),

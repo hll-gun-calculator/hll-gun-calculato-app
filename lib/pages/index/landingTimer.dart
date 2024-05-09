@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
   final TextEditingController _textEditingControllerTimedRemovalValue = TextEditingController(text: "10");
 
   // 声音高度
-  late double _volumeValue = .5;
+  late double _volumeValue = .3;
 
   // 自动滚动底部
   bool isAutoScrollFooter = true;
@@ -106,7 +107,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                       decoration: InputDecoration(
                         hintText: "0",
                         helperText: FlutterI18n.translate(context, "landingTimer.settings.inputAutoRemovalCompleteHelperText"),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                         border: InputBorder.none,
                       ),
                       maxLength: 2,
@@ -151,18 +152,30 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                     title: Text(FlutterI18n.translate(context, "landingTimer.settings.volume")),
                     subtitle: Text(FlutterI18n.translate(context, "landingTimer.settings.volumeDescription")),
                   ),
-                  Slider(
-                    label: (_volumeValue * 100).toStringAsFixed(0),
-                    max: 1,
-                    min: 0,
-                    divisions: 50,
-                    value: _volumeValue,
-                    onChanged: (value) {
-                      modalSetState(() {
-                        _volumeValue = value;
-                      });
-                      App.config.updateAttr("landingTimer.volume", _volumeValue);
-                    },
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.volume_mute),
+                        Expanded(
+                          flex: 1,
+                          child: Slider(
+                            label: (_volumeValue * 100).toStringAsFixed(0),
+                            max: 1,
+                            min: 0,
+                            divisions: 50,
+                            value: _volumeValue,
+                            onChanged: (value) {
+                              modalSetState(() {
+                                _volumeValue = value;
+                              });
+                              App.config.updateAttr("landingTimer.volume", _volumeValue);
+                            },
+                          ),
+                        ),
+                        const Icon(Icons.volume_up),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -216,7 +229,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                                     IconButton.filled(
                                       color: Theme.of(context).colorScheme.primaryContainer,
                                       icon: e.isTimerActive ? const Icon(Icons.stop) : const Icon(Icons.play_arrow),
-                                      onPressed: () {
+                                      onPressed: e.countdownTimeSeconds > 0 ? () {
                                         if (e.isTimerActive) {
                                           data.stopTimer(e);
                                           return;
@@ -225,7 +238,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                                         data.startCountdownTimer(e, vanishCallback: (l) {
                                           _scrollFooter();
                                         });
-                                      },
+                                      } : null,
                                     ),
                                     if (!e.isTimerActive)
                                       IconButton.filled(
@@ -246,7 +259,7 @@ class _LandingTimerPageState extends State<LandingTimerPage> with AutomaticKeepA
                         opacity: .3,
                         child: Text(
                           FlutterI18n.translate(context, "landingTimer.nullPrompt"),
-                          style: TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ),

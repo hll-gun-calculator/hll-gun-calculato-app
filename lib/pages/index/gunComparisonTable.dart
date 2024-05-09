@@ -209,7 +209,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                   hintText: "0",
                   labelText: FlutterI18n.translate(context, "gunComparisonTable.setting.section"),
                   helperText: FlutterI18n.translate(context, "gunComparisonTable.setting.sectionHelperText"),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 ),
                 keyboardType: TextInputType.number,
                 controller: valueRangeController,
@@ -380,44 +380,39 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
               /// tool
               Row(
                 children: [
+                  const SizedBox(width: 5),
                   Wrap(
                     children: [
-                      GestureDetector(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            child: Wrap(
-                              runAlignment: WrapAlignment.center,
-                              children: [
-                                Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
-                                const Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
+                      RawChip(
+                        onPressed: () => _openSelectFactions(),
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        avatar: const Icon(Icons.flag),
+                        label: Row(
+                          children: [
+                            Text(FlutterI18n.translate(context, "basic.factions.${inputFactions.value}")),
+                            const Icon(Icons.keyboard_arrow_down_outlined, size: 18),
+                          ],
                         ),
-                        onTap: () => _openSelectFactions(),
                       ),
                       const SizedBox(width: 5),
-                      GestureDetector(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            child: Wrap(
-                              runAlignment: WrapAlignment.center,
-                              children: [
-                                Text(calcData.currentCalculatingFunctionName),
-                                const Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                        ),
-                        onTap: () => {
+                      RawChip(
+                        onPressed: () {
                           App.url.opEnPage(context, "/calculatingFunctionConfig").then((value) {
                             setState(() {
                               inputFactions = App.provider.ofCalc(context).currentCalculatingFunction.child.keys.first;
                             });
-                          }),
+                          });
                         },
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        avatar: const Icon(Icons.functions),
+                        label: Row(
+                          children: [
+                            Text(calcData.currentCalculatingFunctionName),
+                            const Icon(Icons.keyboard_arrow_down_outlined, size: 18),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -481,7 +476,7 @@ class _GunComparisonTablePageState extends State<GunComparisonTablePage> with Au
                                     child: TextField(
                                       readOnly: true,
                                       showCursor: true,
-                                      decoration: InputDecoration(hintText: FlutterI18n.translate(context, "gunComparisonTable.inputHelperText"), contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                                      decoration: InputDecoration(hintText: FlutterI18n.translate(context, "gunComparisonTable.inputHelperText"), contentPadding: const EdgeInsets.symmetric(horizontal: 10)),
                                       controller: _textController.value,
                                     ),
                                   ),
