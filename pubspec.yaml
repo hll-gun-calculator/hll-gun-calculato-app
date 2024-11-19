@@ -33,7 +33,7 @@ dependencies:
   fluttertoast: ^8.2.4
   audioplayers: ^5.2.1
   flutter_translate: ^4.0.3
-  flutter_i18n: ^0.34.0
+  flutter_i18n: ^0.35.0
   flex_color_scheme: ^7.3.1
   json_annotation: ^4.8.1
   flutter_map: ^5.0.0

@@ -1,1 +1,1 @@
-flutter build web -t ./lib/main.prod.dart --release --build-number 3
+flutter build web -t ./lib/main.prod.dart --release --build-number 4

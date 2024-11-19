@@ -639,17 +639,6 @@ class _CalcPageState extends State<CalcPage> with AutomaticKeepAliveClientMixin 
               onSubmit: () {
                 if (_textController.value.text.isEmpty) return;
 
-                if (isCompleteInputOperation) {
-                  setState(() {
-                    isCompleteInputOperation = false;
-                    _clearCalc();
-                  });
-                  return;
-                }
-
-                // 处理输入定时器
-                _handInputTimer();
-
                 // 计算结果 且添加到历史
                 historyData.add(_calcSubmit(calcData));
               },
