@@ -24,7 +24,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.7.2
         with:
-          token: ${{ PUSH_TOKEN_WEB }}
+          token: ${{ secrets.PUSH_TOKEN_WEB }}
           branch: gh-pages
           folder: build/web
           repository-name: hll-gun-calculator/hll-gun-calculato-app-for-web
