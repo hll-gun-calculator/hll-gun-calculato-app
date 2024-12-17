@@ -34,20 +34,18 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
   void _getRecommendedList() async {
     GuideRecommendedCalcFunction;
 
-    if (mounted) {
-      setState(() {
-        load = true;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      load = true;
+    });
 
-    Response result = await Http.request(
+    Map<String, dynamic> result = await Http.fetchJsonpData(
       "config/calcFunction/recommendeds.json",
       httpDioValue: "app_web_site",
-      method: Http.GET,
     );
 
-    if (result.data is Map && result.data.toString().isNotEmpty) {
-      guideRecommendedCalcFunction = GuideRecommendedCalcFunction.fromJson(result.data);
+    if (result.toString().isNotEmpty) {
+      guideRecommendedCalcFunction = GuideRecommendedCalcFunction.fromJson(result);
     }
 
     setState(() {
@@ -126,7 +124,7 @@ class _GuideCalculatingFunctionManagementState extends State<GuideCalculatingFun
             subtitle: const Text("我们陈列出一些社区提供’计算函数‘选择"),
             trailing: const Icon(Icons.open_in_new),
             onTap: () {
-              App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/calc/calcRecommendedList.html");
+              App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/calc/calcRecommendedList.html");
             },
           ),
           if (load)

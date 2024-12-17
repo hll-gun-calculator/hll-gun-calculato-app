@@ -112,13 +112,14 @@
     const serviceWorkerVersion = null;
 
     window.addEventListener('load', function(ev) {
+
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine({
-              renderer: 'html'
+              renderer: 'html',
           }).then(function(appRunner) {
             appRunner.runApp();
           });

@@ -113,7 +113,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
           ListTile(
             title: Text(FlutterI18n.translate(context, "setting.cell.privacy.title")),
-            onTap: () => urlUtil.onPeUrl("${Config.apis["app_web_site"]!.url}/page/privacy/"),
+            onTap: () => urlUtil.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/privacy/"),
             trailing: const Icon(Icons.open_in_new),
           ),
         ],

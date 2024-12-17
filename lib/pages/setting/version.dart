@@ -100,7 +100,7 @@ class _VersionPageState extends State<VersionPage> {
                   title: const Text("最新版本"),
                   trailing: const Icon(Icons.open_in_new),
                   onTap: () {
-                    App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                    App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/version.html");
                   },
                 )
               else
@@ -111,7 +111,7 @@ class _VersionPageState extends State<VersionPage> {
                       subtitle: Text(newVersion!.web.version),
                       trailing: const Icon(Icons.open_in_new),
                       onTap: () {
-                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/version.html");
                       },
                     ),
                     ListTile(
@@ -119,7 +119,7 @@ class _VersionPageState extends State<VersionPage> {
                       subtitle: Text(newVersion!.android.version),
                       trailing: const Icon(Icons.open_in_new),
                       onTap: () {
-                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/version.html");
                       },
                     ),
                     ListTile(
@@ -127,7 +127,7 @@ class _VersionPageState extends State<VersionPage> {
                       subtitle: Text(newVersion!.ios.version),
                       trailing: const Icon(Icons.open_in_new),
                       onTap: () {
-                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/version.html");
+                        App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/version.html");
                       },
                     )
                   ],

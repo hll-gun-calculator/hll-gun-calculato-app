@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -579,7 +580,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                                           OutlinedButton.icon(
                                                             icon: const Icon(Icons.help),
                                                             label: const Text("帮助", style: TextStyle(fontWeight: FontWeight.bold)),
-                                                            onPressed: () => App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/map/help.html"),
+                                                            onPressed: () => App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/map/help.html"),
                                                             style: ButtonStyle(
                                                               visualDensity: VisualDensity.compact,
                                                               foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.error.withOpacity(.8)),

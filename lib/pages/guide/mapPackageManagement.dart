@@ -14,7 +14,7 @@ class GuideMapPackageManagement extends StatefulWidget {
   State<GuideMapPackageManagement> createState() => _GuideMapPackageManagementState();
 }
 
-class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> with AutomaticKeepAliveClientMixin  {
+class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> with AutomaticKeepAliveClientMixin {
   late GuideRecommendedMap guideRecommendedMap = GuideRecommendedMap();
 
   Map completeDownloadList = {};
@@ -35,14 +35,13 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> w
       load = true;
     });
 
-    Response result = await Http.request(
+    Map<String, dynamic> result = await Http.fetchJsonpData(
       "config/map/recommendeds.json",
       httpDioValue: "app_web_site",
-      method: Http.GET,
     );
 
-    if (result.data is Map && result.data.toString().isNotEmpty) {
-      guideRecommendedMap = GuideRecommendedMap.fromJson(result.data);
+    if (result.toString().isNotEmpty) {
+      guideRecommendedMap = GuideRecommendedMap.fromJson(result);
     }
 
     setState(() {
@@ -84,7 +83,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> w
 
   /// 下载标记
   /// 检查是否下载成功过
-  bool _downloadCompletionMark (String name) {
+  bool _downloadCompletionMark(String name) {
     MapProvider mapData = App.provider.ofMap(context);
     return mapData.list.where((element) => element.name == name).isNotEmpty || completeDownloadList[name] != null;
   }
@@ -132,7 +131,7 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> w
               subtitle: Text("我们陈列出一些社区提供’地图包‘选择"),
               trailing: Icon(Icons.open_in_new),
               onTap: () {
-                App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/page/map/mapRecommendedList.html");
+                App.url.onPeUrl("${Config.apis["app_web_site"]!.url}/docs/map/mapRecommendedList.html");
               },
             ),
             if (load)
@@ -171,10 +170,10 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> w
                       ),
                     if (!e.load && !_downloadCompletionMark(e.name))
                       TextButton.icon(
-                      onPressed: () => _downloadAndUse(e),
-                      icon: const Icon(Icons.add_circle_outline),
-                      label: const Text("添加并作为默认"),
-                    )
+                        onPressed: () => _downloadAndUse(e),
+                        icon: const Icon(Icons.add_circle_outline),
+                        label: const Text("添加并作为默认"),
+                      )
                   ],
                 ),
               );

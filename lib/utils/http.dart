@@ -1,6 +1,7 @@
 /// http请求
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/io.dart';
@@ -141,6 +142,60 @@ class Http {
     return result;
   }
 
+  static Future<Map<String, dynamic>> fetchJsonpData(
+    String url, {
+    String httpDioValue = "network_service_request",
+    HttpDioType httpDioType = HttpDioType.api,
+  }) async {
+    try {
+      final dio = Dio();
+
+      String domain = "";
+      switch (httpDioType) {
+        case HttpDioType.api:
+          domain = httpDioValue.isEmpty ? "" : Config.apiHost[httpDioValue]!.url;
+          break;
+        case HttpDioType.none:
+        default:
+          domain = "";
+          break;
+      }
+
+      String path = "${domain.isEmpty ? "" : "$domain/"}$url?callback=run";
+
+      final response = await dio.get<String>(
+        path,
+        options: Options(responseType: ResponseType.plain), // 以文本形式接收响应
+      );
+
+      if (response.statusCode == 200) {
+        final jsCode = response.data;
+
+        return jsonDecode(jsCode as String);
+
+        // 使用正则表达式提取 JSON 数据
+        final regex = RegExp(r'\((.*)\)');
+        final match = regex.firstMatch(jsCode!);
+
+        if (match != null && match.groupCount > 0) {
+          final jsonString = match.group(1);
+          final jsonData = jsonDecode(jsonString!);
+          return jsonData;
+        } else {
+          throw Exception('无法解析 JSONP 数据');
+        }
+      } else {
+        throw Exception('请求失败，状态码：${response.statusCode}');
+      }
+    } on DioError catch (e) {
+      print('Dio 错误：$e');
+      rethrow;
+    } catch (e) {
+      print('发生错误：$e');
+      rethrow;
+    }
+  }
+
   static Dio createInstance() {
     /// 全局属性：请求前缀、连接超时时间、响应超时时间
     BaseOptions options = BaseOptions(
@@ -148,15 +203,6 @@ class Http {
       receiveTimeout: RECEIVE_TIMEOUT,
     );
     dio = Dio(options);
-
-    // 请求代理
-    // 对于web存在跨域资源处理
-    // if (kIsWeb) {
-    //   dio.httpClientAdapter = IOHttpClientAdapter()..onHttpClientCreate = (client) {
-    //     client.findProxy = (uri) => 'PROXY localhost:60930';
-    //     return client;
-    //   };
-    // }
 
     // 缓存实例
     // by https://pub.dev/packages/dio_cache_interceptor
