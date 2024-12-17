@@ -20,7 +20,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           cache: true # 启用缓存以加速构建
       - run: flutter pub get
-      - run: flutter build web --release --target=lib/main.dev.dart --base-href=/hll-gun-calculato-app-for-web/
+      - run: flutter build web --release --target=lib/main.dev.dart --base-href=/
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.7.2
         with:
