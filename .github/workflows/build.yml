@@ -3,6 +3,8 @@ name: Deploy Web
 on:
   push:
     branches: [main]
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -20,7 +22,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build web --release --target=lib/main.dev.dart
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages
