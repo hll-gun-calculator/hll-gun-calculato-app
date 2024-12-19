@@ -88,14 +88,13 @@ class PackageProvider with ChangeNotifier {
   Future getOnlinePackage() async {
     package!.loadOnline = true;
     notifyListeners();
-    Response result = await Http.request(
+    Map<String, dynamic> result = await Http.fetchJsonpData(
       "config/version.json",
       httpDioValue: "app_web_site",
-      method: Http.GET,
     );
 
-    if (result.data.toString().length >= 0) {
-      package!.list = result.data["list"];
+    if (result.toString().isNotEmpty) {
+      package!.list = result["list"];
       package!.onlineVersion = package!.list![0]["version"];
     }
     package!.loadOnline = false;

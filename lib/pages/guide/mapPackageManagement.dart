@@ -58,9 +58,9 @@ class _GuideMapPackageManagementState extends State<GuideMapPackageManagement> w
     });
 
     for (var i in guideRecommendedBaseItem.updataFunction) {
-      Response result = await Http.request(i.path, method: Http.GET, httpDioType: HttpDioType.none);
-      if (result.data is Map && Map.from(result.data).isNotEmpty) {
-        requestList.add(result.data);
+      Map<String, dynamic> result = await Http.fetchJsonpData(i.path, httpDioType: HttpDioType.none);
+      if (result.toString().isNotEmpty) {
+        requestList.add(result);
       }
     }
 

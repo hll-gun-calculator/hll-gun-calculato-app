@@ -109,13 +109,12 @@
     }
 </script>
 <script type="text/javascript">
-    const serviceWorkerVersion = null;
+    const flutter_service_worker_version = null;
 
     window.addEventListener('load', function(ev) {
-
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerVersion: flutter_service_worker_version,
         },
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine({

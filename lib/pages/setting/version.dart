@@ -36,15 +36,14 @@ class _VersionPageState extends State<VersionPage> {
       newVersion!.load = true;
     });
 
-    Response result = await Http.request(
+    Map<String, dynamic> result = await Http.fetchJsonpData(
       "config/newVersion.json",
-      method: Http.GET,
       httpDioValue: "app_web_site",
     );
 
-    if (result.data != null) {
+    if (result.toString().isNotEmpty) {
       setState(() {
-        newVersion = NewVersion.fromJson(result.data);
+        newVersion = NewVersion.fromJson(result);
       });
     }
 
@@ -59,14 +58,13 @@ class _VersionPageState extends State<VersionPage> {
       versions!.load = true;
     });
 
-    Response result = await Http.request(
+    Map<String, dynamic> result = await Http.fetchJsonpData(
       "config/versions.json",
-      method: Http.GET,
       httpDioValue: "app_web_site",
     );
 
-    if (result.data != null) {
-      versions = Versions.fromJson(result.data);
+    if (result.toString().isNotEmpty) {
+      versions = Versions.fromJson(result);
     }
 
     setState(() {
