@@ -172,18 +172,6 @@ class Http {
         final jsCode = response.data;
 
         return jsonDecode(jsCode as String);
-
-        // 使用正则表达式提取 JSON 数据
-        final regex = RegExp(r'\((.*)\)');
-        final match = regex.firstMatch(jsCode!);
-
-        if (match != null && match.groupCount > 0) {
-          final jsonString = match.group(1);
-          final jsonData = jsonDecode(jsonString!);
-          return jsonData;
-        } else {
-          throw Exception('无法解析 JSONP 数据');
-        }
       } else {
         throw Exception('请求失败，状态码：${response.statusCode}');
       }
